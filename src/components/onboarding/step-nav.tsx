@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 
 interface StepNavProps {
   step: number;
@@ -16,11 +15,11 @@ export function StepNav({ step, totalSteps, onContinue, continueDisabled }: Step
   const isLast = step === totalSteps;
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-start justify-between">
       {!isFirst ? (
         <button
           onClick={() => router.push(`/onboarding/step-${step - 1}`)}
-          className="inline-flex items-center justify-center h-12 px-6 rounded-xl border-2 border-[#e8ebf5] font-[family-name:var(--font-mona)] font-semibold text-base text-[#636788] bg-transparent cursor-pointer transition-all duration-200 hover:bg-[#f3f5fc]"
+          className="flex items-center justify-center h-[48px] px-[24px] py-[12px] rounded-[12px] border-2 border-[#e8ebf5] font-[family-name:var(--font-mona)] font-semibold text-[16px] leading-[24px] text-[#636788] bg-transparent cursor-pointer transition-all duration-200 hover:bg-[#f3f5fc]"
         >
           Back
         </button>
@@ -30,7 +29,7 @@ export function StepNav({ step, totalSteps, onContinue, continueDisabled }: Step
       <button
         onClick={onContinue}
         disabled={continueDisabled}
-        className="inline-flex items-center justify-center gap-1 h-12 px-4 rounded-xl bg-[#ea4c89] text-white font-[family-name:var(--font-mona)] font-bold text-base cursor-pointer transition-all duration-200 hover:brightness-90 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex items-center justify-center gap-[4px] px-[16px] py-[12px] rounded-[12px] bg-[#ea4c89] text-white font-[family-name:var(--font-mona)] font-bold text-[16px] leading-[1.5] cursor-pointer transition-all duration-200 hover:brightness-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isLast ? "Finish Setup" : "Continue"}
         {!isLast && (
