@@ -21,25 +21,32 @@ Migrate the existing Jella AI sign-in page from plain HTML/CSS/JS to a Next.js 1
 
 ## Fonts
 
-- **Mona Sans** (SemiBold, Bold) — headings, labels, buttons
-- **Source Sans Pro** (Regular) — body text, placeholders, descriptions
+Both Sign In and Onboarding use the same font pair:
+- **Mona Sans** (SemiBold, Bold) — headings, labels, buttons. Replaces Inter and Wix Madefor Display.
+- **Source Sans 3** (Regular, SemiBold) — body text, placeholders, descriptions. Replaces Wix Madefor Text. (Google Fonts renamed Source Sans Pro → Source Sans 3.)
 
-Loaded via `next/font/google` (Source Sans Pro) and `next/font/local` (Mona Sans — GitHub font, not on Google Fonts).
+Old fonts (Inter, Wix Madefor) are removed completely.
 
-## Color System (from Figma)
+Loaded via `next/font/local` (Mona Sans — GitHub font) and `next/font/google` (Source Sans 3).
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--bg-page` | `#FAFBFF` | Page background |
-| `--color-title` | `#191E41` | Headings |
-| `--color-body` | `#636788` | Body text, descriptions |
-| `--color-primary` | `#EA4C89` | Primary buttons, active states |
-| `--color-primary-dark` | `#3A3546` | Auto-Fill button |
-| `--color-border` | `#F3F5FC` | Input borders, dividers |
-| `--color-border-focus` | `rgba(234,76,137,0.2)` | Focused input border |
-| `--color-input-bg` | `#FAFBFF` | Input background |
-| `--color-white` | `#FFFFFF` | Card background, active step bg |
-| `--color-back-border` | `#E8EBF5` | Back button border |
+## Color System (OKLCH)
+
+Onboarding uses a light theme. All values stored as CSS custom properties in OKLCH.
+
+| Token | OKLCH Value | Hex Reference | Usage |
+|-------|-------------|---------------|-------|
+| `--bg-page` | `oklch(0.98 0.005 270)` | #FAFBFF | Page background |
+| `--color-title` | `oklch(0.22 0.04 270)` | #191E41 | Headings |
+| `--color-body` | `oklch(0.5 0.03 270)` | #636788 | Body text, descriptions |
+| `--color-primary` | `oklch(0.65 0.24 350)` | #EA4C89 | Primary buttons, active states |
+| `--color-primary-dark` | `oklch(0.3 0.03 300)` | #3A3546 | Auto-Fill button |
+| `--color-border` | `oklch(0.96 0.005 270)` | #F3F5FC | Input borders, dividers |
+| `--color-border-focus` | `oklch(0.65 0.24 350 / 0.2)` | rgba(234,76,137,0.2) | Focused input border |
+| `--color-input-bg` | `oklch(0.98 0.005 270)` | #FAFBFF | Input background |
+| `--color-white` | `oklch(1 0 0)` | #FFFFFF | Card background |
+| `--color-back-border` | `oklch(0.92 0.01 270)` | #E8EBF5 | Back button border |
+
+Sign In page keeps existing OKLCH dark/light tokens from `style.css`.
 
 ## Project Structure
 
@@ -88,19 +95,27 @@ src/
 - Inactive steps: transparent background
 - Each step: 40px circle icon + title (Mona Sans SemiBold 16px) + subtitle (Source Sans Pro Regular 14px)
 - Current step determined by URL pathname
+- Sidebar background: `linear-gradient(180deg, oklch(0.95 0.02 280) 0%, oklch(0.93 0.015 340) 100%)` with soft pink tint
 
 ### Step 1: Brand Basics
 
 Form card with white background, `shadow-sm`, `rounded-xl`:
 
-1. **URL field** (full width) — label "Paste your Instagram or Website Link (optional)", placeholder "e.g. https://www.instagram.com/bloomstudio/", paired with "Auto-Fill" button (dark `#3A3546`, sparkle icon, Mona Sans Bold 14px)
-2. **Brand Name** + **Niche** — two columns, Brand Name is text input, Niche is select dropdown
-3. **Region** + **Language** — two columns, both select dropdowns
+1. **URL field** (full width) — label "Paste your Instagram or Website Link (optional)", placeholder "e.g. https://www.instagram.com/bloomstudio/", paired with "Auto-Fill" button (dark, sparkle icon, Mona Sans Bold 14px). **Auto-Fill is disabled** (no backend) — button shows `opacity-50 cursor-not-allowed`, tooltip "Coming soon"
+2. **Brand Name** (text input) + **Niche** (custom select) — two columns
+3. **Region** (custom select) + **Language** (custom select) — two columns
 4. **Description** — full width textarea, 140px height, pink focus border
 
+**Select options (placeholder data):**
+- **Niche:** Beauty, Fashion, Food, Tech, Fitness, Travel, Education, Other
+- **Region:** North America, Europe, Asia, Latin America, Middle East, Africa, Oceania
+- **Language:** English, Spanish, French, German, Portuguese, Japanese, Korean, Chinese
+
+**Select component:** Custom styled (not native `<select>`). Trigger shows selected value + chevron-down icon. Dropdown is a positioned list with hover highlight. Rounded-lg, border `--color-border`, white background.
+
 Bottom navigation:
-- "Back" — ghost button, 2px border `#E8EBF5`, text `#636788`, hidden on Step 1
-- "Continue →" — primary `#EA4C89`, white text, arrow icon
+- "Back" — ghost button, 2px border `var(--color-back-border)`, text `var(--color-body)`, hidden on Step 1
+- "Continue →" — primary `var(--color-primary)`, white text, arrow icon
 
 ### Steps 2-4
 
@@ -154,8 +169,45 @@ interface OnboardingData {
 
 - **Step 1:** Brand Name required, Description required. Others optional.
 - Validation runs on "Continue" click, not on blur.
-- Error shown below field, red text.
+- Error messages:
+  - Brand Name empty: "Please enter your brand name"
+  - Description empty: "Please add a short description of your brand"
+- Error shown below field in red (`oklch(0.55 0.22 25)`), with subtle shakeIn animation
+- Focus moves to first errored field on submit
 - No cross-step validation.
+
+## Responsive Behavior
+
+### Onboarding
+
+| Breakpoint | Behavior |
+|-----------|----------|
+| >= 1024px | Sidebar 384px fixed left + content fills remaining width |
+| 768-1023px | Sidebar collapses to top stepper bar (horizontal steps, icons only) + content below |
+| < 768px | Top stepper bar (step numbers only, no text) + full-width content, padding reduced |
+
+### Sign In (preserved from current CSS)
+
+| Breakpoint | Behavior |
+|-----------|----------|
+| >= 1024px | Two-panel: brand left + auth right |
+| < 1024px | Stacked: brand top + auth below |
+| < 640px | Auth only, full-screen |
+
+## Step Transitions
+
+- No animated transitions between steps (instant page navigation via App Router)
+- Form card fades in on mount: `opacity 0→1, translateY 8px→0, 300ms ease-out`
+- Sidebar active step highlight transitions smoothly: `background-color 200ms ease`
+
+## Step 4: Submit Behavior
+
+- "Continue" button text changes to "Finish Setup"
+- On click: `console.log(onboardingData)`, then show success state inside the card:
+  - Checkmark icon (green)
+  - "You're all set!" heading
+  - "Your brand profile has been created." subtitle
+  - "Go to Dashboard" button (disabled, shows "Coming soon" tooltip)
 
 ## Assets
 
@@ -163,14 +215,15 @@ interface OnboardingData {
 - Step icons: SVG inline (from Figma — briefcase, target, palette, document)
 - Auto-Fill sparkle icon: SVG inline
 - Arrow right icon: SVG inline
-- Sidebar background: CSS gradient or exported image from Figma
+- Sidebar background: CSS gradient (see OnboardingSidebar section)
 
 ## Existing Code Preservation
 
-- Current dark theme OKLCH color system → kept for Sign In page
+- Current dark theme OKLCH color system → kept for Sign In page (separate CSS scope)
 - Current animations (slideUp, fadeStagger, logoFloat) → converted to Tailwind/CSS modules
 - Current form validation logic → converted to React state
 - Current testimonials slider → converted to React component with useState
+- Fonts changed globally: Mona Sans + Source Sans Pro replace Inter + Wix Madefor
 
 ## Non-Goals
 
