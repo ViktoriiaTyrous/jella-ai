@@ -12,15 +12,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, optional, className = "", ...props }, ref) => {
     return (
       <div className="flex flex-col gap-2">
-        <label className="font-[family-name:var(--font-mona)] font-semibold text-sm text-[var(--color-title)]">
+        <label className="capitalize font-[family-name:var(--font-mona)] font-semibold text-sm leading-[1.5] text-[#191e41]">
           {label}
-          {optional && <span className="font-[family-name:var(--font-source)] font-normal text-[var(--color-body)]"> (optional)</span>}
+          {optional && <span className="font-[family-name:var(--font-source)] font-normal text-[#616268]"> (optional)</span>}
         </label>
-        <input
-          ref={ref}
-          className={`w-full bg-[var(--color-input-bg)] border border-[var(--color-border)] rounded-[var(--radius-sm)] px-4 py-3 font-[family-name:var(--font-source)] text-base text-[var(--color-title)] placeholder:text-[var(--color-body)] outline-none transition-all duration-200 hover:border-[color-mix(in_oklch,var(--color-body)_30%,transparent)] focus:border-[var(--color-border-focus)] focus:shadow-[0_0_0_3px_var(--color-border-focus)] ${error ? "border-[var(--color-error)] shadow-[0_0_0_3px_oklch(0.55_0.22_25/0.12)]" : ""} ${className}`}
-          {...props}
-        />
+        <div className="bg-[#fafbff] border border-[#f3f5fc] rounded-lg px-4 py-3">
+          <input
+            ref={ref}
+            className={`w-full bg-transparent font-[family-name:var(--font-mona)] text-base text-[#191e41] placeholder:text-[#636788] outline-none ${className}`}
+            {...props}
+          />
+        </div>
         {error && (
           <p className="text-[var(--color-error)] text-sm font-[family-name:var(--font-source)] font-medium animate-[shakeIn_0.35s_ease-out]">
             {error}

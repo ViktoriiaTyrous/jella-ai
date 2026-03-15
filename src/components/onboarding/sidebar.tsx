@@ -53,13 +53,14 @@ interface SidebarProps {
 
 export function Sidebar({ currentStep }: SidebarProps) {
   return (
-    <div
-      className="h-full rounded-2xl overflow-hidden relative p-[30px] flex flex-col"
-      style={{ background: "linear-gradient(180deg, oklch(0.95 0.02 280), oklch(0.93 0.015 340))" }}
+    <div className="h-full rounded-2xl overflow-hidden relative flex flex-col"
+      style={{
+        background: "linear-gradient(160deg, #f0e6f6 0%, #f5e0ec 40%, #eddef5 100%)",
+      }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3">
-        <div className="size-12">
+      <div className="flex items-center gap-3 px-[30px] pt-[23px]">
+        <div className="size-12 shrink-0">
           <svg width="49" height="48" viewBox="0 0 49 48" fill="none">
             <circle cx="24" cy="18" r="10" fill="#EA4C89" />
             <path d="M14 24c0 10 4 16 10 19 6-3 10-9 10-19" stroke="#EA4C89" strokeOpacity="0.4" strokeWidth="2" fill="none" strokeLinecap="round" />
@@ -69,10 +70,10 @@ export function Sidebar({ currentStep }: SidebarProps) {
       </div>
 
       {/* Divider */}
-      <div className="h-px bg-white mt-6 mb-10" />
+      <div className="h-px bg-white mx-px mt-[17px]" />
 
       {/* Steps */}
-      <div className="flex flex-col">
+      <div className="flex flex-col px-[25px] mt-[42px]">
         {STEPS.map((step, i) => (
           <div key={step.title}>
             <StepIndicator
@@ -82,8 +83,8 @@ export function Sidebar({ currentStep }: SidebarProps) {
               active={i + 1 === currentStep}
             />
             {i < STEPS.length - 1 && (
-              <div className="w-[59px] h-8 flex items-center justify-center">
-                <div className="w-px h-full bg-gray-300/40" />
+              <div className="ml-[21px] h-8 flex items-stretch">
+                <div className="w-px bg-gradient-to-b from-gray-300/60 to-gray-300/20" />
               </div>
             )}
           </div>

@@ -33,17 +33,21 @@ export default function Step1Page() {
   };
 
   return (
-    <div className="animate-[fadeIn_0.3s_ease-out]">
-      <h1 className="font-[family-name:var(--font-mona)] font-semibold text-[32px] text-[var(--color-title)] leading-tight">
-        Brand Basics
-      </h1>
-      <p className="font-[family-name:var(--font-source)] text-base text-[var(--color-body)] mt-1">
-        Add your website or Instagram link — this helps AI understand your brand&apos;s audience, tone, and product style.
-      </p>
+    <div className="animate-[fadeIn_0.3s_ease-out] flex flex-col gap-6">
+      {/* Header */}
+      <div>
+        <h1 className="font-[family-name:var(--font-mona)] font-semibold text-[32px] text-[#191e41] leading-[1.3]">
+          Brand Basics
+        </h1>
+        <p className="font-[family-name:var(--font-mona)] text-base text-[#636788] leading-[1.3] mt-0 h-7 flex items-center">
+          Add your website or Instagram link — this helps AI understand your brand&apos;s audience, tone, and product style.
+        </p>
+      </div>
 
-      <div className="mt-6 bg-white rounded-xl shadow-[0_1px_2px_oklch(0_0_0/0.05)]">
+      {/* Form Card */}
+      <div className="bg-white rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.05)] pb-6">
         {/* URL + Auto-Fill */}
-        <div className="border-b border-[var(--color-border)] p-6">
+        <div className="border-b border-[#f3f5fc] p-6">
           <div className="flex gap-4 items-end">
             <div className="flex-1">
               <Input
@@ -58,18 +62,18 @@ export default function Step1Page() {
               variant="dark"
               disabled
               title="Coming soon"
-              className="h-12 shrink-0"
+              className="h-12 shrink-0 gap-[6px] rounded-xl"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 3l1.5 5.5H19l-4.5 3.5 1.5 5.5L12 14l-4 3.5 1.5-5.5L5 8.5h5.5z" />
               </svg>
-              Auto-Fill
+              <span className="font-[family-name:var(--font-mona)] font-bold text-sm">Auto-Fill</span>
             </Button>
           </div>
         </div>
 
         {/* Brand Name + Niche */}
-        <div className="border-b border-[var(--color-border)] p-6">
+        <div className="border-b border-[#f3f5fc] p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Brand Name"
@@ -89,27 +93,27 @@ export default function Step1Page() {
         </div>
 
         {/* Region + Language */}
-        <div className="border-b border-[var(--color-border)] p-6">
+        <div className="border-b border-[#f3f5fc] p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
               label="Region"
               options={REGIONS}
               value={data.region}
               onChange={(v) => updateField("region", v)}
-              placeholder="Select region"
+              placeholder="Enter your business name"
             />
             <Select
               label="Language"
               options={LANGUAGES}
               value={data.language}
               onChange={(v) => updateField("language", v)}
-              placeholder="Select language"
+              placeholder="e.g. Beauty"
             />
           </div>
         </div>
 
         {/* Description */}
-        <div className="p-6 pt-3">
+        <div className="px-6 pt-3 pb-6">
           <Textarea
             label="Description"
             placeholder="Describe your brand in a few sentences..."
@@ -121,6 +125,7 @@ export default function Step1Page() {
         </div>
       </div>
 
+      {/* Navigation */}
       <StepNav step={1} totalSteps={4} onContinue={handleContinue} />
     </div>
   );
