@@ -33,7 +33,7 @@ export function Select({ label, options, value, onChange, placeholder = "Select.
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="w-full bg-[#fafbff] border border-[#f3f5fc] rounded-[8px] px-[16px] py-[12px] font-[family-name:var(--font-mona)] text-[16px] leading-[1.5] text-left flex items-center justify-between outline-none transition-all duration-200 focus:border-[rgba(234,76,137,0.3)] focus:shadow-[0_0_0_3px_rgba(234,76,137,0.08)]"
+          className="w-full bg-[#fafbff] border border-[#f3f5fc] rounded-[8px] px-[16px] py-[12px] font-[family-name:var(--font-mona)] font-normal text-[16px] leading-[1.5] text-left flex items-center justify-between outline-none transition-all duration-200 focus:border-[rgba(234,76,137,0.3)] focus:shadow-[0_0_0_3px_rgba(234,76,137,0.06)]"
         >
           <span className={value ? "text-[#191e41]" : "text-[#636788]"}>
             {value || placeholder}
@@ -43,7 +43,7 @@ export function Select({ label, options, value, onChange, placeholder = "Select.
           </svg>
         </button>
         {open && (
-          <ul className="absolute z-10 mt-1 w-full bg-white border border-[#f3f5fc] rounded-[12px] shadow-[0_4px_16px_rgba(0,0,0,0.1)] max-h-60 overflow-auto py-1">
+          <ul className="absolute z-10 mt-1 w-full bg-white border border-[#f3f5fc] rounded-[12px] shadow-[0_4px_16px_rgba(0,0,0,0.08)] max-h-60 overflow-auto py-1">
             {options.map((option) => (
               <li key={option}>
                 <button

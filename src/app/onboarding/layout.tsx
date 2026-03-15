@@ -11,19 +11,23 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
 
   return (
     <OnboardingProvider>
-      <div className="relative min-h-screen bg-[#fafbff]">
-        {/* Desktop sidebar — exact Figma position */}
-        <div className="hidden lg:block absolute left-[20px] top-[20px] w-[384px] h-[calc(100vh-40px)]">
+      {/* Desktop */}
+      <div className="hidden lg:block min-h-screen bg-[#fafbff] relative">
+        {/* Sidebar — Figma: left:20, top:20, w:384 */}
+        <div className="absolute left-[20px] top-[20px] bottom-[20px]">
           <Sidebar currentStep={currentStep} />
         </div>
-        {/* Mobile stepper */}
-        <div className="lg:hidden px-4 pt-4">
-          <MobileStepper currentStep={currentStep} />
-        </div>
-        {/* Content — exact Figma position */}
-        <main className="lg:absolute lg:left-[calc(27.78%+19.56px)] lg:top-[69px] lg:w-[1076px] px-6 py-10 lg:p-0">
+        {/* Content — Figma: left:calc(27.78%+19.56px), top:69px, w:1076px */}
+        <div className="absolute left-[calc(27.78%+19.56px)] top-[69px] right-[40px] max-w-[1076px]">
           {children}
-        </main>
+        </div>
+      </div>
+      {/* Mobile */}
+      <div className="lg:hidden min-h-screen bg-[#fafbff]">
+        <MobileStepper currentStep={currentStep} />
+        <div className="px-4 pb-8">
+          {children}
+        </div>
       </div>
     </OnboardingProvider>
   );
