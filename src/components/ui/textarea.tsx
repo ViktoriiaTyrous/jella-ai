@@ -10,19 +10,49 @@ interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, className = "", ...props }, ref) => {
     return (
-      <div className="flex flex-col gap-[8px]">
-        <label className="font-[family-name:var(--font-mona)] font-semibold text-[14px] leading-[1.3] text-[#191e41]">
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <label
+          style={{
+            fontFamily: "var(--font-mona), system-ui, sans-serif",
+            fontWeight: 600,
+            fontSize: "14px",
+            lineHeight: 1.3,
+            color: "#191e41",
+          }}
+        >
           {label}
         </label>
-        <div className={`bg-[#fafbff] border border-[rgba(234,76,137,0.2)] rounded-[8px] px-[16px] py-[12px] transition-all duration-200 focus-within:border-[rgba(234,76,137,0.4)] focus-within:shadow-[0_0_0_3px_rgba(234,76,137,0.06)] ${error ? "!border-red-400" : ""}`}>
-          <textarea
-            ref={ref}
-            className={`w-full bg-transparent font-[family-name:var(--font-mona)] font-normal text-[16px] leading-[1.5] text-[#05103c] placeholder:text-[#636788] outline-none resize-none ${className}`}
-            {...props}
-          />
-        </div>
+        <textarea
+          ref={ref}
+          style={{
+            width: "100%",
+            height: "140px",
+            backgroundColor: "#fafbff",
+            border: error ? "1px solid #ef4444" : "1px solid rgba(234,76,137,0.2)",
+            borderRadius: "8px",
+            padding: "12px 16px",
+            fontFamily: "var(--font-mona), system-ui, sans-serif",
+            fontWeight: 400,
+            fontSize: "16px",
+            lineHeight: 1.5,
+            color: "#05103c",
+            outline: "none",
+            resize: "none" as const,
+            transition: "border-color 0.2s, box-shadow 0.2s",
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "rgba(234,76,137,0.4)";
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(234,76,137,0.06)";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = error ? "#ef4444" : "rgba(234,76,137,0.2)";
+            e.currentTarget.style.boxShadow = "none";
+          }}
+          className={className}
+          {...props}
+        />
         {error && (
-          <p className="text-red-500 text-[13px] font-[family-name:var(--font-source)] font-medium animate-[shakeIn_0.35s_ease-out]">
+          <p style={{ color: "#ef4444", fontSize: "13px", fontFamily: "var(--font-source), system-ui, sans-serif", fontWeight: 500 }}>
             {error}
           </p>
         )}

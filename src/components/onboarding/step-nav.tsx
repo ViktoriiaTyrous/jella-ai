@@ -15,11 +15,29 @@ export function StepNav({ step, totalSteps, onContinue, continueDisabled }: Step
   const isLast = step === totalSteps;
 
   return (
-    <div className="flex items-start justify-between">
+    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
       {!isFirst ? (
         <button
           onClick={() => router.push(`/onboarding/step-${step - 1}`)}
-          className="flex items-center justify-center h-[48px] px-[24px] py-[12px] rounded-[12px] border-2 border-[#e8ebf5] font-[family-name:var(--font-mona)] font-semibold text-[16px] leading-[24px] text-[#636788] bg-transparent cursor-pointer transition-all duration-200 hover:bg-[#f3f5fc]"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "48px",
+            padding: "12px 24px",
+            borderRadius: "12px",
+            border: "2px solid #e8ebf5",
+            backgroundColor: "transparent",
+            fontFamily: "var(--font-mona), system-ui, sans-serif",
+            fontWeight: 600,
+            fontSize: "16px",
+            lineHeight: "24px",
+            color: "#636788",
+            cursor: "pointer",
+            transition: "background-color 0.2s",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f3f5fc"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
         >
           Back
         </button>
@@ -29,7 +47,26 @@ export function StepNav({ step, totalSteps, onContinue, continueDisabled }: Step
       <button
         onClick={onContinue}
         disabled={continueDisabled}
-        className="flex items-center justify-center gap-[4px] px-[16px] py-[12px] rounded-[12px] bg-[#ea4c89] text-white font-[family-name:var(--font-mona)] font-bold text-[16px] leading-[1.5] cursor-pointer transition-all duration-200 hover:brightness-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "4px",
+          padding: "12px 16px",
+          borderRadius: "12px",
+          backgroundColor: "#ea4c89",
+          color: "#fff",
+          border: "none",
+          fontFamily: "var(--font-mona), system-ui, sans-serif",
+          fontWeight: 700,
+          fontSize: "16px",
+          lineHeight: 1.5,
+          cursor: continueDisabled ? "not-allowed" : "pointer",
+          opacity: continueDisabled ? 0.5 : 1,
+          transition: "filter 0.2s",
+        }}
+        onMouseEnter={(e) => { if (!continueDisabled) e.currentTarget.style.filter = "brightness(0.9)"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.filter = "none"; }}
       >
         {isLast ? "Finish Setup" : "Continue"}
         {!isLast && (

@@ -25,31 +25,103 @@ export function Select({ label, options, value, onChange, placeholder = "Select.
   }, []);
 
   return (
-    <div className="flex flex-col gap-[8px]" ref={ref}>
-      <label className="font-[family-name:var(--font-mona)] font-semibold text-[14px] leading-[1.5] text-[#191e41]">
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }} ref={ref}>
+      <label
+        style={{
+          fontFamily: "var(--font-mona), system-ui, sans-serif",
+          fontWeight: 600,
+          fontSize: "14px",
+          lineHeight: 1.5,
+          color: "#191e41",
+        }}
+      >
         {label}
       </label>
-      <div className="relative">
+      <div style={{ position: "relative" }}>
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="w-full bg-[#fafbff] border border-[#f3f5fc] rounded-[8px] px-[16px] py-[12px] font-[family-name:var(--font-mona)] font-normal text-[16px] leading-[1.5] text-left flex items-center justify-between outline-none transition-all duration-200 focus:border-[rgba(234,76,137,0.3)] focus:shadow-[0_0_0_3px_rgba(234,76,137,0.06)]"
+          style={{
+            width: "100%",
+            backgroundColor: "#fafbff",
+            border: "1px solid #f3f5fc",
+            borderRadius: "8px",
+            padding: "12px 16px",
+            fontFamily: "var(--font-mona), system-ui, sans-serif",
+            fontWeight: 400,
+            fontSize: "16px",
+            lineHeight: 1.5,
+            textAlign: "left" as const,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            cursor: "pointer",
+            outline: "none",
+            transition: "border-color 0.2s, box-shadow 0.2s",
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "rgba(234,76,137,0.3)";
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(234,76,137,0.06)";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = "#f3f5fc";
+            e.currentTarget.style.boxShadow = "none";
+          }}
         >
-          <span className={value ? "text-[#191e41]" : "text-[#636788]"}>
+          <span style={{ color: value ? "#191e41" : "#636788" }}>
             {value || placeholder}
           </span>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`text-[#636788] transition-transform duration-200 shrink-0 ${open ? "rotate-180" : ""}`}>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#636788"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ flexShrink: 0, transition: "transform 0.2s", transform: open ? "rotate(180deg)" : "none" }}
+          >
             <path d="m6 9 6 6 6-6" />
           </svg>
         </button>
         {open && (
-          <ul className="absolute z-10 mt-1 w-full bg-white border border-[#f3f5fc] rounded-[12px] shadow-[0_4px_16px_rgba(0,0,0,0.08)] max-h-60 overflow-auto py-1">
+          <ul
+            style={{
+              position: "absolute",
+              zIndex: 10,
+              marginTop: "4px",
+              width: "100%",
+              backgroundColor: "#fff",
+              border: "1px solid #f3f5fc",
+              borderRadius: "12px",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+              maxHeight: "240px",
+              overflowY: "auto" as const,
+              padding: "4px 0",
+              listStyle: "none",
+            }}
+          >
             {options.map((option) => (
               <li key={option}>
                 <button
                   type="button"
                   onClick={() => { onChange(option); setOpen(false); }}
-                  className={`w-full text-left px-[16px] py-[10px] font-[family-name:var(--font-source)] text-[14px] transition-colors hover:bg-[#f3f5fc] ${value === option ? "text-[#ea4c89] font-semibold" : "text-[#191e41]"}`}
+                  style={{
+                    width: "100%",
+                    textAlign: "left" as const,
+                    padding: "10px 16px",
+                    fontFamily: "var(--font-source), system-ui, sans-serif",
+                    fontSize: "14px",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: value === option ? "#ea4c89" : "#191e41",
+                    fontWeight: value === option ? 600 : 400,
+                    transition: "background-color 0.15s",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f3f5fc"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
                 >
                   {option}
                 </button>

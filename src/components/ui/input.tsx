@@ -11,20 +11,53 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, optional, className = "", ...props }, ref) => {
     return (
-      <div className="flex flex-col gap-[8px]">
-        <label className="font-[family-name:var(--font-mona)] font-semibold text-[14px] leading-[1.5] text-[#191e41] whitespace-nowrap">
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <label
+          style={{
+            fontFamily: "var(--font-mona), system-ui, sans-serif",
+            fontWeight: 600,
+            fontSize: "14px",
+            lineHeight: 1.5,
+            color: "#191e41",
+          }}
+        >
           {label}{" "}
-          {optional && <span className="font-[family-name:var(--font-source)] font-normal text-[#616268]">(optional)</span>}
+          {optional && (
+            <span style={{ fontFamily: "var(--font-source), system-ui, sans-serif", fontWeight: 400, color: "#616268" }}>
+              (optional)
+            </span>
+          )}
         </label>
-        <div className={`bg-[#fafbff] border border-[#f3f5fc] rounded-[8px] flex items-center px-[16px] py-[12px] transition-all duration-200 focus-within:border-[rgba(234,76,137,0.3)] focus-within:shadow-[0_0_0_3px_rgba(234,76,137,0.06)] ${error ? "!border-red-400 !shadow-[0_0_0_3px_rgba(239,68,68,0.08)]" : ""}`}>
-          <input
-            ref={ref}
-            className={`w-full bg-transparent font-[family-name:var(--font-mona)] font-normal text-[16px] leading-[1.5] text-[#191e41] placeholder:text-[#636788] outline-none ${className}`}
-            {...props}
-          />
-        </div>
+        <input
+          ref={ref}
+          style={{
+            width: "100%",
+            backgroundColor: "#fafbff",
+            border: "1px solid #f3f5fc",
+            borderRadius: "8px",
+            padding: "12px 16px",
+            fontFamily: "var(--font-mona), system-ui, sans-serif",
+            fontWeight: 400,
+            fontSize: "16px",
+            lineHeight: 1.5,
+            color: "#191e41",
+            outline: "none",
+            transition: "border-color 0.2s, box-shadow 0.2s",
+            ...(error ? { borderColor: "#ef4444", boxShadow: "0 0 0 3px rgba(239,68,68,0.08)" } : {}),
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "rgba(234,76,137,0.3)";
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(234,76,137,0.06)";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = error ? "#ef4444" : "#f3f5fc";
+            e.currentTarget.style.boxShadow = error ? "0 0 0 3px rgba(239,68,68,0.08)" : "none";
+          }}
+          className={className}
+          {...props}
+        />
         {error && (
-          <p className="text-red-500 text-[13px] font-[family-name:var(--font-source)] font-medium animate-[shakeIn_0.35s_ease-out]">
+          <p style={{ color: "#ef4444", fontSize: "13px", fontFamily: "var(--font-source), system-ui, sans-serif", fontWeight: 500 }}>
             {error}
           </p>
         )}
