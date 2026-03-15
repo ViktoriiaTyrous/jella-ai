@@ -6,7 +6,6 @@ import { useOnboarding } from "@/context/onboarding-context";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { StepNav } from "@/components/onboarding/step-nav";
 
 const NICHES = ["Beauty", "Fashion", "Food", "Tech", "Fitness", "Travel", "Education", "Other"];
@@ -33,47 +32,46 @@ export default function Step1Page() {
   };
 
   return (
-    <div className="animate-[fadeIn_0.3s_ease-out] flex flex-col gap-6">
+    <div className="animate-[fadeIn_0.3s_ease-out] flex flex-col gap-10">
       {/* Header */}
       <div>
         <h1 className="font-[family-name:var(--font-mona)] font-semibold text-[32px] text-[#191e41] leading-[1.3]">
           Brand Basics
         </h1>
-        <p className="font-[family-name:var(--font-mona)] text-base text-[#636788] leading-[1.3] mt-0 h-7 flex items-center">
+        <p className="font-[family-name:var(--font-mona)] text-base text-[#636788] leading-[1.3] h-7 flex items-center">
           Add your website or Instagram link — this helps AI understand your brand&apos;s audience, tone, and product style.
         </p>
       </div>
 
       {/* Form Card */}
-      <div className="bg-white rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.05)] pb-6">
+      <div className="bg-white rounded-xl shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
         {/* URL + Auto-Fill */}
-        <div className="border-b border-[#f3f5fc] p-6">
+        <div className="border-b border-[#e4e7f3] p-6">
           <div className="flex gap-4 items-end">
             <div className="flex-1">
               <Input
-                label="Paste your Instagram or Website link"
+                label="Paste Your Instagram Or Website Link"
                 optional
                 placeholder="e.g. https://www.instagram.com/bloomstudio/"
                 value={data.websiteUrl}
                 onChange={(e) => updateField("websiteUrl", e.target.value)}
               />
             </div>
-            <Button
-              variant="dark"
+            <button
               disabled
               title="Coming soon"
-              className="h-12 shrink-0 gap-[6px] rounded-xl"
+              className="inline-flex items-center justify-center gap-[6px] h-12 px-4 rounded-xl bg-[#3a3546] text-white font-[family-name:var(--font-mona)] font-bold text-sm cursor-not-allowed opacity-50 shrink-0"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M12 3l1.5 5.5H19l-4.5 3.5 1.5 5.5L12 14l-4 3.5 1.5-5.5L5 8.5h5.5z" />
               </svg>
-              <span className="font-[family-name:var(--font-mona)] font-bold text-sm">Auto-Fill</span>
-            </Button>
+              Auto-Fill
+            </button>
           </div>
         </div>
 
         {/* Brand Name + Niche */}
-        <div className="border-b border-[#f3f5fc] p-6">
+        <div className="border-b border-[#e4e7f3] p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Brand Name"
@@ -93,7 +91,7 @@ export default function Step1Page() {
         </div>
 
         {/* Region + Language */}
-        <div className="border-b border-[#f3f5fc] p-6">
+        <div className="border-b border-[#e4e7f3] p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
               label="Region"
@@ -113,7 +111,7 @@ export default function Step1Page() {
         </div>
 
         {/* Description */}
-        <div className="px-6 pt-3 pb-6">
+        <div className="p-6 pt-3">
           <Textarea
             label="Description"
             placeholder="Describe your brand in a few sentences..."
