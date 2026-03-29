@@ -778,80 +778,84 @@ export default function LandingPage() {
           </FadeIn>
 
           <FadeIn delay={0.15}>
-            <div style={{ position: "relative", marginTop: 80, display: "flex", justifyContent: "center", alignItems: "center", gap: 0, minHeight: 320 }}>
+            <div style={{ position: "relative", marginTop: 80, maxWidth: 900, margin: "80px auto 0" }}>
+              {/* SVG connection lines */}
+              <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }} viewBox="0 0 900 340" preserveAspectRatio="none">
+                {/* Left connections */}
+                <path d="M200 57 L350 170" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
+                <path d="M200 170 L350 170" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
+                <path d="M200 283 L350 170" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
+                {/* Right connections */}
+                <path d="M550 170 L700 57" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
+                <path d="M550 170 L700 170" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
+                <path d="M550 170 L700 283" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
+                {/* Small circles at start points */}
+                <circle cx="200" cy="57" r="4" fill={INDIGO} opacity="0.2" />
+                <circle cx="200" cy="170" r="4" fill={INDIGO} opacity="0.2" />
+                <circle cx="200" cy="283" r="4" fill={INDIGO} opacity="0.2" />
+                <circle cx="700" cy="57" r="4" fill={INDIGO} opacity="0.2" />
+                <circle cx="700" cy="170" r="4" fill={INDIGO} opacity="0.2" />
+                <circle cx="700" cy="283" r="4" fill={INDIGO} opacity="0.2" />
+                <defs>
+                  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill={INDIGO} />
+                  </marker>
+                </defs>
+              </svg>
 
-              {/* Left platforms */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "flex-end", flex: "0 0 200px" }}>
-                {integrations.filter(p => p.name !== "Jella AI").slice(0, 3).map(p => (
-                  <div key={p.name} style={{
-                    display: "flex", alignItems: "center", gap: 12,
-                    padding: "14px 20px", borderRadius: 14,
-                    border: `1.5px solid ${CARD_BORDER}`, background: WHITE,
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
-                  }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 8, background: `${p.color}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, color: p.color }}>{p.letter}</span>
+              <div style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                {/* Left platforms */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+                  {integrations.filter(p => p.name !== "Jella AI").slice(0, 3).map(p => (
+                    <div key={p.name} style={{
+                      display: "flex", alignItems: "center", gap: 14,
+                      padding: "16px 24px", borderRadius: 16,
+                      border: `1.5px solid ${CARD_BORDER}`, background: WHITE,
+                      boxShadow: "0 2px 16px rgba(0,0,0,0.05)", minWidth: 180,
+                    }}>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, background: `${p.color}15`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: 20, fontWeight: 700, color: p.color }}>{p.letter}</span>
+                      </div>
+                      <span style={{ ...body, fontSize: 16, fontWeight: 600, color: NAVY }}>{p.name}</span>
                     </div>
-                    <span style={{ ...body, fontSize: 15, fontWeight: 600, color: NAVY }}>{p.name}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Left arrows */}
-              <div style={{ flex: "0 0 80px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 24 }}>
-                {[0, 1, 2].map(i => (
-                  <svg key={i} width="80" height="20" viewBox="0 0 80 20">
-                    <line x1="0" y1="10" x2="68" y2="10" stroke={INDIGO} strokeWidth="1.5" />
-                    <polygon points="68,5 80,10 68,15" fill={INDIGO} />
-                    <circle cx="0" cy="10" r="3" fill={INDIGO} opacity="0.3" />
-                  </svg>
-                ))}
-              </div>
-
-              {/* Center Jella */}
-              <div style={{
-                padding: "20px 40px", borderRadius: 16,
-                border: `2px solid ${INDIGO}`,
-                background: WHITE,
-                display: "flex", alignItems: "center", gap: 14,
-                boxShadow: "0 8px 32px rgba(67,56,202,0.12)",
-                position: "relative", zIndex: 2,
-              }}>
-                <div style={{
-                  width: 48, height: 48, borderRadius: 12,
-                  background: PINK, display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <Logo size="sm" variant="light" />
+                  ))}
                 </div>
-                <span style={{ ...heading, fontSize: 28, fontWeight: 700, color: NAVY }}>Jella AI</span>
-              </div>
 
-              {/* Right arrows */}
-              <div style={{ flex: "0 0 80px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 24 }}>
-                {[0, 1, 2].map(i => (
-                  <svg key={i} width="80" height="20" viewBox="0 0 80 20">
-                    <circle cx="80" cy="10" r="3" fill={INDIGO} opacity="0.3" />
-                    <line x1="12" y1="10" x2="80" y2="10" stroke={INDIGO} strokeWidth="1.5" />
-                    <polygon points="0,5 12,10 0,15" fill={INDIGO} />
-                  </svg>
-                ))}
-              </div>
-
-              {/* Right platforms */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "flex-start", flex: "0 0 200px" }}>
-                {integrations.filter(p => p.name !== "Jella AI").slice(3, 6).map(p => (
-                  <div key={p.name} style={{
-                    display: "flex", alignItems: "center", gap: 12,
-                    padding: "14px 20px", borderRadius: 14,
-                    border: `1.5px solid ${CARD_BORDER}`, background: WHITE,
-                    boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                {/* Center Jella */}
+                <div style={{
+                  padding: "24px 44px", borderRadius: 20,
+                  border: `2px solid ${INDIGO}`,
+                  borderStyle: "dashed",
+                  background: WHITE,
+                  display: "flex", alignItems: "center", gap: 16,
+                  boxShadow: "0 8px 32px rgba(67,56,202,0.1)",
+                }}>
+                  <div style={{
+                    width: 52, height: 52, borderRadius: 14,
+                    background: PINK, display: "flex", alignItems: "center", justifyContent: "center",
+                    boxShadow: "0 4px 16px rgba(234,76,137,0.25)",
                   }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 8, background: `${p.color}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <span style={{ fontSize: 18, fontWeight: 700, color: p.color }}>{p.letter}</span>
-                    </div>
-                    <span style={{ ...body, fontSize: 15, fontWeight: 600, color: NAVY }}>{p.name}</span>
+                    <Logo size="sm" variant="light" />
                   </div>
-                ))}
+                  <span style={{ ...heading, fontSize: 30, fontWeight: 700, color: NAVY }}>Jella AI</span>
+                </div>
+
+                {/* Right platforms */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+                  {integrations.filter(p => p.name !== "Jella AI").slice(3, 6).map(p => (
+                    <div key={p.name} style={{
+                      display: "flex", alignItems: "center", gap: 14,
+                      padding: "16px 24px", borderRadius: 16,
+                      border: `1.5px solid ${CARD_BORDER}`, background: WHITE,
+                      boxShadow: "0 2px 16px rgba(0,0,0,0.05)", minWidth: 180,
+                    }}>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, background: `${p.color}15`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: 20, fontWeight: 700, color: p.color }}>{p.letter}</span>
+                      </div>
+                      <span style={{ ...body, fontSize: 16, fontWeight: 600, color: NAVY }}>{p.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </FadeIn>
@@ -1043,75 +1047,87 @@ export default function LandingPage() {
       </section>
 
       {/* ════════ CTA ════════ */}
-      <section style={{ position: "relative", zIndex: 19, padding: "120px 0", background: "linear-gradient(135deg, #ea4c89 0%, #c13584 50%, #833ab4 100%)", overflow: "hidden" }}>
-        {/* Decorative circles */}
-        <div style={{ position: "absolute", top: -120, right: -120, width: 400, height: 400, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
-        <div style={{ position: "absolute", bottom: -80, left: -80, width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
-        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 40px", textAlign: "center", position: "relative", zIndex: 1 }}>
+      <section style={{ position: "relative", zIndex: 19, padding: "0 40px 0", background: WHITE }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
           <FadeIn>
-            <h2 style={{ ...heading, fontSize: 52, fontWeight: 700, color: WHITE, lineHeight: 1.15 }}>
-              Stop Planning. Start Publishing.
-            </h2>
-            <p style={{ ...body, fontSize: 18, color: "rgba(255,255,255,0.8)", marginTop: 20, maxWidth: 560, margin: "20px auto 0" }}>
-              Join 37,000+ creators who switched to Jella and got their evenings back. Free plan available — no credit card required.
-            </p>
-            <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 40 }}>
-              <Link
-                href="/sign-up"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  padding: "16px 36px", background: WHITE, color: NAVY,
-                  borderRadius: 12, textDecoration: "none", fontWeight: 600, fontSize: 16,
-                  fontFamily: "var(--font-source), system-ui, sans-serif",
-                }}
-              >
-                Start Free Today <IconArrowRight />
-              </Link>
-              <button style={{
-                padding: "16px 36px", background: "rgba(255,255,255,0.15)", color: WHITE,
-                borderRadius: 12, border: "1px solid rgba(255,255,255,0.3)", cursor: "pointer",
-                fontWeight: 600, fontSize: 16, fontFamily: "var(--font-source), system-ui, sans-serif",
-                display: "flex", alignItems: "center", gap: 8,
-              }}>
-                <IconPlay />
-                Watch Demo
-              </button>
+            <div style={{
+              position: "relative", overflow: "hidden",
+              borderRadius: 32,
+              background: "linear-gradient(135deg, #e84393 0%, #ec6fa2 40%, #f5a0c0 100%)",
+              padding: "100px 40px",
+              textAlign: "center",
+            }}>
+              {/* Grid pattern overlay */}
+              <div style={{ position: "absolute", inset: 0, backgroundImage: "url(/grid-pattern.svg)", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.15, pointerEvents: "none" }} />
+
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <h2 style={{ ...heading, fontSize: 56, fontWeight: 700, color: WHITE, lineHeight: 1.15, maxWidth: 700, margin: "0 auto" }}>
+                  Ready to transform your content strategy?
+                </h2>
+                <p style={{ ...body, fontSize: 18, color: "rgba(255,255,255,0.8)", marginTop: 24, maxWidth: 600, margin: "24px auto 0" }}>
+                  See how Jella simplifies your workflow by combining AI content, scheduling, analytics, and design — all in one seamless platform.
+                </p>
+                <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 40 }}>
+                  <Link
+                    href="/sign-up"
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      padding: "16px 36px", background: WHITE, color: NAVY,
+                      borderRadius: 14, textDecoration: "none", fontWeight: 600, fontSize: 16,
+                      fontFamily: "var(--font-source), system-ui, sans-serif",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    Get Started →
+                  </Link>
+                  <button style={{
+                    padding: "16px 36px", background: "rgba(255,255,255,0.15)", color: WHITE,
+                    borderRadius: 14, border: "1px solid rgba(255,255,255,0.35)", cursor: "pointer",
+                    fontWeight: 600, fontSize: 16, fontFamily: "var(--font-source), system-ui, sans-serif",
+                    backdropFilter: "blur(8px)",
+                  }}>
+                    View Video Demo
+                  </button>
+                </div>
+              </div>
             </div>
           </FadeIn>
         </div>
       </section>
 
       {/* ════════ FOOTER ════════ */}
-      <footer style={{ position: "relative", zIndex: 20, padding: "60px 0 40px", background: WHITE, borderTop: `1px solid ${CARD_BORDER}` }}>
+      <footer style={{ position: "relative", zIndex: 20, padding: "80px 0 40px", background: NAVY, marginTop: 120 }}>
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 40, marginBottom: 40 }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                <Logo size="sm" />
-                <span style={{ ...heading, fontSize: 20, fontWeight: 700 }}>Jella AI</span>
-              </div>
-              <p style={{ ...body, fontSize: 14, lineHeight: 1.6, maxWidth: 260 }}>
-                The all-in-one content platform for creators who want to grow faster and work smarter.
-              </p>
+          {/* Big logo */}
+          <div style={{ textAlign: "center", marginBottom: 60 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 20 }}>
+              <Logo size="lg" variant="light" />
+              <span style={{ ...heading, fontSize: 40, fontWeight: 700, color: WHITE }}>Jella AI</span>
             </div>
+            <p style={{ ...body, fontSize: 16, color: "rgba(255,255,255,0.5)", maxWidth: 400, margin: "0 auto" }}>
+              The all-in-one content platform for creators who want to grow faster and work smarter.
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 40, marginBottom: 60 }}>
             {[
               { title: "Product", links: ["Features", "Pricing", "Integrations", "Changelog"] },
               { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
               { title: "Resources", links: ["Documentation", "Help Center", "Community", "Templates"] },
               { title: "Legal", links: ["Privacy Policy", "Terms of Service", "Cookie Policy"] },
             ].map(col => (
-              <div key={col.title}>
-                <h4 style={{ ...heading, fontSize: 14, fontWeight: 600, marginBottom: 16 }}>{col.title}</h4>
+              <div key={col.title} style={{ textAlign: "center" }}>
+                <h4 style={{ ...heading, fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 20 }}>{col.title}</h4>
                 {col.links.map(link => (
-                  <p key={link} style={{ ...body, fontSize: 14, marginBottom: 10, cursor: "pointer" }}>{link}</p>
+                  <p key={link} style={{ ...body, fontSize: 14, color: "rgba(255,255,255,0.6)", marginBottom: 12, cursor: "pointer" }}>{link}</p>
                 ))}
               </div>
             ))}
           </div>
 
-          <div style={{ borderTop: `1px solid ${CARD_BORDER}`, paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <p style={{ ...body, fontSize: 13 }}>© 2026 Jella AI — All rights reserved.</p>
-            <p style={{ ...body, fontSize: 13 }}>Privacy Policy | Terms of Service</p>
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <p style={{ ...body, fontSize: 13, color: "rgba(255,255,255,0.4)" }}>© 2026 Jella AI — All rights reserved.</p>
+            <p style={{ ...body, fontSize: 13, color: "rgba(255,255,255,0.4)" }}>Privacy Policy | Terms of Service</p>
           </div>
         </div>
       </footer>
