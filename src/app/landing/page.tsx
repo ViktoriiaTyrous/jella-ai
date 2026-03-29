@@ -778,43 +778,44 @@ export default function LandingPage() {
           </FadeIn>
 
           <FadeIn delay={0.15}>
-            <div style={{ position: "relative", marginTop: 80, maxWidth: 900, margin: "80px auto 0" }}>
-              {/* SVG connection lines */}
-              <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }} viewBox="0 0 900 340" preserveAspectRatio="none">
-                {/* Left connections */}
-                <path d="M200 57 L350 170" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
-                <path d="M200 170 L350 170" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
-                <path d="M200 283 L350 170" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
-                {/* Right connections */}
-                <path d="M550 170 L700 57" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
-                <path d="M550 170 L700 170" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
-                <path d="M550 170 L700 283" fill="none" stroke={INDIGO} strokeWidth="1.5" markerEnd="url(#arrow)" />
-                {/* Small circles at start points */}
-                <circle cx="200" cy="57" r="4" fill={INDIGO} opacity="0.2" />
-                <circle cx="200" cy="170" r="4" fill={INDIGO} opacity="0.2" />
-                <circle cx="200" cy="283" r="4" fill={INDIGO} opacity="0.2" />
-                <circle cx="700" cy="57" r="4" fill={INDIGO} opacity="0.2" />
-                <circle cx="700" cy="170" r="4" fill={INDIGO} opacity="0.2" />
-                <circle cx="700" cy="283" r="4" fill={INDIGO} opacity="0.2" />
+            <div style={{ position: "relative", marginTop: 80, maxWidth: 1000, margin: "80px auto 0" }}>
+              {/* SVG curved connection lines */}
+              <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0 }} viewBox="0 0 1000 380" preserveAspectRatio="xMidYMid meet">
                 <defs>
-                  <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill={INDIGO} />
+                  <marker id="arrowHead" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="10" markerHeight="10" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 6 L 0 11 Q 3 6 0 1" fill={INDIGO} />
                   </marker>
                 </defs>
+                {/* Left curved connections */}
+                <path d="M220 65 C310 65, 320 190, 390 190" fill="none" stroke={INDIGO} strokeWidth="1.5" strokeOpacity="0.3" markerEnd="url(#arrowHead)" />
+                <path d="M220 190 L390 190" fill="none" stroke={INDIGO} strokeWidth="1.5" strokeOpacity="0.3" markerEnd="url(#arrowHead)" />
+                <path d="M220 315 C310 315, 320 190, 390 190" fill="none" stroke={INDIGO} strokeWidth="1.5" strokeOpacity="0.3" markerEnd="url(#arrowHead)" />
+                {/* Right curved connections */}
+                <path d="M610 190 C680 190, 690 65, 780 65" fill="none" stroke={INDIGO} strokeWidth="1.5" strokeOpacity="0.3" markerEnd="url(#arrowHead)" />
+                <path d="M610 190 L780 190" fill="none" stroke={INDIGO} strokeWidth="1.5" strokeOpacity="0.3" markerEnd="url(#arrowHead)" />
+                <path d="M610 190 C680 190, 690 315, 780 315" fill="none" stroke={INDIGO} strokeWidth="1.5" strokeOpacity="0.3" markerEnd="url(#arrowHead)" />
+                {/* Dots at connection points */}
+                {[{x:220,y:65},{x:220,y:190},{x:220,y:315},{x:780,y:65},{x:780,y:190},{x:780,y:315}].map((d,i) => (
+                  <circle key={i} cx={d.x} cy={d.y} r="4" fill={INDIGO} opacity="0.15" />
+                ))}
               </svg>
 
               <div style={{ position: "relative", zIndex: 1, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                {/* Left platforms */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-                  {integrations.filter(p => p.name !== "Jella AI").slice(0, 3).map(p => (
+                {/* Left platforms with real logos */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+                  {[
+                    { name: "Instagram", color: "#E1306C", icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="6" stroke="#E1306C" strokeWidth="2"/><circle cx="12" cy="12" r="5" stroke="#E1306C" strokeWidth="2"/><circle cx="18" cy="6" r="1.5" fill="#E1306C"/></svg> },
+                    { name: "TikTok", color: "#000000", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.01a8.27 8.27 0 004.77 1.52V7.08a4.83 4.83 0 01-1-.39z"/></svg> },
+                    { name: "LinkedIn", color: "#0A66C2", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg> },
+                  ].map(p => (
                     <div key={p.name} style={{
                       display: "flex", alignItems: "center", gap: 14,
                       padding: "16px 24px", borderRadius: 16,
                       border: `1.5px solid ${CARD_BORDER}`, background: WHITE,
-                      boxShadow: "0 2px 16px rgba(0,0,0,0.05)", minWidth: 180,
+                      boxShadow: "0 2px 16px rgba(0,0,0,0.05)", minWidth: 190,
                     }}>
-                      <div style={{ width: 40, height: 40, borderRadius: 10, background: `${p.color}15`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ fontSize: 20, fontWeight: 700, color: p.color }}>{p.letter}</span>
+                      <div style={{ width: 42, height: 42, borderRadius: 12, background: `${p.color}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {p.icon}
                       </div>
                       <span style={{ ...body, fontSize: 16, fontWeight: 600, color: NAVY }}>{p.name}</span>
                     </div>
@@ -823,34 +824,37 @@ export default function LandingPage() {
 
                 {/* Center Jella */}
                 <div style={{
-                  padding: "24px 44px", borderRadius: 20,
-                  border: `2px solid ${INDIGO}`,
-                  borderStyle: "dashed",
+                  padding: "28px 48px", borderRadius: 20,
+                  border: `2px dashed ${INDIGO}`,
                   background: WHITE,
                   display: "flex", alignItems: "center", gap: 16,
                   boxShadow: "0 8px 32px rgba(67,56,202,0.1)",
                 }}>
                   <div style={{
-                    width: 52, height: 52, borderRadius: 14,
+                    width: 56, height: 56, borderRadius: 16,
                     background: PINK, display: "flex", alignItems: "center", justifyContent: "center",
                     boxShadow: "0 4px 16px rgba(234,76,137,0.25)",
                   }}>
                     <Logo size="sm" variant="light" />
                   </div>
-                  <span style={{ ...heading, fontSize: 30, fontWeight: 700, color: NAVY }}>Jella AI</span>
+                  <span style={{ ...heading, fontSize: 32, fontWeight: 700, color: NAVY }}>Jella AI</span>
                 </div>
 
-                {/* Right platforms */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-                  {integrations.filter(p => p.name !== "Jella AI").slice(3, 6).map(p => (
+                {/* Right platforms with real logos */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+                  {[
+                    { name: "Twitter", color: "#1DA1F2", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="#1DA1F2"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> },
+                    { name: "Facebook", color: "#1877F2", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg> },
+                    { name: "Pinterest", color: "#E60023", icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="#E60023"><path d="M12 0a12 12 0 00-4.373 23.178c-.07-.633-.133-1.606.028-2.297.145-.625.938-3.977.938-3.977s-.239-.479-.239-1.187c0-1.113.645-1.943 1.448-1.943.683 0 1.012.512 1.012 1.127 0 .687-.437 1.712-.663 2.663-.188.796.4 1.446 1.185 1.446 1.422 0 2.515-1.5 2.515-3.664 0-1.915-1.377-3.254-3.342-3.254-2.276 0-3.612 1.707-3.612 3.471 0 .688.265 1.425.596 1.826a.24.24 0 01.056.23c-.061.253-.196.796-.222.907-.035.146-.116.177-.268.107-1-.465-1.624-1.926-1.624-3.1 0-2.523 1.834-4.84 5.286-4.84 2.775 0 4.932 1.977 4.932 4.62 0 2.757-1.739 4.976-4.151 4.976-.811 0-1.573-.421-1.834-.919l-.498 1.902c-.181.695-.669 1.566-.995 2.097A12 12 0 1012 0z"/></svg> },
+                  ].map(p => (
                     <div key={p.name} style={{
                       display: "flex", alignItems: "center", gap: 14,
                       padding: "16px 24px", borderRadius: 16,
                       border: `1.5px solid ${CARD_BORDER}`, background: WHITE,
-                      boxShadow: "0 2px 16px rgba(0,0,0,0.05)", minWidth: 180,
+                      boxShadow: "0 2px 16px rgba(0,0,0,0.05)", minWidth: 190,
                     }}>
-                      <div style={{ width: 40, height: 40, borderRadius: 10, background: `${p.color}15`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <span style={{ fontSize: 20, fontWeight: 700, color: p.color }}>{p.letter}</span>
+                      <div style={{ width: 42, height: 42, borderRadius: 12, background: `${p.color}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {p.icon}
                       </div>
                       <span style={{ ...body, fontSize: 16, fontWeight: 600, color: NAVY }}>{p.name}</span>
                     </div>
