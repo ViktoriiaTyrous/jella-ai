@@ -191,18 +191,32 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       )}
 
       {/* Desktop sidebar */}
-      <div className="hidden lg:block fixed top-0 left-0 h-full z-30">
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          height: "100%",
+          zIndex: 30,
+        }}
+        className="hidden lg:block"
+      >
         {sidebar}
       </div>
 
       {/* Main content */}
       <main
-        className="min-h-screen lg:ml-[260px]"
-        style={{ padding: "32px 40px", paddingTop: "32px" }}
+        style={{ minHeight: "100vh", marginLeft: 260, padding: "32px 40px" }}
       >
-        <div className="lg:hidden" style={{ height: 56 }} />
         {children}
       </main>
+
+      {/* Mobile override */}
+      <style>{`
+        @media (max-width: 1023px) {
+          main { margin-left: 0 !important; padding-top: 88px !important; }
+        }
+      `}</style>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/ui/logo";
 import { signIn as doSignIn } from "@/lib/auth";
+import { signInWithGoogle } from "@/app/actions/auth";
 
 const features = [
   {
@@ -283,7 +284,7 @@ export default function SignInPage() {
 
             {/* Google button */}
             <button
-              onClick={() => { window.location.href = "/api/auth/signin/google"; }}
+              onClick={() => signInWithGoogle()}
               style={{
                 width: "100%", padding: "12px 16px", borderRadius: 10,
                 border: "1px solid #d8dce8", background: "#ffffff",
