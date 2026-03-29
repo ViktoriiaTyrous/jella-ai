@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Logo from "@/components/ui/logo";
 
@@ -41,668 +41,907 @@ function FadeIn({ children, style, delay = 0 }: { children: React.ReactNode; sty
 /* ───────── constants ───────── */
 const PINK = "#ea4c89";
 const NAVY = "#191e41";
+const INDIGO = "#4338CA";
 const BODY = "#636788";
 const BG = "#fafbff";
-const CARD_BORDER = "#f3f5fc";
-const FOOTER_BG = "#f3f5fc";
+const CARD_BORDER = "#f0f1f5";
+const WHITE = "#ffffff";
+const PINK_LIGHT = "#fdf2f7";
+const INDIGO_LIGHT = "#eef2ff";
 
 const heading: React.CSSProperties = { fontFamily: "var(--font-mona), system-ui, sans-serif", color: NAVY, margin: 0 };
 const body: React.CSSProperties = { fontFamily: "var(--font-source), system-ui, sans-serif", color: BODY, margin: 0 };
 
-const btnPink: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", justifyContent: "center",
-  padding: "14px 32px", borderRadius: 12, background: PINK, color: "#fff",
-  fontFamily: "var(--font-mona)", fontWeight: 600, fontSize: 16,
-  border: "none", cursor: "pointer", textDecoration: "none",
-  transition: "transform 0.15s, box-shadow 0.15s",
-};
-const btnOutline: React.CSSProperties = {
-  ...btnPink, background: "transparent", color: NAVY,
-  border: `2px solid ${CARD_BORDER}`,
-};
+/* ───────── icons ───────── */
+function IconCheck() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={INDIGO} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+function IconArrowRight() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
+  );
+}
+function IconPlay() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill={PINK} stroke="none">
+      <path d="M8 5v14l11-7z" />
+    </svg>
+  );
+}
 
-/* ───────── page ───────── */
+/* Feature card icons — indigo outline style like Figma */
+function IconHome2() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" />
+      <path d="M9 21V12h6v9" />
+    </svg>
+  );
+}
+function IconDocument() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+    </svg>
+  );
+}
+function IconBriefcase2() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2" />
+      <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+    </svg>
+  );
+}
+function IconHeart2() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
+    </svg>
+  );
+}
+function IconUsers2() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 00-3-3.87" />
+      <path d="M16 3.13a4 4 0 010 7.75" />
+    </svg>
+  );
+}
+function IconDollar2() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="1" x2="12" y2="23" />
+      <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+    </svg>
+  );
+}
+
+/* ───────── What You Can Do tabs ───────── */
+const featureTabs = [
+  {
+    label: "AI Content",
+    title: "AI Content Generator",
+    desc: "Create engaging, on-brand posts for any social media platform. Our AI engine generates captions, suggests hashtags, and optimizes your content for maximum reach and engagement across all channels.",
+  },
+  {
+    label: "Smart Scheduler",
+    title: "Smart Content Scheduler",
+    desc: "Plan and schedule your content across all platforms from one unified calendar. Set optimal posting times, manage queues, and never miss the best moment to engage your audience.",
+  },
+  {
+    label: "Analytics",
+    title: "Analytics Dashboard",
+    desc: "Track engagement, reach, and growth with beautiful, actionable analytics. Understand what works, identify trends, and make data-driven decisions to optimize your content strategy.",
+  },
+  {
+    label: "Media Studio",
+    title: "AI Media Studio",
+    desc: "Generate stunning images with AI, edit photos, and create visual content that stands out. Upload your own media or let our AI create eye-catching visuals for every platform.",
+  },
+];
+
+/* ───────── testimonials ───────── */
+const testimonials = [
+  { text: "Jella AI transformed how we manage social media. The AI-generated posts are incredibly on-brand and save us hours every week.", author: "Lana Smith", role: "Marketing Director" },
+  { text: "The scheduling and analytics features are game-changers. We've seen 40% more engagement since switching to Jella.", author: "Amir R.", role: "Content Strategist" },
+  { text: "Finally, one platform that does everything. No more juggling between 5 different tools for social media management.", author: "Sofia Chen", role: "Brand Manager" },
+];
+
+/* ───────── integrations ───────── */
+const integrations = [
+  { name: "Instagram", color: "#E1306C", letter: "I" },
+  { name: "Jella AI", color: PINK, letter: "" },
+  { name: "TikTok", color: "#000000", letter: "T" },
+  { name: "LinkedIn", color: "#0A66C2", letter: "L" },
+  { name: "Twitter", color: "#1DA1F2", letter: "T" },
+  { name: "Facebook", color: "#1877F2", letter: "F" },
+  { name: "Pinterest", color: "#E60023", letter: "P" },
+];
+
+/* ═══════════════════════════════════════════════════════ */
 export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [activeNav, setActiveNav] = useState("Home");
+  const [activeTab, setActiveTab] = useState(0);
+  const [testimonialIdx, setTestimonialIdx] = useState(0);
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", h, { passive: true });
-    return () => window.removeEventListener("scroll", h);
+    const t = setInterval(() => setTestimonialIdx(i => (i + 1) % testimonials.length), 5000);
+    return () => clearInterval(t);
   }, []);
 
-  const scrollTo = useCallback((id: string) => {
-    setMenuOpen(false);
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  }, []);
-
-  /* ─── NAV ─── */
-  const nav = (
-    <nav style={{
-      position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      background: scrolled ? "rgba(234,76,137,0.95)" : "transparent",
-      backdropFilter: scrolled ? "blur(12px)" : "none",
-      boxShadow: scrolled ? "0 2px 8px rgba(0,0,0,0.1)" : "none",
-      transition: "all 0.3s ease",
-    }}>
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <Logo size="sm" variant="light" />
-          <span style={{ fontFamily: "var(--font-mona), sans-serif", fontSize: 20, fontWeight: 700, color: "#fff" }}>Jella AI</span>
-        </Link>
-
-        {/* desktop links */}
-        <div style={{ display: "flex", alignItems: "center", gap: 0, background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: 4 }} className="nav-desktop">
-          {[{ label: "Home", id: "hero" }, { label: "About", id: "features" }, { label: "Services", id: "whyChoose" }, { label: "Pricing", id: "pricing" }, { label: "Contacts", id: "faq" }].map((s, i) => (
-            <button key={s.id} onClick={() => scrollTo(s.id)} style={{ background: i === 0 ? "rgba(255,255,255,0.25)" : "transparent", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 500, color: "#fff", padding: "8px 20px", borderRadius: 999, fontFamily: "var(--font-source), sans-serif", transition: "background 0.2s" }}
-              onMouseEnter={(e) => { if (i !== 0) e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
-              onMouseLeave={(e) => { if (i !== 0) e.currentTarget.style.background = "transparent"; }}
-            >{s.label}</button>
-          ))}
-        </div>
-        <Link href="/sign-up" style={{ padding: "10px 24px", borderRadius: 999, background: "#191e41", color: "#fff", fontFamily: "var(--font-mona), sans-serif", fontSize: 14, fontWeight: 600, textDecoration: "none", border: "none", cursor: "pointer" }}>Get Started</Link>
-
-        {/* mobile hamburger */}
-        <button onClick={() => setMenuOpen(!menuOpen)} style={{ display: "none", background: "none", border: "none", cursor: "pointer", padding: 8 }} className="nav-hamburger">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={NAVY} strokeWidth="2" strokeLinecap="round">
-            {menuOpen ? <><line x1="6" y1="6" x2="18" y2="18" /><line x1="6" y1="18" x2="18" y2="6" /></> : <><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></>}
-          </svg>
-        </button>
-      </div>
-
-      {/* mobile menu */}
-      {menuOpen && (
-        <div style={{ padding: "16px 24px", background: "#fff", borderTop: `1px solid ${CARD_BORDER}` }} className="nav-mobile">
-          {["features", "pricing", "testimonials", "faq"].map((s) => (
-            <button key={s} onClick={() => scrollTo(s)} style={{ ...body, display: "block", width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer", padding: "12px 0", fontSize: 16, fontWeight: 500, textTransform: "capitalize" }}>{s}</button>
-          ))}
-          <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
-            <Link href="/sign-in" style={{ ...btnOutline, padding: "10px 20px", fontSize: 14, flex: 1, textAlign: "center" }}>Sign In</Link>
-            <Link href="/sign-up" style={{ ...btnPink, padding: "10px 20px", fontSize: 14, flex: 1, textAlign: "center" }}>Get Started Free</Link>
-          </div>
-        </div>
-      )}
-
-      {/* responsive CSS + animations */}
-      <style>{`
-        @media(max-width:768px){
-          .nav-desktop{display:none !important}
-          .nav-hamburger{display:block !important}
-        }
-        @media(min-width:769px){
-          .nav-mobile{display:none !important}
-        }
-        @keyframes float1{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.05)}}
-        @keyframes float2{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-15px) rotate(5deg)}}
-        @keyframes float3{0%,100%{transform:translate(0,0)}50%{transform:translate(10px,-10px)}}
-        @keyframes pulse{0%,100%{opacity:0.4}50%{opacity:0.8}}
-        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-        .hero-glow-1{animation:float1 6s ease-in-out infinite}
-        .hero-glow-2{animation:float2 8s ease-in-out infinite}
-        .hero-glow-3{animation:float3 10s ease-in-out infinite}
-        .hero-pulse{animation:pulse 3s ease-in-out infinite}
-      `}</style>
-    </nav>
-  );
-
-  /* ─── HERO ─── */
-  const hero = (
-    <section id="hero" style={{ paddingTop: 120, paddingBottom: 0, background: "linear-gradient(180deg, #ea4c89 0%, #e84393 40%, #f5a0c0 80%, #fafbff 100%)", textAlign: "center", position: "relative", overflow: "hidden" }}>
-      {/* Decorative circles */}
-      <div style={{ position: "absolute", top: -100, left: -100, width: 400, height: 400, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", top: 50, right: -80, width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,0.04)", pointerEvents: "none" }} />
-
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 32px", position: "relative", zIndex: 1 }}>
-        <FadeIn>
-          <h1 style={{ fontFamily: "var(--font-mona), sans-serif", fontSize: 56, fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", color: "rgba(255,255,255,0.85)", marginTop: 40 }}>
-            Your All-in-One Platform for<br />
-            <span style={{ color: "#ffffff" }}>Social Media Growth</span>
-          </h1>
-        </FadeIn>
-        <FadeIn delay={0.1}>
-          <p style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 18, lineHeight: 1.6, marginTop: 20, color: "rgba(255,255,255,0.75)", maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
-            Create AI-powered posts, schedule content, and grow your audience —<br />all from one beautiful dashboard.
-          </p>
-        </FadeIn>
-        <FadeIn delay={0.2}>
-          <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 36, flexWrap: "wrap" }}>
-            <Link href="/sign-up" style={{ padding: "14px 32px", borderRadius: 999, background: "#191e41", color: "#fff", fontFamily: "var(--font-mona), sans-serif", fontSize: 16, fontWeight: 600, textDecoration: "none", border: "none" }}>Get Started Free</Link>
-            <button onClick={() => {}} style={{ padding: "14px 32px", borderRadius: 999, background: "rgba(255,255,255,0.2)", color: "#fff", fontFamily: "var(--font-mona), sans-serif", fontSize: 16, fontWeight: 600, border: "1px solid rgba(255,255,255,0.3)", cursor: "pointer", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", gap: 8 }}>
-              View Video Demo
-            </button>
-          </div>
-        </FadeIn>
-      </div>
-
-      {/* Dashboard screenshot — wide */}
-      <FadeIn delay={0.3}>
-        <div style={{ maxWidth: 1200, margin: "50px auto 0", padding: "0 32px", position: "relative", zIndex: 1 }}>
-          <div style={{
-            borderRadius: 16, overflow: "hidden",
-            background: "#fff", border: "1px solid rgba(255,255,255,0.3)",
-            boxShadow: "0 32px 100px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.1)",
-          }}>
-            <div style={{ padding: "10px 16px", background: "#f9fafb", borderBottom: "1px solid #f3f5fc", display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#ff5f57" }} />
-              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#febc2e" }} />
-              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#28c840" }} />
-              <span style={{ flex: 1, marginLeft: 12, padding: "5px 12px", borderRadius: 8, background: "#fff", border: "1px solid #f3f5fc", fontSize: 12, color: "#636788" }}>app.jella.ai/dashboard</span>
-            </div>
-            <img src="/dashboard-preview.png" alt="Jella AI Dashboard" style={{ width: "100%", display: "block" }} />
-          </div>
-        </div>
-      </FadeIn>
-
-      {/* hero mockup */}
-      <FadeIn delay={0.3}>
-        <div style={{ maxWidth: 1000, margin: "60px auto 0", padding: "0 24px" }}>
-          <div style={{
-            borderRadius: 16, overflow: "hidden",
-            background: "#fff", border: `1px solid ${CARD_BORDER}`,
-            boxShadow: "0 24px 80px rgba(25,30,65,0.1), 0 4px 20px rgba(234,76,137,0.08)",
-          }}>
-            {/* browser chrome */}
-            <div style={{ padding: "12px 16px", background: "#f9fafb", borderBottom: `1px solid ${CARD_BORDER}`, display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#ff5f57" }} />
-              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#febc2e" }} />
-              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#28c840" }} />
-              <span style={{ flex: 1, marginLeft: 12, padding: "6px 12px", borderRadius: 8, background: "#fff", border: `1px solid ${CARD_BORDER}`, fontSize: 13, color: BODY }}>app.jella.ai/dashboard</span>
-            </div>
-            {/* real dashboard screenshot */}
-            <img
-              src="/dashboard-preview.png"
-              alt="Jella AI Dashboard"
-              style={{ width: "100%", display: "block" }}
-            />
-          </div>
-        </div>
-      </FadeIn>
-
-      {/* stats row */}
-      <FadeIn delay={0.4}>
-        <div style={{ display: "flex", justifyContent: "center", gap: 60, marginTop: 60, flexWrap: "wrap" }}>
-          {[["10K+", "Creators"], ["500K+", "Posts Generated"], ["98%", "Time Saved"]].map(([v, l]) => (
-            <div key={l} style={{ textAlign: "center" }}>
-              <p style={{ ...heading, fontSize: 36, fontWeight: 800 }}>{v}</p>
-              <p style={{ ...body, fontSize: 15, marginTop: 4 }}>{l}</p>
-            </div>
-          ))}
-        </div>
-      </FadeIn>
-    </section>
-  );
-
-  /* ─── WHY JELLA — BENTO GRID ─── */
-  const bentoCells = [
-    { title: "AI Content Generator", subtitle: "Generate captions, hashtags & images with GPT-4o + DALL-E 3", icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z", iconBg: "#fce4ec", col: "1 / 3", row: "1 / 2", img: "/create-preview.png" },
-    { title: "Smart Analytics", subtitle: "Track engagement, growth & performance across platforms", icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z", iconBg: "#e8f5e9", col: "3 / 4", row: "1 / 2", img: "/analytics-preview.png" },
-    { title: "Content Calendar", subtitle: "Schedule posts across all platforms in one view", icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", iconBg: "#e3f2fd", col: "1 / 2", row: "2 / 3", img: "/dashboard-preview.png" },
-    { title: "Kanban Board", subtitle: "Organize your content pipeline — from idea to published", icon: "M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z", iconBg: "#f3e5f5", col: "2 / 4", row: "2 / 3", img: "/dashboard-preview.png" },
-  ];
-  const whyJella = (
-    <section style={{ padding: "100px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
-        <FadeIn>
-          <h2 style={{ ...heading, fontSize: 40, fontWeight: 800, lineHeight: 1.2 }}>Social Media Shouldn't Be This Complicated</h2>
-          <p style={{ ...body, fontSize: 18, marginTop: 16 }}>Stop juggling 5 different tools. Jella handles everything.</p>
-        </FadeIn>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24, marginTop: 56 }}>
-          {bentoCells.map((cell, i) => (
-            <FadeIn key={cell.title} delay={i * 0.1} style={{ gridColumn: cell.col, gridRow: cell.row }}>
-              <div style={{
-                background: "#fff", borderRadius: 20, overflow: "hidden",
-                border: `1px solid ${CARD_BORDER}`, boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
-                textAlign: "left", height: "100%", display: "flex", flexDirection: "column",
-                transition: "transform 0.3s ease, box-shadow 0.3s ease", cursor: "default",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 8px 40px rgba(0,0,0,0.10)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.06)"; }}
-              >
-                <div style={{ padding: "28px 28px 0" }}>
-                  <div style={{ width: 40, height: 40, borderRadius: "50%", background: cell.iconBg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={NAVY} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d={cell.icon} /></svg>
-                  </div>
-                  <h3 style={{ ...heading, fontSize: 18, fontWeight: 600, marginTop: 16 }}>{cell.title}</h3>
-                  <p style={{ ...body, fontSize: 14, lineHeight: 1.6, marginTop: 8 }}>{cell.subtitle}</p>
-                </div>
-                <img src={cell.img} alt={cell.title} style={{ width: "100%", height: 200, objectFit: "cover", objectPosition: "top left", display: "block", marginTop: 16 }} />
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-
-  /* ─── FEATURES CARDS ─── */
-  const features = [
-    { icon: "M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5", title: "AI Content Generator", desc: "Generate captions, hashtags, and full posts in seconds. GPT-4o powered." },
-    { icon: "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z", title: "Smart Scheduler", desc: "Plan and schedule posts across all platforms with an AI-optimized calendar." },
-    { icon: "M15 2H9a2 2 0 00-2 2v16a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2zM3 10h2M19 10h2M12 18h.01", title: "Visual Creator", desc: "Generate stunning images with DALL-E 3 or upload your own media." },
-  ];
-  const featuresSection = (
-    <section id="features" style={{ padding: "100px 24px", background: BG }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <FadeIn><h2 style={{ ...heading, fontSize: 40, fontWeight: 800, textAlign: "center" }}>What You Can Do with Jella</h2></FadeIn>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24, marginTop: 56 }}>
-          {features.map((f, i) => (
-            <FadeIn key={f.title} delay={i * 0.1}>
-              <div style={{ background: "#fff", borderRadius: 16, padding: 32, border: `1px solid ${CARD_BORDER}`, boxShadow: "0 2px 12px rgba(0,0,0,0.04)", height: "100%" }}>
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: `${PINK}14`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={PINK} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={f.icon} /></svg>
-                </div>
-                <h3 style={{ ...heading, fontSize: 20, fontWeight: 600, marginTop: 20 }}>{f.title}</h3>
-                <p style={{ ...body, fontSize: 16, lineHeight: 1.6, marginTop: 12 }}>{f.desc}</p>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-
-  /* ─── WHY PEOPLE CHOOSE JELLA — 6 CARDS ─── */
-  const whyPeopleCards = [
-    { icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z", title: "AI Content Generator", desc: "Generate captions, hashtags, and full posts for any platform in seconds with GPT-4o." },
-    { icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z", title: "Visual Creator", desc: "Create stunning images with DALL-E 3 or upload your own media with drag & drop." },
-    { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", title: "Smart Scheduler", desc: "Plan and schedule posts across 6 platforms with an AI-optimized content calendar." },
-    { icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z", title: "Analytics Dashboard", desc: "Track engagement, follower growth, and content performance with visual insights." },
-    { icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z", title: "Brand Consistency", desc: "Set your brand voice, tone, and style once — every generated post stays on-brand." },
-    { icon: "M13 10V3L4 14h7v7l9-11h-7z", title: "Bulk Generation", desc: "Generate 5 posts at once, with AI text improver to refine tone and length instantly." },
-  ];
-  const whyPeopleSection = (
-    <section style={{ padding: "100px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 56 }}>
-          <div>
-            <FadeIn>
-              <h2 style={{ ...heading, fontSize: 40, fontWeight: 700 }}>Why People Choose Jella</h2>
-              <p style={{ ...body, fontSize: 16, marginTop: 12 }}>Smart tools that simplify every step of your content journey.</p>
-            </FadeIn>
-          </div>
-          <FadeIn delay={0.1}>
-            <Link href="/sign-up" style={{ ...btnPink, borderRadius: 9999, padding: "12px 28px", fontSize: 15 }}>Start Creating</Link>
-          </FadeIn>
-        </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
-          {whyPeopleCards.map((card, i) => (
-            <FadeIn key={card.title} delay={i * 0.08}>
-              <div
-                style={{
-                  background: "#fff", borderRadius: 16, padding: 32,
-                  border: `1px solid ${CARD_BORDER}`,
-                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                  cursor: "default", height: "100%",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.10)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
-              >
-                <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(234,76,137,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={PINK} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d={card.icon} /></svg>
-                </div>
-                <h3 style={{ ...heading, fontSize: 20, fontWeight: 600, marginTop: 20 }}>{card.title}</h3>
-                <p style={{ ...body, fontSize: 15, lineHeight: 1.6, marginTop: 12 }}>{card.desc}</p>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-
-  /* ─── DISCOVER KEY FEATURES ─── */
-  const featureBullets = [
-    "Create AI-powered posts for any platform",
-    "Schedule and automate your content calendar",
-    "Track performance with real-time analytics",
-  ];
-  const discoverSection = (
-    <section style={{ padding: "100px 24px", background: BG }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", gap: 64 }}>
-        {/* Left — image */}
-        <FadeIn style={{ flex: 1 }}>
-          <div style={{
-            background: NAVY, borderRadius: 24, padding: 40,
-            position: "relative", overflow: "hidden",
-          }}>
-            <img
-              src="/dashboard-preview.png"
-              alt="Jella AI Dashboard Preview"
-              style={{
-                width: "100%", borderRadius: 12, display: "block",
-                transform: "perspective(1200px) rotateY(-4deg) rotateX(2deg)",
-                boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-              }}
-            />
-            {/* Play button overlay */}
-            <div style={{
-              position: "absolute", bottom: 32, left: 40,
-              display: "flex", alignItems: "center", gap: 12,
-            }}>
-              <div style={{
-                width: 48, height: 48, borderRadius: "50%", background: PINK,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", boxShadow: "0 4px 20px rgba(234,76,137,0.4)",
-              }}>
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="6,2 16,9 6,16" /></svg>
-              </div>
-              <span style={{ color: "#fff", fontSize: 14, fontWeight: 600, fontFamily: "var(--font-mona)" }}>Watch introduction 1:37</span>
-            </div>
-          </div>
-        </FadeIn>
-
-        {/* Right — text */}
-        <FadeIn delay={0.15} style={{ flex: 1 }}>
-          <div>
-            <h2 style={{ ...heading, fontSize: 40, fontWeight: 700, lineHeight: 1.2 }}>
-              Discover the <span style={{ color: PINK }}>Key</span> Features of Jella
-            </h2>
-            <p style={{ ...body, fontSize: 17, lineHeight: 1.7, marginTop: 20 }}>
-              Jella brings all essential content tools into one intuitive platform — helping you create, schedule, and analyze your social media presence without stress.
-            </p>
-            <div style={{ marginTop: 28 }}>
-              {featureBullets.map((bullet, i) => (
-                <div key={i} style={{
-                  background: "#fff", borderRadius: 12,
-                  border: `1px solid ${CARD_BORDER}`,
-                  padding: "16px 20px", marginBottom: 12,
-                  display: "flex", alignItems: "center", gap: 14,
-                }}>
-                  <div style={{
-                    width: 24, height: 24, borderRadius: "50%", background: PINK,
-                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                  }}>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  </div>
-                  <span style={{ ...body, fontSize: 15, fontWeight: 500, color: NAVY }}>{bullet}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </FadeIn>
-      </div>
-    </section>
-  );
-
-  /* ─── TESTIMONIALS CAROUSEL ─── */
-  const testimonials = [
-    { text: "Jella cut our content creation time by 80%. The AI suggestions are incredibly on-brand.", name: "Sarah Chen", role: "Founder, Bloom Studio", avatar: "SC" },
-    { text: "We went from 3 posts a week to daily content without adding headcount.", name: "Marcus Rivera", role: "Marketing Lead, Novu", avatar: "MR" },
-    { text: "The scheduling + AI combo is unbeatable. Best investment for our small team.", name: "Anna Kowalski", role: "Content Creator", avatar: "AK" },
-    { text: "Finally a tool that understands our brand voice. Every post feels authentic.", name: "James Park", role: "Brand Director, Luxe", avatar: "JP" },
-    { text: "The analytics alone justify the cost. We increased engagement by 340% in 3 months.", name: "Lisa Nguyen", role: "Growth Lead, Fitly", avatar: "LN" },
-    { text: "I manage 12 client accounts with Jella. It would take 3 people without it.", name: "David Kim", role: "Agency Owner", avatar: "DK" },
-  ];
-  const [carouselIndex, setCarouselIndex] = useState(0);
-  const carouselMax = testimonials.length - 3;
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCarouselIndex((prev) => (prev >= carouselMax ? 0 : prev + 1));
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [carouselMax]);
-  const testimonialsSection = (
-    <section id="testimonials" style={{ padding: "100px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <FadeIn><h2 style={{ ...heading, fontSize: 40, fontWeight: 800, textAlign: "center" }}>Why People Choose Jella</h2></FadeIn>
-        <div style={{ position: "relative", marginTop: 56 }}>
-          {/* Left arrow */}
-          <button
-            onClick={() => setCarouselIndex((prev) => (prev <= 0 ? carouselMax : prev - 1))}
-            style={{ position: "absolute", left: -24, top: "50%", transform: "translateY(-50%)", zIndex: 2, width: 48, height: 48, borderRadius: "50%", background: "#fff", border: `1px solid ${CARD_BORDER}`, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 5l-5 5 5 5" stroke={NAVY} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
-          {/* Right arrow */}
-          <button
-            onClick={() => setCarouselIndex((prev) => (prev >= carouselMax ? 0 : prev + 1))}
-            style={{ position: "absolute", right: -24, top: "50%", transform: "translateY(-50%)", zIndex: 2, width: 48, height: 48, borderRadius: "50%", background: "#fff", border: `1px solid ${CARD_BORDER}`, boxShadow: "0 2px 12px rgba(0,0,0,0.08)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M8 5l5 5-5 5" stroke={NAVY} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-          </button>
-          {/* Track */}
-          <div style={{ overflow: "hidden" }}>
-            <div style={{ display: "flex", transition: "transform 0.5s ease", transform: `translateX(-${carouselIndex * (100 / 3)}%)` }}>
-              {testimonials.map((t) => (
-                <div key={t.name} style={{ flex: "0 0 calc(100% / 3)", padding: "0 12px", boxSizing: "border-box" }}>
-                  <div style={{ background: "#fff", borderRadius: 16, padding: 32, border: `1px solid ${CARD_BORDER}`, boxShadow: "0 2px 12px rgba(0,0,0,0.04)", height: "100%" }}>
-                    <p style={{ ...body, fontSize: 16, lineHeight: 1.7, fontStyle: "italic" }}>"{t.text}"</p>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 24 }}>
-                      <div style={{ width: 44, height: 44, borderRadius: "50%", background: `linear-gradient(135deg, ${PINK}, #c13584)`, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 14, fontFamily: "var(--font-mona)" }}>{t.avatar}</div>
-                      <div>
-                        <p style={{ ...heading, fontSize: 15, fontWeight: 600 }}>{t.name}</p>
-                        <p style={{ ...body, fontSize: 13, marginTop: 2 }}>{t.role}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* Dots */}
-          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 32 }}>
-            {Array.from({ length: carouselMax + 1 }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCarouselIndex(i)}
-                style={{ width: carouselIndex === i ? 24 : 8, height: 8, borderRadius: 4, background: carouselIndex === i ? PINK : CARD_BORDER, border: "none", cursor: "pointer", transition: "all 0.3s ease", padding: 0 }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-
-  /* ─── STICKY SCROLL CARDS ─── */
-  const stickyCards = [
-    { title: "AI-Powered Post Generation", desc: "Describe your topic, pick your tone, and let AI create the perfect post. Supports Instagram, TikTok, Twitter/X, LinkedIn, Facebook, Pinterest.", dot: PINK, img: "/create-preview.png", top: 100 },
-    { title: "Content Calendar & Scheduling", desc: "Drag-and-drop scheduling. See your entire month at a glance. Never miss a posting window again.", dot: "#6c63ff", img: "/dashboard-preview.png", top: 120 },
-    { title: "Analytics & Insights", desc: "Track engagement, growth, and performance across every platform. Data-driven decisions made simple.", dot: "#28c840", img: "/analytics-preview.png", top: 140 },
-  ];
-  const deepDiveSection = (
-    <section style={{ padding: "100px 24px", background: BG }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
-        {stickyCards.map((card) => (
-          <div key={card.title} style={{ position: "sticky", top: card.top, marginBottom: 40, zIndex: card.top }}>
-            <div style={{
-              background: "#fff", borderRadius: 24, boxShadow: "0 8px 40px rgba(0,0,0,0.08)",
-              padding: 60, minHeight: 500, display: "flex", gap: 48, alignItems: "center", flexWrap: "wrap",
-            }}>
-              <div style={{ flex: "1 1 45%", minWidth: 280 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: card.dot, display: "inline-block" }} />
-                  <h3 style={{ ...heading, fontSize: 32, fontWeight: 700 }}>{card.title}</h3>
-                </div>
-                <p style={{ ...body, fontSize: 17, lineHeight: 1.7 }}>{card.desc}</p>
-              </div>
-              <div style={{ flex: "1 1 55%", minWidth: 280 }}>
-                <img src={card.img} alt={card.title} style={{ borderRadius: 16, boxShadow: "0 8px 40px rgba(0,0,0,0.1)", width: "100%", objectFit: "cover", maxHeight: 380, display: "block" }} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-
-  /* ─── PRICING ─── */
-  const plans = [
-    { name: "Free", price: "$0", period: "/mo", items: ["5 AI posts/month", "1 social platform", "Basic scheduling", "Community support"], cta: "Get Started Free", popular: false, href: "/sign-up" },
-    { name: "Pro", price: "$29", period: "/mo", items: ["Unlimited AI posts", "All 6 platforms", "AI image generation (DALL-E 3)", "Advanced scheduling", "Priority support", "Analytics dashboard"], cta: "Start Pro Trial", popular: true, href: "/sign-up" },
-    { name: "Team", price: "$79", period: "/mo", items: ["Everything in Pro", "5 team members", "Brand kit management", "Collaboration tools", "Custom AI training", "Dedicated support"], cta: "Contact Sales", popular: false, href: "/sign-up" },
-  ];
-  const pricingSection = (
-    <section id="pricing" style={{ padding: "100px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
-        <FadeIn>
-          <h2 style={{ ...heading, fontSize: 40, fontWeight: 800 }}>Simple, Transparent Pricing</h2>
-          <p style={{ ...body, fontSize: 18, marginTop: 12 }}>Start free. Upgrade when you're ready.</p>
-        </FadeIn>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24, marginTop: 56 }}>
-          {plans.map((p, i) => (
-            <FadeIn key={p.name} delay={i * 0.1}>
-              <div style={{
-                background: "#fff", borderRadius: 16, padding: 32,
-                border: p.popular ? `2px solid ${PINK}` : `1px solid ${CARD_BORDER}`,
-                boxShadow: p.popular ? `0 8px 40px ${PINK}18` : "0 2px 12px rgba(0,0,0,0.04)",
-                transform: p.popular ? "scale(1.03)" : "none",
-                position: "relative", textAlign: "left", height: "100%",
-                display: "flex", flexDirection: "column",
-              }}>
-                {p.popular && (
-                  <span style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: PINK, color: "#fff", fontSize: 12, fontWeight: 700, padding: "4px 16px", borderRadius: 20, fontFamily: "var(--font-mona)" }}>POPULAR</span>
-                )}
-                <h3 style={{ ...heading, fontSize: 22, fontWeight: 700 }}>{p.name}</h3>
-                <div style={{ marginTop: 16, display: "flex", alignItems: "baseline", gap: 4 }}>
-                  <span style={{ ...heading, fontSize: 48, fontWeight: 800 }}>{p.price}</span>
-                  <span style={{ ...body, fontSize: 16 }}>{p.period}</span>
-                </div>
-                <ul style={{ listStyle: "none", padding: 0, marginTop: 28, flex: 1 }}>
-                  {p.items.map((item) => (
-                    <li key={item} style={{ ...body, fontSize: 15, padding: "8px 0", display: "flex", alignItems: "center", gap: 10 }}>
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="9" fill={`${PINK}14`} /><path d="M6 9l2 2 4-4" stroke={PINK} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <Link href={p.href} style={{ ...(p.popular ? btnPink : btnOutline), width: "100%", marginTop: 28, textAlign: "center", ...(p.popular ? { padding: "16px 32px", fontSize: 17 } : {}) }}>
-                  {p.cta}
-                </Link>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-
-  /* ─── INTEGRATIONS ─── */
-  const platforms = ["Instagram", "TikTok", "Twitter/X", "Facebook", "LinkedIn", "Pinterest", "YouTube", "Canva", "Google Drive"];
-  const integrationsSection = (
-    <section style={{ padding: "100px 24px", background: BG }}>
-      <div style={{ maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
-        <FadeIn><h2 style={{ ...heading, fontSize: 40, fontWeight: 800 }}>Connected Platforms & Integrations</h2></FadeIn>
-        <FadeIn delay={0.15}>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 20, marginTop: 48 }}>
-            {platforms.map((p) => (
-              <div key={p} style={{ width: 100, height: 100, borderRadius: 16, background: "#fff", border: `1px solid ${CARD_BORDER}`, boxShadow: "0 2px 8px rgba(0,0,0,0.04)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                <div style={{ width: 40, height: 40, borderRadius: 10, background: `${PINK}10`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontWeight: 700, fontSize: 16, color: PINK }}>{p.charAt(0)}</span>
-                </div>
-                <span style={{ ...body, fontSize: 11, fontWeight: 500 }}>{p}</span>
-              </div>
-            ))}
-          </div>
-        </FadeIn>
-      </div>
-    </section>
-  );
-
-  /* ─── FAQ ─── */
-  const faqs = [
-    ["What is Jella AI?", "AI-powered social media platform for creating, scheduling, and publishing content across all major platforms."],
-    ["Is there a free plan?", "Yes! The free plan includes 5 AI-generated posts per month with 1 social platform connected."],
-    ["Which platforms are supported?", "Instagram, TikTok, Twitter/X, Facebook, LinkedIn, and Pinterest."],
-    ["How does AI generation work?", "Powered by GPT-4o for text generation and DALL-E 3 for image creation. Just describe what you want."],
-    ["Can I use my own images?", "Absolutely. Drag & drop upload is fully supported alongside AI-generated visuals."],
-    ["Is my data secure?", "Yes. All data is encrypted at rest and in transit, and is never shared with third parties."],
-  ];
-  const faqSection = (
-    <section id="faq" style={{ padding: "100px 24px", background: "#fff" }}>
-      <div style={{ maxWidth: 720, margin: "0 auto" }}>
-        <FadeIn><h2 style={{ ...heading, fontSize: 40, fontWeight: 800, textAlign: "center" }}>Frequently Asked Questions</h2></FadeIn>
-        <div style={{ marginTop: 48 }}>
-          {faqs.map(([q, a], i) => (
-            <FadeIn key={i} delay={i * 0.05}>
-              <div style={{ borderBottom: `1px solid ${CARD_BORDER}` }}>
-                <button
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  style={{
-                    width: "100%", padding: "20px 0", background: "none", border: "none", cursor: "pointer",
-                    display: "flex", justifyContent: "space-between", alignItems: "center", textAlign: "left",
-                  }}
-                >
-                  <span style={{ ...heading, fontSize: 17, fontWeight: 600 }}>{q}</span>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0, transform: openFaq === i ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>
-                    <path d="M5 8l5 5 5-5" stroke={NAVY} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-                <div style={{ maxHeight: openFaq === i ? 200 : 0, overflow: "hidden", transition: "max-height 0.3s ease" }}>
-                  <p style={{ ...body, fontSize: 15, lineHeight: 1.7, paddingBottom: 20 }}>{a}</p>
-                </div>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-
-  /* ─── CTA ─── */
-  const cta = (
-    <section style={{ padding: "100px 24px", background: `linear-gradient(135deg, ${NAVY}, #0f3460)`, textAlign: "center" }}>
-      <div style={{ maxWidth: 600, margin: "0 auto" }}>
-        <FadeIn>
-          <h2 style={{ ...heading, fontSize: 40, fontWeight: 800, color: "#fff" }}>Ready to Transform Your Social Media?</h2>
-          <p style={{ ...body, fontSize: 18, color: "rgba(255,255,255,0.7)", marginTop: 16 }}>Join 10,000+ creators who are saving hours every week.</p>
-          <Link href="/sign-up" style={{ ...btnPink, padding: "18px 40px", fontSize: 18, marginTop: 36 }}>
-            Get Started Free &rarr;
-          </Link>
-        </FadeIn>
-      </div>
-    </section>
-  );
-
-  /* ─── FOOTER ─── */
-  const footerCols = [
-    { title: "Product", links: [["Features", "#features"], ["Pricing", "#pricing"], ["Integrations", "#"]] },
-    { title: "Company", links: [["About", "#"], ["Blog", "#"], ["Careers", "#"]] },
-    { title: "Support", links: [["Help Center", "#"], ["Contact", "#"], ["Status", "#"]] },
-    { title: "Legal", links: [["Privacy", "#"], ["Terms", "#"]] },
-  ];
-  const footer = (
-    <footer style={{ padding: "60px 24px 32px", background: FOOTER_BG }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 40 }}>
-          {footerCols.map((c) => (
-            <div key={c.title}>
-              <p style={{ ...heading, fontSize: 14, fontWeight: 700, marginBottom: 16, textTransform: "uppercase", letterSpacing: "0.05em" }}>{c.title}</p>
-              {c.links.map(([label, href]) => (
-                <a key={label} href={href} style={{ ...body, display: "block", fontSize: 14, marginBottom: 10, textDecoration: "none", color: BODY }}>{label}</a>
-              ))}
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: 48, paddingTop: 24, borderTop: `1px solid ${CARD_BORDER}`, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16 }}>
-          <p style={{ ...body, fontSize: 13 }}>&copy; 2026 Jella AI. All rights reserved.</p>
-          <div style={{ display: "flex", gap: 16 }}>
-            {["Twitter", "LinkedIn", "Instagram"].map((s) => (
-              <a key={s} href="#" style={{ ...body, fontSize: 13, textDecoration: "none" }}>{s}</a>
-            ))}
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
+  const navItems = ["Home", "About", "Services", "Pricing", "Contacts"];
 
   return (
-    <div style={{ background: BG, minHeight: "100vh" }}>
-      {nav}
-      {hero}
-      {whyJella}
-      {featuresSection}
-      {whyPeopleSection}
-      {discoverSection}
-      {testimonialsSection}
-      {deepDiveSection}
-      {pricingSection}
-      {integrationsSection}
-      {faqSection}
-      {cta}
-      {footer}
+    <div style={{ background: BG, minHeight: "100vh", overflowX: "hidden" }}>
+
+      {/* ════════ HEADER + HERO (pink bg) — sticky ════════ */}
+      <section style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 1,
+        background: "linear-gradient(180deg, #e84393 0%, #ec6fa2 40%, #f5a0c0 70%, #fce4ec 95%, #fafbff 100%)",
+        marginBottom: -20,
+      }}>
+        {/* SVG grid pattern overlay */}
+        <div style={{
+          position: "absolute", inset: 0, zIndex: 0,
+          backgroundImage: "url(/hero-bg.svg)",
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+          backgroundRepeat: "no-repeat",
+        }} />
+
+        {/* Header */}
+        <header style={{ position: "relative", zIndex: 10 }}>
+          <div style={{ maxWidth: 1400, margin: "0 auto", padding: "20px 40px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+              <Logo size="sm" variant="light" />
+              <span style={{ ...heading, fontSize: 22, fontWeight: 700, color: WHITE }}>Jella AI</span>
+            </Link>
+
+            <nav style={{ display: "flex", gap: 8, background: "rgba(255,255,255,0.12)", borderRadius: 14, padding: 6 }}>
+              {navItems.map(item => (
+                <button
+                  key={item}
+                  onClick={() => setActiveNav(item)}
+                  style={{
+                    padding: "8px 28px",
+                    borderRadius: 10,
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: 16,
+                    fontWeight: 500,
+                    fontFamily: "var(--font-source), system-ui, sans-serif",
+                    background: activeNav === item ? "rgba(255,255,255,0.85)" : "transparent",
+                    color: activeNav === item ? PINK : WHITE,
+                    transition: "all 0.2s",
+                  }}
+                >
+                  {item}
+                </button>
+              ))}
+            </nav>
+
+            <Link
+              href="/sign-up"
+              style={{
+                padding: "12px 24px",
+                background: "transparent",
+                color: WHITE,
+                borderRadius: 10,
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: 15,
+                fontFamily: "var(--font-source), system-ui, sans-serif",
+                border: "1px solid rgba(255,255,255,0.4)",
+              }}
+            >
+              Get Started
+            </Link>
+          </div>
+        </header>
+
+        {/* Hero content */}
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 1400, margin: "0 auto", padding: "160px 40px 0", textAlign: "center" }}>
+
+          {/* Floating social badges — glassmorphism */}
+          {[
+            { name: "Instagram", top: 180, left: 80, right: "auto", bg: "rgba(225,48,108,0.6)", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="white" strokeWidth="2"/><circle cx="12" cy="12" r="5" fill="none" stroke="white" strokeWidth="2"/><circle cx="18" cy="6" r="1.5" fill="white"/></svg> },
+            { name: "X (Twitter)", top: 40, left: "auto", right: 180, bg: "rgba(26,26,46,0.6)", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> },
+            { name: "TikTok", top: 280, left: "auto", right: 40, bg: "rgba(26,26,46,0.6)", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.27 6.27 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V9.01a8.27 8.27 0 004.77 1.52V7.08a4.83 4.83 0 01-1-.39z"/></svg> },
+            { name: "LinkedIn", top: 80, left: 160, right: "auto", bg: "rgba(10,102,194,0.6)", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452z"/></svg> },
+            { name: "YouTube", top: 110, left: "auto", right: 50, bg: "rgba(255,0,0,0.6)", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg> },
+          ].map(badge => (
+            <div key={badge.name} style={{ position: "absolute", top: badge.top, left: badge.left === "auto" ? undefined : badge.left, right: badge.right === "auto" ? undefined : badge.right, zIndex: 2 }}>
+              <div style={{
+                display: "flex", alignItems: "center", gap: 8, padding: "10px 18px",
+                background: badge.bg,
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
+                borderRadius: 28, color: WHITE, fontSize: 13, fontWeight: 600,
+                fontFamily: "var(--font-source)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
+              }}>
+                {badge.icon}
+                {badge.name}
+              </div>
+            </div>
+          ))}
+
+          <FadeIn>
+            <h1 style={{
+              ...heading,
+              fontSize: 72,
+              fontWeight: 700,
+              lineHeight: 1.1,
+              maxWidth: 950,
+              margin: "0 auto",
+              letterSpacing: "-0.02em",
+              background: "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}>
+              Your All-in-One Platform for Social Media Growth
+            </h1>
+          </FadeIn>
+
+          <FadeIn delay={0.1}>
+            <p style={{ ...body, fontSize: 18, lineHeight: 1.6, maxWidth: 600, margin: "24px auto 0", color: "rgba(255,255,255,0.7)" }}>
+              Create AI-powered posts, schedule content, and grow your audience — all from one beautiful dashboard.
+            </p>
+          </FadeIn>
+
+          <FadeIn delay={0.2}>
+            <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 36 }}>
+              <Link
+                href="/sign-up"
+                style={{
+                  padding: "14px 32px",
+                  background: INDIGO,
+                  color: WHITE,
+                  borderRadius: 10,
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  fontSize: 16,
+                  fontFamily: "var(--font-source), system-ui, sans-serif",
+                }}
+              >
+                See All Features
+              </Link>
+              <button
+                style={{
+                  padding: "14px 32px",
+                  background: "rgba(255,255,255,0.15)",
+                  color: WHITE,
+                  borderRadius: 10,
+                  border: "1px solid rgba(255,255,255,0.3)",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  fontSize: 16,
+                  fontFamily: "var(--font-source), system-ui, sans-serif",
+                  backdropFilter: "blur(8px)",
+                }}
+              >
+                View Video Demo
+              </button>
+            </div>
+          </FadeIn>
+
+          {/* Browser Chrome with Dashboard Screenshot */}
+          <FadeIn delay={0.3}>
+            <div style={{ marginTop: 50, maxWidth: 1100, margin: "50px auto 0", borderRadius: 16, overflow: "hidden", boxShadow: "0 20px 80px rgba(0,0,0,0.15)", border: "1px solid rgba(255,255,255,0.2)" }}>
+              {/* Browser bar */}
+              <div style={{ background: "#f8f9fc", padding: "14px 20px", display: "flex", alignItems: "center", gap: 12, borderBottom: `1px solid ${CARD_BORDER}` }}>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ff5f56" }} />
+                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#ffbd2e" }} />
+                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: "#27c93f" }} />
+                </div>
+                <div style={{ flex: 1, background: WHITE, borderRadius: 8, padding: "8px 16px", border: `1px solid ${CARD_BORDER}`, textAlign: "center" }}>
+                  <span style={{ ...body, fontSize: 13, color: "#9ca3af" }}>app.jella.ai/dashboard</span>
+                </div>
+              </div>
+              {/* Dashboard preview */}
+              <div style={{ background: WHITE, position: "relative" }}>
+                <img src="/dashboard-preview.png" alt="Jella AI Dashboard" style={{ width: "100%", display: "block" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ════════ SOCIAL PROOF ════════ */}
+      <section style={{ position: "relative", zIndex: 10, padding: "100px 0", background: WHITE, borderRadius: "32px 32px 0 0", boxShadow: "0 -10px 40px rgba(0,0,0,0.06)" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px", display: "flex", gap: 80, alignItems: "center" }}>
+          <FadeIn style={{ flex: 1 }}>
+            <div>
+              <h2 style={{ ...heading, fontSize: 48, fontWeight: 700, lineHeight: 1.15 }}>
+                Social Media Shouldn&apos;t Be This Complicated
+              </h2>
+              <p style={{ ...body, fontSize: 18, marginTop: 20, lineHeight: 1.6 }}>
+                Stop juggling 5 different tools. Jella handles everything.
+              </p>
+              <Link
+                href="/sign-up"
+                style={{
+                  display: "inline-block",
+                  marginTop: 28,
+                  padding: "14px 28px",
+                  background: INDIGO,
+                  color: WHITE,
+                  borderRadius: 12,
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  fontSize: 15,
+                  fontFamily: "var(--font-source), system-ui, sans-serif",
+                }}
+              >
+                See All Features
+              </Link>
+
+              <div style={{ marginTop: 60 }}>
+                <div style={{ display: "flex", alignItems: "baseline" }}>
+                  <span style={{
+                    ...heading, fontSize: 200, fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 0.85,
+                    background: "linear-gradient(90deg, #d94f84 0%, #c44a8a 25%, #a855a8 50%, #9b7bc4 75%)",
+                    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
+                  }}>37K</span>
+                  <span style={{
+                    ...heading, fontSize: 200, fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 0.85,
+                    color: "rgba(147, 130, 200, 0.45)",
+                  }}>+</span>
+                </div>
+                <div style={{ marginTop: 16, display: "inline-flex", alignItems: "center", padding: "10px 24px", background: "#f3f5f9", borderRadius: 28 }}>
+                  <span style={{ ...body, fontSize: 18, color: NAVY, fontWeight: 500 }}>Creators We Aim To Support</span>
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+
+          <FadeIn delay={0.2} style={{ flex: 1 }}>
+            <div style={{ borderRadius: 20, overflow: "hidden", background: "#e8ecf4", height: 550 }}>
+              <img src="/social-proof.jpg" alt="Social media creators" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ════════ WHAT YOU CAN DO — with tabs + pink gradient card ════════ */}
+      <section style={{ position: "relative", zIndex: 11, padding: "100px 0", background: PINK_LIGHT }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px" }}>
+          <FadeIn>
+            <div style={{ textAlign: "center", marginBottom: 40 }}>
+              <h2 style={{ ...heading, fontSize: 48, fontWeight: 700 }}>
+                What You Can Do with <span style={{ color: PINK }}>Jella</span>
+              </h2>
+              <p style={{ ...body, fontSize: 18, marginTop: 16 }}>
+                Our smart platform connects essential content tools under one dashboard.
+              </p>
+            </div>
+          </FadeIn>
+
+          {/* Tab navigation */}
+          <FadeIn delay={0.1}>
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 40 }}>
+              {featureTabs.map((tab, i) => (
+                <button
+                  key={tab.label}
+                  onClick={() => setActiveTab(i)}
+                  style={{
+                    padding: "12px 28px",
+                    borderRadius: 28,
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: 15,
+                    fontWeight: 500,
+                    fontFamily: "var(--font-source), system-ui, sans-serif",
+                    background: activeTab === i ? PINK : WHITE,
+                    color: activeTab === i ? WHITE : NAVY,
+                    transition: "all 0.2s",
+                    boxShadow: activeTab === i ? "0 4px 12px rgba(234,76,137,0.25)" : "none",
+                  }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </FadeIn>
+
+          {/* Pink gradient card with content + screenshot */}
+          <FadeIn delay={0.2}>
+            <div style={{
+              borderRadius: 24,
+              background: "linear-gradient(135deg, #f472b6 0%, #ec4899 30%, #f9a8d4 100%)",
+              padding: 48,
+              display: "flex",
+              gap: 40,
+              alignItems: "center",
+              minHeight: 450,
+              overflow: "hidden",
+              position: "relative",
+            }}>
+              {/* Left text */}
+              <div style={{ flex: "0 0 380px", position: "relative", zIndex: 1 }}>
+                <p style={{ ...body, fontSize: 14, color: "rgba(255,255,255,0.7)", fontWeight: 500 }}>
+                  {featureTabs[activeTab].label}
+                </p>
+                <h3 style={{ ...heading, fontSize: 36, fontWeight: 700, color: WHITE, marginTop: 12, lineHeight: 1.2 }}>
+                  {featureTabs[activeTab].title}
+                </h3>
+                <p style={{ ...body, fontSize: 15, color: "rgba(255,255,255,0.85)", marginTop: 16, lineHeight: 1.7 }}>
+                  {featureTabs[activeTab].desc}
+                </p>
+                <Link
+                  href="/sign-up"
+                  style={{
+                    display: "inline-block",
+                    marginTop: 28,
+                    padding: "14px 28px",
+                    background: INDIGO,
+                    color: WHITE,
+                    borderRadius: 12,
+                    textDecoration: "none",
+                    fontWeight: 600,
+                    fontSize: 15,
+                    fontFamily: "var(--font-source), system-ui, sans-serif",
+                  }}
+                >
+                  Start Creating
+                </Link>
+              </div>
+
+              {/* Right: dashboard screenshot */}
+              <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.15)", position: "relative", zIndex: 1 }}>
+                <div style={{ background: WHITE, borderRadius: 16, overflow: "hidden" }}>
+                  <img src="/dashboard-preview.png" alt="Jella AI Features" style={{ width: "100%", display: "block" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                </div>
+              </div>
+
+              {/* Decorative circles */}
+              <div style={{ position: "absolute", top: -100, right: -100, width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,0.08)" }} />
+              <div style={{ position: "absolute", bottom: -80, left: -80, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ════════ WHY PEOPLE CHOOSE ════════ */}
+      <section style={{ position: "relative", zIndex: 12, padding: "100px 0", background: WHITE }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px" }}>
+          <FadeIn>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 48 }}>
+              <div>
+                <h2 style={{ ...heading, fontSize: 48, fontWeight: 700 }}>
+                  Why People Choose <span style={{ color: INDIGO }}>Jella</span>
+                </h2>
+                <p style={{ ...body, fontSize: 18, marginTop: 12 }}>
+                  Smart tools that simplify every step of your content journey.
+                </p>
+              </div>
+              <Link
+                href="/sign-up"
+                style={{
+                  padding: "14px 28px",
+                  background: NAVY,
+                  color: WHITE,
+                  borderRadius: 12,
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  fontSize: 15,
+                  fontFamily: "var(--font-source), system-ui, sans-serif",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Start Your Journey
+              </Link>
+            </div>
+          </FadeIn>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+            {[
+              { icon: <IconHome2 />, title: "AI Post Creator", desc: "Generate engaging, on-brand posts for any platform with powerful AI assistance." },
+              { icon: <IconDocument />, title: "Smart Scheduler", desc: "Plan and schedule your content across all platforms from one unified calendar." },
+              { icon: <IconBriefcase2 />, title: "Analytics Dashboard", desc: "Track engagement, reach, and growth with beautiful, actionable analytics." },
+              { icon: <IconHeart2 />, title: "Content Templates", desc: "Start with proven templates and customize them to match your brand voice perfectly." },
+              { icon: <IconUsers2 />, title: "Team Collaboration", desc: "Work together with your team, share drafts, and manage approvals seamlessly." },
+              { icon: <IconDollar2 />, title: "Growth Insights", desc: "Get data-driven recommendations to optimize your posting strategy and grow faster." },
+            ].map((card, i) => (
+              <FadeIn key={card.title} delay={i * 0.08}>
+                <div style={{
+                  padding: 32,
+                  borderRadius: 16,
+                  border: `1px solid ${CARD_BORDER}`,
+                  background: WHITE,
+                  transition: "box-shadow 0.3s, transform 0.3s",
+                  cursor: "default",
+                  height: "100%",
+                }}>
+                  <div style={{
+                    width: 52, height: 52, borderRadius: 14,
+                    background: INDIGO_LIGHT,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    {card.icon}
+                  </div>
+                  <h3 style={{ ...heading, fontSize: 20, fontWeight: 600, marginTop: 20 }}>{card.title}</h3>
+                  <p style={{ ...body, fontSize: 15, lineHeight: 1.7, marginTop: 12 }}>{card.desc}</p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════ DISCOVER KEY FEATURES / VIDEO ════════ */}
+      <section style={{ position: "relative", zIndex: 13, padding: "100px 0", background: BG }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px", display: "flex", gap: 60, alignItems: "center" }}>
+          {/* Video / Screenshot */}
+          <FadeIn style={{ flex: 1 }}>
+            <div style={{ borderRadius: 20, overflow: "hidden", background: "#1a1a2e", position: "relative", minHeight: 400, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img src="/dashboard-preview.png" alt="Jella AI Demo" style={{ width: "100%", opacity: 0.6 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+              {/* Play button overlay */}
+              <div style={{
+                position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                width: 80, height: 80, borderRadius: "50%", background: "rgba(255,255,255,0.95)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.2)", cursor: "pointer",
+              }}>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill={PINK} stroke="none">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+              <div style={{ position: "absolute", bottom: 20, left: 20, display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.15)", borderRadius: 8, padding: "8px 14px" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                <span style={{ color: WHITE, fontSize: 13, fontFamily: "var(--font-source)" }}>Watch introduction 1:37</span>
+              </div>
+            </div>
+          </FadeIn>
+
+          {/* Text content */}
+          <FadeIn delay={0.15} style={{ flex: 1 }}>
+            <div>
+              <h2 style={{ ...heading, fontSize: 42, fontWeight: 700, lineHeight: 1.2 }}>
+                Discover Key Features of <span style={{ color: PINK }}>Jella</span>
+              </h2>
+              <p style={{ ...body, fontSize: 16, marginTop: 20, lineHeight: 1.7 }}>
+                Jella brings all essential content creation tools into one intuitive platform — helping you create posts, schedule content, analyze performance, and grow your audience without stress.
+              </p>
+              <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 16 }}>
+                {[
+                  "Simplify your workflow with step-by-step guidance",
+                  "Get personalized recommendations and alerts",
+                  "Access AI-powered tools and proven templates",
+                ].map(item => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ width: 28, height: 28, borderRadius: "50%", background: INDIGO_LIGHT, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <IconCheck />
+                    </div>
+                    <span style={{ ...body, fontSize: 15, color: NAVY }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ════════ COMPARE ════════ */}
+      <section style={{ position: "relative", zIndex: 14, padding: "100px 0", background: "linear-gradient(180deg, #1a1a2e 0%, #191e41 100%)" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px" }}>
+          <FadeIn>
+            <div style={{ textAlign: "center", marginBottom: 60 }}>
+              <h2 style={{ ...heading, fontSize: 48, fontWeight: 700, color: WHITE }}>
+                Compare Jella: One Platform,{"\n"}Endless Advantages
+              </h2>
+              <p style={{ ...body, fontSize: 18, marginTop: 16, color: "rgba(255,255,255,0.6)", maxWidth: 700, margin: "16px auto 0" }}>
+                See how Jella brings every essential content tool together — from creation and scheduling to analytics and growth — all in one simple, powerful dashboard.
+              </p>
+            </div>
+          </FadeIn>
+
+          <FadeIn delay={0.15}>
+            <div style={{ display: "flex", gap: 40, alignItems: "flex-start" }}>
+              {/* Left */}
+              <div style={{ flex: "0 0 400px" }}>
+                <h3 style={{ ...heading, fontSize: 14, fontWeight: 600, color: PINK, textTransform: "uppercase", letterSpacing: "0.05em" }}>Smart Content Engine</h3>
+                <h4 style={{ ...heading, fontSize: 28, fontWeight: 700, color: WHITE, marginTop: 12, lineHeight: 1.3 }}>
+                  AI Content Generation
+                </h4>
+                <p style={{ ...body, fontSize: 15, color: "rgba(255,255,255,0.6)", marginTop: 12, lineHeight: 1.7 }}>
+                  Generate engaging posts with AI, schedule across platforms, and track performance — all without leaving Jella. One platform for your entire content workflow.
+                </p>
+              </div>
+
+              {/* Right: Dashboard */}
+              <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", minHeight: 400 }}>
+                <img src="/dashboard-preview.png" alt="Jella Dashboard Compare" style={{ width: "100%", opacity: 0.85 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ════════ INTEGRATIONS ════════ */}
+      <section style={{ position: "relative", zIndex: 15, padding: "100px 0", background: WHITE }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px", textAlign: "center" }}>
+          <FadeIn>
+            <h2 style={{ ...heading, fontSize: 48, fontWeight: 700 }}>
+              Connected Services{"\n"}& Integrations
+            </h2>
+            <p style={{ ...body, fontSize: 18, marginTop: 16 }}>
+              Trusted platforms that make your content workflow easier.
+            </p>
+          </FadeIn>
+
+          <FadeIn delay={0.15}>
+            <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 48, flexWrap: "wrap" }}>
+              {integrations.map(p => (
+                <div key={p.name} style={{
+                  padding: "16px 24px",
+                  borderRadius: 14,
+                  border: `1px solid ${p.name === "Jella AI" ? "transparent" : CARD_BORDER}`,
+                  background: p.name === "Jella AI" ? PINK : WHITE,
+                  display: "flex", alignItems: "center", gap: 10,
+                  boxShadow: p.name === "Jella AI" ? "0 4px 20px rgba(234,76,137,0.25)" : "0 1px 4px rgba(0,0,0,0.04)",
+                  cursor: "default",
+                }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: 8,
+                    background: p.name === "Jella AI" ? "rgba(255,255,255,0.2)" : `${p.color}15`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    {p.name === "Jella AI" ? <Logo size="sm" variant="light" /> : (
+                      <span style={{ fontSize: 16, fontWeight: 700, color: p.color }}>{p.letter}</span>
+                    )}
+                  </div>
+                  <span style={{
+                    ...body, fontWeight: 600, fontSize: 14,
+                    color: p.name === "Jella AI" ? WHITE : NAVY,
+                  }}>{p.name}</span>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ════════ MOBILE EXPERIENCE ════════ */}
+      <section style={{ position: "relative", zIndex: 16, padding: "100px 0", background: BG }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px" }}>
+          <FadeIn>
+            <div style={{ textAlign: "center", marginBottom: 60 }}>
+              <h2 style={{ ...heading, fontSize: 48, fontWeight: 700 }}>
+                Explore The Jella{"\n"}<span style={{ color: PINK }}>Mobile Experience</span>
+              </h2>
+              <p style={{ ...body, fontSize: 18, marginTop: 16, maxWidth: 600, margin: "16px auto 0" }}>
+                Take Jella wherever you go. Create posts, track analytics, and manage your content — all from your smartphone.
+              </p>
+            </div>
+          </FadeIn>
+
+          <div style={{ display: "flex", gap: 40, alignItems: "center" }}>
+            {/* Left - iOS */}
+            <FadeIn style={{ flex: 1 }}>
+              <div>
+                <h3 style={{ ...heading, fontSize: 24, fontWeight: 600, marginBottom: 16 }}>Download for iOS</h3>
+                <p style={{ ...body, fontSize: 15, lineHeight: 1.7, marginBottom: 24 }}>
+                  Create and schedule posts on the go. Access all your content tools right from your iPhone.
+                </p>
+                {["Manage your content anytime, anywhere", "Receive instant notifications", "Access all AI tools in one app"].map(item => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: INDIGO_LIGHT, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <IconCheck />
+                    </div>
+                    <span style={{ ...body, fontSize: 14, color: NAVY }}>{item}</span>
+                  </div>
+                ))}
+                <button style={{
+                  marginTop: 20, padding: "12px 24px", background: NAVY, color: WHITE,
+                  borderRadius: 10, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
+                  fontFamily: "var(--font-source), system-ui, sans-serif",
+                }}>
+                  Download for iOS
+                </button>
+              </div>
+            </FadeIn>
+
+            {/* Center - phone mockup */}
+            <FadeIn delay={0.15} style={{ flex: "0 0 300px", textAlign: "center" }}>
+              <div style={{
+                width: 260, height: 520, borderRadius: 36, background: NAVY,
+                margin: "0 auto", padding: 8, boxShadow: "0 20px 60px rgba(25,30,65,0.2)",
+              }}>
+                <div style={{
+                  width: "100%", height: "100%", borderRadius: 28, background: WHITE,
+                  overflow: "hidden",
+                }}>
+                  <img src="/dashboard-preview.png" alt="Jella Mobile" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                </div>
+              </div>
+            </FadeIn>
+
+            {/* Right - Android */}
+            <FadeIn delay={0.3} style={{ flex: 1 }}>
+              <div>
+                <h3 style={{ ...heading, fontSize: 24, fontWeight: 600, marginBottom: 16 }}>Download for Android</h3>
+                <p style={{ ...body, fontSize: 15, lineHeight: 1.7, marginBottom: 24 }}>
+                  With our Android app, you can access all features and create content on-the-go.
+                </p>
+                {["Create and edit posts from anywhere", "Sync your schedule across devices", "Track performance in real-time"].map(item => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: INDIGO_LIGHT, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <IconCheck />
+                    </div>
+                    <span style={{ ...body, fontSize: 14, color: NAVY }}>{item}</span>
+                  </div>
+                ))}
+                <button style={{
+                  marginTop: 20, padding: "12px 24px", background: NAVY, color: WHITE,
+                  borderRadius: 10, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
+                  fontFamily: "var(--font-source), system-ui, sans-serif",
+                }}>
+                  Download for Android
+                </button>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════ SEAMLESS ACCESS ════════ */}
+      <section style={{ position: "relative", zIndex: 17, padding: "100px 0", background: WHITE }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px" }}>
+          <FadeIn>
+            <div style={{ textAlign: "center", marginBottom: 60 }}>
+              <h2 style={{ ...heading, fontSize: 48, fontWeight: 700 }}>
+                Seamless Access,{"\n"}Anytime & Anywhere
+              </h2>
+              <p style={{ ...body, fontSize: 18, marginTop: 16, maxWidth: 700, margin: "16px auto 0" }}>
+                Access essential tools for posts, scheduling, analytics, and content creation — all from one secure dashboard.
+              </p>
+            </div>
+          </FadeIn>
+
+          <FadeIn delay={0.15}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+              <div style={{ borderRadius: 16, overflow: "hidden", background: "#f8f9fc", border: `1px solid ${CARD_BORDER}`, padding: 24 }}>
+                <h3 style={{ ...heading, fontSize: 20, fontWeight: 600, marginBottom: 8 }}>Analytics & Insights</h3>
+                <p style={{ ...body, fontSize: 14, marginBottom: 20 }}>Overview of recent activity and engagement.</p>
+                <div style={{ borderRadius: 12, overflow: "hidden", background: WHITE, height: 280, border: `1px solid ${CARD_BORDER}` }}>
+                  <img src="/dashboard-preview.png" alt="Analytics" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                </div>
+              </div>
+              <div style={{ borderRadius: 16, overflow: "hidden", background: "#f8f9fc", border: `1px solid ${CARD_BORDER}`, padding: 24 }}>
+                <h3 style={{ ...heading, fontSize: 20, fontWeight: 600, marginBottom: 8 }}>Content Management</h3>
+                <p style={{ ...body, fontSize: 14, marginBottom: 20 }}>Manage all your posts and scheduled content.</p>
+                <div style={{ borderRadius: 12, overflow: "hidden", background: WHITE, height: 280, border: `1px solid ${CARD_BORDER}` }}>
+                  <img src="/dashboard-preview.png" alt="Content" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ════════ TESTIMONIALS ════════ */}
+      <section style={{ position: "relative", zIndex: 18, padding: "100px 0", background: BG }}>
+        <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 40px", textAlign: "center" }}>
+          <FadeIn>
+            <p style={{ ...body, fontSize: 14, color: PINK, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Testimonials</p>
+            <div style={{ marginTop: 32, minHeight: 160 }}>
+              <p style={{ ...body, fontSize: 22, lineHeight: 1.6, color: NAVY, fontStyle: "italic" }}>
+                &ldquo;{testimonials[testimonialIdx].text}&rdquo;
+              </p>
+              <p style={{ ...body, fontSize: 15, color: BODY, marginTop: 20 }}>
+                — {testimonials[testimonialIdx].author}, {testimonials[testimonialIdx].role}
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 24 }}>
+              {testimonials.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setTestimonialIdx(i)}
+                  style={{
+                    width: i === testimonialIdx ? 24 : 8,
+                    height: 8,
+                    borderRadius: 4,
+                    background: i === testimonialIdx ? PINK : "#d1d5db",
+                    border: "none",
+                    cursor: "pointer",
+                    transition: "all 0.3s",
+                  }}
+                />
+              ))}
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ════════ CTA ════════ */}
+      <section style={{ position: "relative", zIndex: 19, padding: "100px 0", background: "linear-gradient(135deg, #ea4c89 0%, #c13584 50%, #833ab4 100%)" }}>
+        <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 40px", textAlign: "center" }}>
+          <FadeIn>
+            <h2 style={{ ...heading, fontSize: 52, fontWeight: 700, color: WHITE, lineHeight: 1.15 }}>
+              Ready to transform your{"\n"}vision into reality?
+            </h2>
+            <p style={{ ...body, fontSize: 18, color: "rgba(255,255,255,0.8)", marginTop: 20, maxWidth: 600, margin: "20px auto 0" }}>
+              See how Jella simplifies your content creation by combining AI, scheduling, and analytics — all in one seamless platform built to grow your audience.
+            </p>
+            <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 40 }}>
+              <Link
+                href="/sign-up"
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  padding: "16px 36px", background: WHITE, color: NAVY,
+                  borderRadius: 12, textDecoration: "none", fontWeight: 600, fontSize: 16,
+                  fontFamily: "var(--font-source), system-ui, sans-serif",
+                }}
+              >
+                Get Started <IconArrowRight />
+              </Link>
+              <button style={{
+                padding: "16px 36px", background: "rgba(255,255,255,0.15)", color: WHITE,
+                borderRadius: 12, border: "1px solid rgba(255,255,255,0.3)", cursor: "pointer",
+                fontWeight: 600, fontSize: 16, fontFamily: "var(--font-source), system-ui, sans-serif",
+                display: "flex", alignItems: "center", gap: 8,
+              }}>
+                <IconPlay />
+                View Video Demo
+              </button>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ════════ FOOTER ════════ */}
+      <footer style={{ position: "relative", zIndex: 20, padding: "60px 0 40px", background: WHITE, borderTop: `1px solid ${CARD_BORDER}` }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr", gap: 40, marginBottom: 40 }}>
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <Logo size="sm" />
+                <span style={{ ...heading, fontSize: 20, fontWeight: 700 }}>Jella AI</span>
+              </div>
+              <p style={{ ...body, fontSize: 14, lineHeight: 1.6, maxWidth: 260 }}>
+                AI-powered social media content creation and scheduling platform. Create, schedule, and grow — all in one place.
+              </p>
+            </div>
+            {[
+              { title: "Product", links: ["Features", "Pricing", "Integrations", "Changelog"] },
+              { title: "Company", links: ["About", "Blog", "Careers", "Contact"] },
+              { title: "Resources", links: ["Documentation", "Help Center", "Community", "Templates"] },
+              { title: "Legal", links: ["Privacy Policy", "Terms of Service", "Cookie Policy"] },
+            ].map(col => (
+              <div key={col.title}>
+                <h4 style={{ ...heading, fontSize: 14, fontWeight: 600, marginBottom: 16 }}>{col.title}</h4>
+                {col.links.map(link => (
+                  <p key={link} style={{ ...body, fontSize: 14, marginBottom: 10, cursor: "pointer" }}>{link}</p>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <div style={{ borderTop: `1px solid ${CARD_BORDER}`, paddingTop: 24, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <p style={{ ...body, fontSize: 13 }}>© 2025 Jella AI — All rights reserved.</p>
+            <p style={{ ...body, fontSize: 13 }}>Privacy Policy | Terms of Service</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
