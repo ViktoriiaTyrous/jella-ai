@@ -515,14 +515,15 @@ export default function LandingPage() {
               <div style={{
                 flex: "0 0 50%",
                 maxWidth: "50%",
+                height: 560,
                 borderRadius: "16px 0 0 16px",
                 overflow: "hidden",
                 boxShadow: "-8px 8px 40px rgba(0,0,0,0.12)",
                 position: "relative",
                 zIndex: 1,
               }}>
-                <div style={{ background: WHITE, borderRadius: "16px 0 0 16px", overflow: "hidden" }}>
-                  <img src="/dashboard-preview.png" alt="Jella AI Features" style={{ width: "100%", display: "block" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                <div style={{ background: WHITE, borderRadius: "16px 0 0 16px", overflow: "hidden", height: "100%" }}>
+                  <img src="/dashboard-preview.png" alt="Jella AI Features" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "left top", display: "block" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 </div>
               </div>
 
