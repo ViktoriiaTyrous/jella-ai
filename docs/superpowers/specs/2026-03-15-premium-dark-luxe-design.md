@@ -17,7 +17,7 @@ All colors migrate from hex to OKLCH via CSS custom properties.
 | `--surface-0` | `oklch(0.13 0.02 270)` | Page background |
 | `--surface-1` | `oklch(0.17 0.02 270)` | Auth card |
 | `--surface-2` | `oklch(0.21 0.02 270)` | Inputs, elevated |
-| `--surface-3` | `oklch(0.15 0.025 280)` | Brand panel |
+| `--surface-brand` | `oklch(0.15 0.025 280)` | Brand panel (separate elevation context) |
 
 ### Borders
 | Token | Value | Purpose |
@@ -38,7 +38,7 @@ All colors migrate from hex to OKLCH via CSS custom properties.
 |-------|-------|---------|
 | `--text-primary` | `oklch(0.95 0.01 270)` | Headings, strong text |
 | `--text-secondary` | `oklch(0.7 0.02 270)` | Paragraphs |
-| `--text-muted` | `oklch(0.5 0.02 270)` | Placeholders, hints |
+| `--text-muted` | `oklch(0.55 0.02 270)` | Placeholders, hints |
 
 ### Feedback
 | Token | Value | Purpose |
@@ -51,6 +51,59 @@ All colors migrate from hex to OKLCH via CSS custom properties.
 |-------|-------|---------|
 | `--glow-pink` | `oklch(0.68 0.22 350 / 0.25)` | Button glow |
 | `--glow-indigo` | `oklch(0.55 0.2 275 / 0.15)` | Decorative glow |
+
+### On-surface
+| Token | Value | Purpose |
+|-------|-------|---------|
+| `--color-on-primary` | `oklch(1 0 0)` | Text/icons on accent-primary bg |
+
+### Shadows (dark-theme optimized)
+| Token | Value | Purpose |
+|-------|-------|---------|
+| `--shadow-card` | `0 2px 4px oklch(0 0 0 / 0.3), 0 8px 32px oklch(0 0 0 / 0.25), 0 0 64px oklch(0.68 0.22 350 / 0.04)` | Card elevation |
+| `--shadow-card-hover` | `0 4px 8px oklch(0 0 0 / 0.35), 0 16px 48px oklch(0 0 0 / 0.3), 0 0 80px oklch(0.68 0.22 350 / 0.08)` | Card hover |
+| `--shadow-input-focus` | `0 0 0 3px oklch(0.68 0.22 350 / 0.25)` | Input pink glow ring |
+| `--shadow-input-error` | `0 0 0 3px oklch(0.65 0.22 25 / 0.2)` | Input error glow ring |
+| `--shadow-btn-primary` | `0 2px 12px oklch(0.68 0.22 350 / 0.3)` | Primary button glow |
+| `--shadow-btn-primary-hover` | `0 6px 28px oklch(0.68 0.22 350 / 0.4)` | Primary button hover glow |
+
+### Gradients (OKLCH)
+| Token | Value | Purpose |
+|-------|-------|---------|
+| `--gradient-brand` | `linear-gradient(180deg, oklch(0.17 0.03 280) 0%, oklch(0.14 0.02 350) 100%)` | Brand panel / footer bg |
+| `--gradient-icon` | `linear-gradient(180deg, oklch(0.68 0.22 350) 0%, oklch(0.6 0.18 350) 100%)` | Icon backgrounds |
+
+### Token Migration Map (old → new)
+| Old Token | New Token |
+|-----------|-----------|
+| `--color-primary` | `--accent-primary` |
+| `--color-primary-hover` | `--accent-primary-hover` |
+| `--color-primary-light` | removed (not needed on dark) |
+| `--color-primary-gradient-end` | part of `--gradient-icon` |
+| `--color-secondary` | `--accent-secondary` |
+| `--color-secondary-hover` | `--accent-secondary-hover` |
+| `--color-success` | `--color-success` (kept) |
+| `--color-error` | `--color-error` (kept) |
+| `--color-title` | `--text-primary` |
+| `--color-heading-dark` | `--text-primary` |
+| `--color-paragraph` | `--text-secondary` |
+| `--color-paragraph-secondary` | `--text-secondary` |
+| `--color-input-bg` | `--surface-2` |
+| `--color-input-border` | `--border-subtle` |
+| `--color-input-border-hover` | `oklch(0.35 0.02 270 / 0.6)` inline |
+| `--color-google-border` | `--border-subtle` |
+| `--color-card-bg` | `oklch(0.2 0.02 270 / 0.4)` inline |
+| `--color-card-border` | `oklch(0.35 0.03 270 / 0.3)` inline |
+| `--color-page-bg` | `--surface-0` |
+| `--color-white` | `--color-on-primary` (on accent bg) or `--text-primary` (on surface) |
+| `--gradient-brand` | `--gradient-brand` (updated values) |
+| `--gradient-icon` | `--gradient-icon` (updated values) |
+| `--shadow-card` | `--shadow-card` (updated values) |
+| `--shadow-card-hover` | `--shadow-card-hover` (updated values) |
+| `--shadow-input-focus` | `--shadow-input-focus` (updated values) |
+| `--shadow-input-error` | `--shadow-input-error` (updated values) |
+| `--shadow-btn-primary` | `--shadow-btn-primary` (updated values) |
+| `--shadow-btn-primary-hover` | `--shadow-btn-primary-hover` (updated values) |
 
 ---
 
@@ -67,9 +120,9 @@ All colors migrate from hex to OKLCH via CSS custom properties.
 ## 3. Brand Panel (Left)
 
 ### Background
-- Base: `--surface-3` solid
-- Overlay: glassmorphism layer with `backdrop-filter: blur(40px)` and subtle CSS noise
-- Noise texture via inline SVG data URI (2x2 fractal noise, very low opacity)
+- Base: `--surface-brand` solid
+- Overlay: glassmorphism layer with `backdrop-filter: blur(40px)` + `-webkit-backdrop-filter: blur(40px)` and subtle CSS noise
+- Noise texture via inline SVG data URI (feTurbulence fractal noise, opacity 0.03)
 
 ### SVG Decorations
 - Orbs: re-colored to OKLCH pink/indigo with higher opacity on dark
@@ -81,8 +134,8 @@ All colors migrate from hex to OKLCH via CSS custom properties.
 ### Feature Cards
 - Background: `oklch(0.2 0.02 270 / 0.4)` with `backdrop-filter: blur(20px)`
 - Border: `1px solid oklch(0.35 0.03 270 / 0.3)`
-- Hover: border brightens, subtle glow shadow appears
-- Icon backgrounds: gradient preserved but using OKLCH values
+- Hover: translateY(-4px) + border brightens to `oklch(0.4 0.03 270 / 0.4)` + `0 8px 32px oklch(0 0 0 / 0.3)` shadow
+- Icon backgrounds: `var(--gradient-icon)` (OKLCH values)
 
 ### Testimonials
 - Text: `--text-primary` with 0.85 opacity
@@ -98,10 +151,10 @@ All colors migrate from hex to OKLCH via CSS custom properties.
 ## 4. Auth Card (Right)
 
 ### Card Container
-- Background: `--surface-1`
-- Border: `1px solid --border-subtle`
-- Shadow: multi-layer with pink glow tint at edges
-- Hover: border brightens slightly, glow intensifies
+- Background: `var(--surface-1)`
+- Border: `1px solid var(--border-subtle)`
+- Shadow: `var(--shadow-card)`
+- Hover: shadow transitions to `var(--shadow-card-hover)`
 
 ### Header
 - Logo: pink glow aura around jellyfish SVG icon
@@ -129,9 +182,13 @@ All colors migrate from hex to OKLCH via CSS custom properties.
 - Focus-visible: pink outline ring
 
 ### Footer
-- Background: gradient from `--surface-1` to slightly different shade
+- Background: `var(--gradient-brand)`
 - Legal text: `--text-muted`
 - Register link: `--accent-primary`
+
+### Disabled Button
+- `opacity: 0.5` (more aggressive than light theme to stay visible on dark)
+- `cursor: not-allowed`, no hover transforms
 
 ---
 

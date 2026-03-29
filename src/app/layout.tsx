@@ -1,10 +1,24 @@
 import type { Metadata } from "next";
-import { monaSans, sourceSans } from "@/lib/fonts";
+import localFont from "next/font/local";
+import { Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 
+const monaSans = localFont({
+  src: "../fonts/MonaSans.woff2",
+  variable: "--font-mona",
+  display: "swap",
+  weight: "200 900",
+});
+
+const sourceSans = Source_Sans_3({
+  subsets: ["latin"],
+  variable: "--font-source",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Jella AI — Your AI-powered creative workspace",
-  description: "AI-powered creative workspace for content, strategy, and growth.",
+  title: "Jella AI — AI-powered social media platform",
+  description: "Create, schedule, and publish social media content with AI",
 };
 
 export default function RootLayout({
@@ -14,9 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${monaSans.variable} ${sourceSans.variable}`}>
-      <body className="font-[family-name:var(--font-source)] antialiased">
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

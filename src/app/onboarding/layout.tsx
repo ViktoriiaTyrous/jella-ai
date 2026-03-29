@@ -1,31 +1,48 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import React from "react";
 import { OnboardingProvider } from "@/context/onboarding-context";
-import { Sidebar, MobileStepper } from "@/components/onboarding/sidebar";
+import Sidebar, { MobileStepper } from "@/components/onboarding/sidebar";
 
 export default function OnboardingLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const stepMatch = pathname.match(/step-(\d+)/);
-  const currentStep = stepMatch ? parseInt(stepMatch[1]) : 1;
-
   return (
     <OnboardingProvider>
       {/* Desktop */}
-      <div className="hidden lg:block min-h-screen bg-[#fafbff] relative">
-        {/* Sidebar — Figma: left:20, top:20, w:384 */}
-        <div className="absolute left-[20px] top-[20px] bottom-[20px]">
-          <Sidebar currentStep={currentStep} />
+      <div
+        className="hidden lg:block"
+        style={{ position: "relative", minHeight: "100vh", background: "#fafbff" }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: 20,
+            top: 20,
+            bottom: 20,
+          }}
+        >
+          <Sidebar />
         </div>
-        {/* Content — Figma: left:calc(27.78%+19.56px), top:69px, w:1076px */}
-        <div className="absolute left-[calc(27.78%+19.56px)] top-[69px] right-[40px] max-w-[1076px]">
+        <div
+          style={{
+            position: "absolute",
+            left: "calc(27.78% + 19.56px)",
+            top: 69,
+            right: 40,
+            maxWidth: 1076,
+            paddingBottom: 40,
+          }}
+        >
           {children}
         </div>
       </div>
+
       {/* Mobile */}
-      <div className="lg:hidden min-h-screen bg-[#fafbff]">
-        <MobileStepper currentStep={currentStep} />
-        <div className="px-4 pb-8">
+      <div
+        className="lg:hidden"
+        style={{ minHeight: "100vh", background: "#fafbff" }}
+      >
+        <MobileStepper />
+        <div style={{ padding: "0 16px 32px 16px" }}>
           {children}
         </div>
       </div>

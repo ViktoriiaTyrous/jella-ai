@@ -1,77 +1,62 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import React from "react";
 
 interface StepNavProps {
   step: number;
   totalSteps: number;
   onContinue: () => void;
-  continueDisabled?: boolean;
+  onBack?: () => void;
 }
 
-export function StepNav({ step, totalSteps, onContinue, continueDisabled }: StepNavProps) {
-  const router = useRouter();
-  const isFirst = step === 1;
+export default function StepNav({ step, totalSteps, onContinue, onBack }: StepNavProps) {
   const isLast = step === totalSteps;
 
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-      {!isFirst ? (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 32 }}>
+      {step > 1 && onBack ? (
         <button
-          onClick={() => router.push(`/onboarding/step-${step - 1}`)}
+          onClick={onBack}
           style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "48px",
+            height: 48,
             padding: "12px 24px",
-            borderRadius: "12px",
+            borderRadius: 12,
             border: "2px solid #e8ebf5",
-            backgroundColor: "transparent",
-            fontFamily: "var(--font-mona), system-ui, sans-serif",
+            background: "transparent",
+            fontFamily: "var(--font-mona), sans-serif",
             fontWeight: 600,
-            fontSize: "16px",
-            lineHeight: "24px",
+            fontSize: 16,
             color: "#636788",
             cursor: "pointer",
-            transition: "background-color 0.2s",
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#f3f5fc"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "transparent"; }}
         >
           Back
         </button>
       ) : (
         <div />
       )}
+
       <button
         onClick={onContinue}
-        disabled={continueDisabled}
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          gap: "4px",
+          gap: 4,
           padding: "12px 16px",
-          borderRadius: "12px",
-          backgroundColor: "#ea4c89",
-          color: "#fff",
+          borderRadius: 12,
           border: "none",
-          fontFamily: "var(--font-mona), system-ui, sans-serif",
+          background: "#ea4c89",
+          fontFamily: "var(--font-mona), sans-serif",
           fontWeight: 700,
-          fontSize: "16px",
-          lineHeight: 1.5,
-          cursor: continueDisabled ? "not-allowed" : "pointer",
-          opacity: continueDisabled ? 0.5 : 1,
-          transition: "filter 0.2s",
+          fontSize: 16,
+          color: "white",
+          cursor: "pointer",
         }}
-        onMouseEnter={(e) => { if (!continueDisabled) e.currentTarget.style.filter = "brightness(0.9)"; }}
-        onMouseLeave={(e) => { e.currentTarget.style.filter = "none"; }}
       >
         {isLast ? "Finish Setup" : "Continue"}
         {!isLast && (
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m9 18 6-6-6-6" />
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M7.5 5l5 5-5 5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         )}
       </button>

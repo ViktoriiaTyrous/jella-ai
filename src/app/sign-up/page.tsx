@@ -56,11 +56,13 @@ const testimonials = [
   },
 ];
 
-export default function SignInPage() {
+export default function SignUpPage() {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
 
   useEffect(() => {
@@ -254,7 +256,7 @@ export default function SignInPage() {
               <p style={{
                 fontSize: 15, color: "#636788", marginTop: 8,
               }}>
-                Sign in to your account
+                Create your account
               </p>
             </div>
 
@@ -287,6 +289,34 @@ export default function SignInPage() {
               <span style={{ fontSize: 13, color: "#9ca0b8" }}>or</span>
               <div style={{ flex: 1, height: 1, background: "#e8ebf5" }} />
             </div>
+
+            {/* Full Name */}
+            <label style={{ display: "block", marginBottom: 16 }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: "#3a3d56", marginBottom: 6, display: "block" }}>
+                Full Name
+              </span>
+              <div style={{
+                display: "flex", alignItems: "center", gap: 10,
+                padding: "0 14px", height: 46, borderRadius: 10,
+                border: "1px solid #d8dce8", background: "#ffffff",
+              }}>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#9ca0b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="10" cy="7" r="4" />
+                  <path d="M3 18c0-3.3 3.1-6 7-6s7 2.7 7 6" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="John Doe"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  style={{
+                    flex: 1, border: "none", outline: "none", background: "transparent",
+                    fontSize: 15, color: "#191e41",
+                    fontFamily: "var(--font-source), sans-serif",
+                  }}
+                />
+              </div>
+            </label>
 
             {/* Email */}
             <label style={{ display: "block", marginBottom: 16 }}>
@@ -332,7 +362,7 @@ export default function SignInPage() {
                 </svg>
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
+                  placeholder="Create a password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   style={{
@@ -364,32 +394,55 @@ export default function SignInPage() {
               </div>
             </label>
 
-            {/* Remember + Forgot */}
-            <div className="flex items-center justify-between" style={{ marginBottom: 24 }}>
-              <label className="flex items-center" style={{ gap: 8, cursor: "pointer" }}>
+            {/* Confirm Password */}
+            <label style={{ display: "block", marginBottom: 24 }}>
+              <span style={{ fontSize: 14, fontWeight: 500, color: "#3a3d56", marginBottom: 6, display: "block" }}>
+                Confirm Password
+              </span>
+              <div style={{
+                display: "flex", alignItems: "center", gap: 10,
+                padding: "0 14px", height: 46, borderRadius: 10,
+                border: "1px solid #d8dce8", background: "#ffffff",
+              }}>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#9ca0b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="4" y="9" width="12" height="9" rx="2" />
+                  <path d="M7 9V6a3 3 0 0 1 6 0v3" />
+                </svg>
                 <input
-                  type="checkbox"
-                  checked={remember}
-                  onChange={(e) => setRemember(e.target.checked)}
+                  type={showConfirm ? "text" : "password"}
+                  placeholder="Confirm your password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   style={{
-                    width: 16, height: 16, borderRadius: 4,
-                    accentColor: "#ea4c89", cursor: "pointer",
+                    flex: 1, border: "none", outline: "none", background: "transparent",
+                    fontSize: 15, color: "#191e41",
+                    fontFamily: "var(--font-source), sans-serif",
                   }}
                 />
-                <span style={{ fontSize: 14, color: "#636788" }}>Remember me</span>
-              </label>
-              <Link
-                href="#"
-                style={{
-                  fontSize: 14, color: "#ea4c89", textDecoration: "none",
-                  fontWeight: 500,
-                }}
-              >
-                Forgot password?
-              </Link>
-            </div>
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  aria-label={showConfirm ? "Hide password" : "Show password"}
+                  style={{ border: "none", background: "none", cursor: "pointer", padding: 0, display: "flex" }}
+                >
+                  {showConfirm ? (
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#9ca0b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 1l18 18" />
+                      <path d="M8.5 4.2A8.5 8.5 0 0 1 10 4c4.5 0 8 4 9 6a14.3 14.3 0 0 1-2.2 3.2" />
+                      <path d="M6.7 6.7A4 4 0 0 0 10 14a4 4 0 0 0 3.3-1.7" />
+                      <path d="M1 10s3.5-6 9-6" />
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="#9ca0b8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 10s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z" />
+                      <circle cx="10" cy="10" r="3" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </label>
 
-            {/* Sign In button */}
+            {/* Create Account button */}
             <button
               style={{
                 width: "100%", padding: "13px 16px", borderRadius: 10,
@@ -401,17 +454,17 @@ export default function SignInPage() {
               onMouseEnter={(e) => { e.currentTarget.style.background = "#d63f7b"; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = "#ea4c89"; }}
             >
-              Sign In
+              Create Account
             </button>
 
-            {/* Sign Up link */}
+            {/* Sign In link */}
             <p style={{
               textAlign: "center", marginTop: 24,
               fontSize: 14, color: "#636788",
             }}>
-              Don&apos;t have an account?{" "}
-              <Link href="/sign-up" style={{ color: "#ea4c89", fontWeight: 600, textDecoration: "none" }}>
-                Sign Up
+              Already have an account?{" "}
+              <Link href="/sign-in" style={{ color: "#ea4c89", fontWeight: 600, textDecoration: "none" }}>
+                Sign In
               </Link>
             </p>
           </div>

@@ -1,64 +1,72 @@
 "use client";
 
-import { forwardRef } from "react";
+import React, { useState } from "react";
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaProps {
   label: string;
+  optional?: boolean;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
   error?: string;
 }
 
-export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, className = "", ...props }, ref) => {
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <label
-          style={{
-            fontFamily: "var(--font-mona), system-ui, sans-serif",
-            fontWeight: 600,
-            fontSize: "14px",
-            lineHeight: 1.3,
-            color: "#191e41",
-          }}
-        >
-          {label}
-        </label>
-        <textarea
-          ref={ref}
-          style={{
-            width: "100%",
-            height: "140px",
-            backgroundColor: "#fafbff",
-            border: error ? "1px solid #ef4444" : "1px solid rgba(234,76,137,0.2)",
-            borderRadius: "8px",
-            padding: "12px 16px",
-            fontFamily: "var(--font-mona), system-ui, sans-serif",
-            fontWeight: 400,
-            fontSize: "16px",
-            lineHeight: 1.5,
-            color: "#05103c",
-            outline: "none",
-            resize: "none" as const,
-            transition: "border-color 0.2s, box-shadow 0.2s",
-          }}
-          onFocus={(e) => {
-            e.currentTarget.style.borderColor = "rgba(234,76,137,0.4)";
-            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(234,76,137,0.06)";
-          }}
-          onBlur={(e) => {
-            e.currentTarget.style.borderColor = error ? "#ef4444" : "rgba(234,76,137,0.2)";
-            e.currentTarget.style.boxShadow = "none";
-          }}
-          className={className}
-          {...props}
-        />
-        {error && (
-          <p style={{ color: "#ef4444", fontSize: "13px", fontFamily: "var(--font-source), system-ui, sans-serif", fontWeight: 500 }}>
-            {error}
-          </p>
-        )}
-      </div>
-    );
-  }
-);
+export default function Textarea({ label, optional, value, onChange, placeholder, error }: TextareaProps) {
+  const [focused, setFocused] = useState(false);
 
-Textarea.displayName = "Textarea";
+  const borderColor = error
+    ? "#ef4444"
+    : focused
+    ? "rgba(234,76,137,0.4)"
+    : "rgba(234,76,137,0.2)";
+
+  const boxShadow = focused && !error ? "0 0 0 3px rgba(234,76,137,0.06)" : "none";
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <label
+        style={{
+          fontFamily: "var(--font-mona), sans-serif",
+          fontWeight: 600,
+          fontSize: 14,
+          color: "#191e41",
+          marginBottom: 8,
+        }}
+      >
+        {label}
+        {optional && (
+          <span style={{ fontWeight: 400, color: "#616268", marginLeft: 4 }}>(optional)</span>
+        )}
+      </label>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        placeholder={placeholder}
+        style={{
+          width: "100%",
+          height: 140,
+          resize: "none",
+          background: "#fafbff",
+          border: `1px solid ${borderColor}`,
+          borderRadius: 8,
+          padding: "12px 16px",
+          fontFamily: "var(--font-mona), sans-serif",
+          fontWeight: 400,
+          fontSize: 16,
+          color: "#191e41",
+          outline: "none",
+          boxShadow,
+          boxSizing: "border-box",
+          transition: "border-color 0.2s, box-shadow 0.2s",
+        }}
+      />
+      {error && (
+        <span style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 13, color: "#ef4444", marginTop: 4 }}>
+          {error}
+        </span>
+      )}
+    </div>
+  );
+}

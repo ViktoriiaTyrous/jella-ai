@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useReducer, type ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 
-export interface OnboardingData {
+interface Step1Data {
   websiteUrl: string;
   brandName: string;
   niche: string;
@@ -11,47 +11,81 @@ export interface OnboardingData {
   description: string;
 }
 
-const initialData: OnboardingData = {
-  websiteUrl: "",
-  brandName: "",
-  niche: "",
-  region: "",
-  language: "",
-  description: "",
-};
-
-type Action =
-  | { type: "UPDATE_FIELD"; field: keyof OnboardingData; value: string }
-  | { type: "RESET" };
-
-function reducer(state: OnboardingData, action: Action): OnboardingData {
-  switch (action.type) {
-    case "UPDATE_FIELD":
-      return { ...state, [action.field]: action.value };
-    case "RESET":
-      return initialData;
-    default:
-      return state;
-  }
+interface Step2Data {
+  goals: string[];
+  platforms: string[];
 }
 
-const OnboardingContext = createContext<{
+interface Step3Data {
+  toneOfVoice: string;
+  contentTypes: string[];
+  postFrequency: string;
+  brandColors: string[];
+}
+
+export interface OnboardingData {
+  step1: Step1Data;
+  step2: Step2Data;
+  step3: Step3Data;
+}
+
+interface OnboardingContextValue {
   data: OnboardingData;
-  updateField: (field: keyof OnboardingData, value: string) => void;
-  reset: () => void;
-} | null>(null);
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
+  updateField: <S extends keyof OnboardingData>(
+    step: S,
+    field: keyof OnboardingData[S],
+    value: OnboardingData[S][keyof OnboardingData[S]]
+  ) => void;
+}
 
-export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const [data, dispatch] = useReducer(reducer, initialData);
+const defaultData: OnboardingData = {
+  step1: {
+    websiteUrl: "",
+    brandName: "",
+    niche: "",
+    region: "",
+    language: "",
+    description: "",
+  },
+  step2: {
+    goals: [],
+    platforms: [],
+  },
+  step3: {
+    toneOfVoice: "",
+    contentTypes: [],
+    postFrequency: "",
+    brandColors: [],
+  },
+};
 
-  const updateField = (field: keyof OnboardingData, value: string) => {
-    dispatch({ type: "UPDATE_FIELD", field, value });
-  };
+const OnboardingContext = createContext<OnboardingContextValue | null>(null);
 
-  const reset = () => dispatch({ type: "RESET" });
+export function OnboardingProvider({ children }: { children: React.ReactNode }) {
+  const [data, setData] = useState<OnboardingData>(defaultData);
+  const [currentStep, setCurrentStep] = useState(1);
+
+  const updateField = useCallback(
+    <S extends keyof OnboardingData>(
+      step: S,
+      field: keyof OnboardingData[S],
+      value: OnboardingData[S][keyof OnboardingData[S]]
+    ) => {
+      setData((prev) => ({
+        ...prev,
+        [step]: {
+          ...prev[step],
+          [field]: value,
+        },
+      }));
+    },
+    []
+  );
 
   return (
-    <OnboardingContext.Provider value={{ data, updateField, reset }}>
+    <OnboardingContext.Provider value={{ data, currentStep, setCurrentStep, updateField }}>
       {children}
     </OnboardingContext.Provider>
   );
