@@ -118,6 +118,9 @@ function CreatePageInner() {
   const [hasGenerated, setHasGenerated] = useState(false);
   const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [imagePrompt, setImagePrompt] = useState("");
 
   // Load post for editing
   useEffect(() => {
@@ -197,11 +200,34 @@ function CreatePageInner() {
     setTimeout(() => setSaveMessage(""), 2500);
   };
 
+  const handleGenerateImage = async () => {
+    if (!imagePrompt.trim()) return;
+    setIsGeneratingImage(true);
+    try {
+      const res = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: imagePrompt.trim(),
+          platform: selectedPlatform,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to generate image");
+      const data = await res.json();
+      if (data.imageUrl) {
+        setImageUrl(data.imageUrl);
+      }
+    } catch (err) {
+      console.error("Image generation error:", err);
+    }
+    setIsGeneratingImage(false);
+  };
+
   const handleSaveDraft = () => {
     if (editId) {
-      updatePost(editId, { caption, hashtags, platform: selectedPlatform, status: "draft" });
+      updatePost(editId, { caption, hashtags, platform: selectedPlatform, status: "draft", mediaUrl: imageUrl });
     } else {
-      createPost({ caption, hashtags, platform: selectedPlatform, status: "draft" });
+      createPost({ caption, hashtags, platform: selectedPlatform, status: "draft", mediaUrl: imageUrl });
     }
     showSaveMsg("Saved as draft!");
   };
@@ -210,12 +236,12 @@ function CreatePageInner() {
     if (editId) {
       updatePost(editId, {
         caption, hashtags, platform: selectedPlatform,
-        status: "published", publishedAt: new Date().toISOString(),
+        status: "published", publishedAt: new Date().toISOString(), mediaUrl: imageUrl,
       });
     } else {
       createPost({
         caption, hashtags, platform: selectedPlatform,
-        status: "published", publishedAt: new Date().toISOString(),
+        status: "published", publishedAt: new Date().toISOString(), mediaUrl: imageUrl,
       });
     }
     showSaveMsg("Published!");
@@ -226,12 +252,12 @@ function CreatePageInner() {
     if (editId) {
       updatePost(editId, {
         caption, hashtags, platform: selectedPlatform,
-        status: "scheduled", scheduledAt: dateTime,
+        status: "scheduled", scheduledAt: dateTime, mediaUrl: imageUrl,
       });
     } else {
       createPost({
         caption, hashtags, platform: selectedPlatform,
-        status: "scheduled", scheduledAt: dateTime,
+        status: "scheduled", scheduledAt: dateTime, mediaUrl: imageUrl,
       });
     }
     setScheduleModalOpen(false);
@@ -725,51 +751,191 @@ function CreatePageInner() {
               </>
             )}
 
-            {/* Media upload */}
+            {/* Media */}
             <div style={cardStyle}>
               <label style={sectionLabel}>Media</label>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: "2px dashed #d8dce8",
-                  borderRadius: 10,
-                  padding: "40px 24px",
-                  background: "#fafbff",
-                  cursor: "pointer",
-                }}
-              >
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#636788" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="4" y="4" width="32" height="32" rx="4" />
-                  <circle cx="14" cy="16" r="3" />
-                  <path d="M36 28l-8-8-12 12" />
-                </svg>
-                <p style={{ fontFamily: "'Source Sans 3', var(--font-source), sans-serif", fontSize: 15, color: "#636788", margin: "12px 0 4px", display: "block", lineHeight: "1.5" }}>
-                  Drag & drop images or videos
-                </p>
-                <button
-                  type="button"
-                  style={{
-                    marginTop: 8,
-                    display: "inline-flex",
-                    alignItems: "center",
-                    padding: "8px 20px",
-                    borderRadius: 8,
-                    border: "2px solid #e8ebf5",
-                    background: "transparent",
-                    color: "#636788",
-                    fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
-                    fontWeight: 600,
-                    fontSize: 13,
-                    cursor: "pointer",
-                    lineHeight: "1.4",
-                  }}
-                >
-                  <span style={{ color: "#636788", fontSize: 13, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>Browse files</span>
-                </button>
-              </div>
+              {imageUrl ? (
+                <div>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={imageUrl}
+                    alt="Generated image"
+                    style={{
+                      width: "100%",
+                      maxWidth: "100%",
+                      borderRadius: 8,
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                  <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+                    <button
+                      type="button"
+                      onClick={handleGenerateImage}
+                      disabled={isGeneratingImage}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        padding: "10px 20px",
+                        borderRadius: 10,
+                        border: "2px solid #e8ebf5",
+                        background: "transparent",
+                        color: "#636788",
+                        fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                        fontWeight: 600,
+                        fontSize: 13,
+                        cursor: "pointer",
+                        lineHeight: "1.4",
+                      }}
+                    >
+                      <span style={{ color: "#636788", fontSize: 13, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>Regenerate</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageUrl("")}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        padding: "10px 20px",
+                        borderRadius: 10,
+                        border: "2px solid #e8ebf5",
+                        background: "transparent",
+                        color: "#dc2626",
+                        fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                        fontWeight: 600,
+                        fontSize: 13,
+                        cursor: "pointer",
+                        lineHeight: "1.4",
+                      }}
+                    >
+                      <span style={{ color: "#dc2626", fontSize: 13, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>Remove</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  {/* AI Generate */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 10,
+                      border: "2px dashed #d8dce8",
+                      borderRadius: 10,
+                      padding: 20,
+                      background: "#fafbff",
+                    }}
+                  >
+                    <span style={{ fontFamily: "'Mona Sans', var(--font-mona), sans-serif", fontSize: 13, fontWeight: 600, color: "#191e41" }}>AI Generate</span>
+                    <input
+                      type="text"
+                      value={imagePrompt}
+                      onChange={(e) => setImagePrompt(e.target.value)}
+                      placeholder="Describe the image you want..."
+                      style={{
+                        display: "block",
+                        width: "100%",
+                        padding: "10px 12px",
+                        border: "2px solid #d8dce8",
+                        borderRadius: 8,
+                        fontFamily: "'Source Sans 3', var(--font-source), sans-serif",
+                        fontSize: 13,
+                        color: "#191e41",
+                        outline: "none",
+                        background: "#ffffff",
+                        lineHeight: "1.4",
+                        boxSizing: "border-box",
+                      }}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = "#ea4c89")}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = "#d8dce8")}
+                      onKeyDown={(e) => e.key === "Enter" && handleGenerateImage()}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleGenerateImage}
+                      disabled={isGeneratingImage || !imagePrompt.trim()}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 6,
+                        padding: "10px 20px",
+                        borderRadius: 10,
+                        border: "none",
+                        background: isGeneratingImage || !imagePrompt.trim() ? "#d1d5e0" : "#3a3546",
+                        color: "#ffffff",
+                        fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                        fontWeight: 600,
+                        fontSize: 13,
+                        cursor: isGeneratingImage || !imagePrompt.trim() ? "not-allowed" : "pointer",
+                        lineHeight: "1.4",
+                      }}
+                    >
+                      {isGeneratingImage ? (
+                        <>
+                          <span
+                            style={{
+                              width: 14,
+                              height: 14,
+                              border: "2px solid rgba(255,255,255,0.3)",
+                              borderTopColor: "#ffffff",
+                              borderRadius: "50%",
+                              display: "inline-block",
+                              animation: "spin 0.8s linear infinite",
+                            }}
+                          />
+                          <span style={{ color: "#ffffff", fontSize: 13 }}>Generating...</span>
+                        </>
+                      ) : (
+                        <span style={{ color: "#ffffff", fontSize: 13 }}>{"\uD83C\uDFA8"} Generate Image</span>
+                      )}
+                    </button>
+                  </div>
+                  {/* Upload area */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "2px dashed #d8dce8",
+                      borderRadius: 10,
+                      padding: 20,
+                      background: "#fafbff",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" stroke="#636788" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="4" y="4" width="32" height="32" rx="4" />
+                      <circle cx="14" cy="16" r="3" />
+                      <path d="M36 28l-8-8-12 12" />
+                    </svg>
+                    <p style={{ fontFamily: "'Source Sans 3', var(--font-source), sans-serif", fontSize: 13, color: "#636788", margin: "8px 0 4px", display: "block", lineHeight: "1.4", textAlign: "center" }}>
+                      Drag & drop images or videos
+                    </p>
+                    <button
+                      type="button"
+                      style={{
+                        marginTop: 4,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        padding: "8px 16px",
+                        borderRadius: 8,
+                        border: "2px solid #e8ebf5",
+                        background: "transparent",
+                        color: "#636788",
+                        fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                        fontWeight: 600,
+                        fontSize: 13,
+                        cursor: "pointer",
+                        lineHeight: "1.4",
+                      }}
+                    >
+                      <span style={{ color: "#636788", fontSize: 13, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>Browse files</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -834,7 +1000,12 @@ function CreatePageInner() {
                       <div style={{ width: 28, height: 28, borderRadius: "50%", background: "linear-gradient(135deg, #ea4c89, #f093b0)" }} />
                       <span style={{ fontFamily: "'Mona Sans', var(--font-mona), sans-serif", fontSize: 13, fontWeight: 600, color: "#191e41" }}>your_brand</span>
                     </div>
-                    <div style={{ width: "100%", aspectRatio: "1/1", background: "#f3f5fc" }} />
+                    {imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={imageUrl} alt="Preview" style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover", display: "block" }} />
+                    ) : (
+                      <div style={{ width: "100%", aspectRatio: "1/1", background: "#f3f5fc" }} />
+                    )}
                     <div style={{ padding: "10px 12px" }}>
                       <div style={{ display: "flex", gap: 12, marginBottom: 8 }}>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#191e41" strokeWidth="1.5"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" /></svg>
@@ -885,7 +1056,12 @@ function CreatePageInner() {
                         <span style={{ fontFamily: "'Source Sans 3', var(--font-source), sans-serif", fontSize: 11, color: "#636788" }}>Just now</span>
                       </div>
                     </div>
-                    <div style={{ width: "100%", height: 140, borderRadius: 8, background: "#f3f5fc", marginBottom: 10 }} />
+                    {imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={imageUrl} alt="Preview" style={{ width: "100%", height: 140, borderRadius: 8, objectFit: "cover", marginBottom: 10, display: "block" }} />
+                    ) : (
+                      <div style={{ width: "100%", height: 140, borderRadius: 8, background: "#f3f5fc", marginBottom: 10 }} />
+                    )}
                     <p style={{ fontFamily: "'Source Sans 3', var(--font-source), sans-serif", fontSize: 12, color: "#191e41", margin: 0, lineHeight: 1.5, display: "block" }}>
                       <span style={{ color: "#191e41", fontSize: 12 }}>{caption || "Your post will appear here..."}</span>
                     </p>
