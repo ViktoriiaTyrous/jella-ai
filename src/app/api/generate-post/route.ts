@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
+    const OpenAI = (await import("openai")).default;
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
     const { platform, topic, tone, contentType, brandName, niche } = await req.json();
 
     const platformLimits: Record<string, number> = {
