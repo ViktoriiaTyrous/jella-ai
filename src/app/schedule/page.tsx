@@ -121,7 +121,7 @@ export default function SchedulePage() {
   };
 
   return (
-    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px" }}>
+    <div style={{ width: "100%", padding: "24px 0" }}>
       {/* Back link */}
       <Link
         href="/dashboard"
