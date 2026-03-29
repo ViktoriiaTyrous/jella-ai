@@ -479,11 +479,12 @@ function CreatePageInner() {
                 disabled={isGenerating || !topic.trim()}
                 style={{
                   marginTop: 16,
-                  display: "inline-flex",
+                  display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   gap: 8,
-                  padding: "14px 24px",
+                  width: "100%",
+                  padding: "16px 24px",
                   borderRadius: 10,
                   border: "none",
                   background: isGenerating || !topic.trim() ? "#d1d5e0" : "#ea4c89",
@@ -494,6 +495,7 @@ function CreatePageInner() {
                   cursor: isGenerating || !topic.trim() ? "not-allowed" : "pointer",
                   lineHeight: "1.4",
                   height: "auto",
+                  boxSizing: "border-box" as const,
                 }}
               >
                 {isGenerating ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const connectedPlatforms = [
   { name: "Instagram", connected: true },
@@ -18,9 +18,21 @@ const notifications = [
 ];
 
 export default function SettingsPage() {
+  const [userName, setUserName] = useState("User");
+  const [userEmail, setUserEmail] = useState("user@example.com");
   const [notifState, setNotifState] = useState<Record<string, boolean>>(
     Object.fromEntries(notifications.map((n) => [n.key, n.on]))
   );
+  const [saveMsg, setSaveMsg] = useState("");
+
+  useEffect(() => {
+    const raw = localStorage.getItem("jella_session");
+    if (raw) {
+      const session = JSON.parse(raw);
+      setUserName(session.name || "User");
+      setUserEmail(session.email || "user@example.com");
+    }
+  }, []);
 
   const toggleNotif = (key: string) => {
     setNotifState((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -88,7 +100,7 @@ export default function SettingsPage() {
               fontSize: 24,
             }}
           >
-            V
+            {userName[0]?.toUpperCase() || "U"}
           </div>
           <button
             style={{
@@ -108,11 +120,11 @@ export default function SettingsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label style={labelStyle}>Name</label>
-            <input type="text" defaultValue="Vika" style={inputStyle} />
+            <input type="text" defaultValue={userName} style={inputStyle} />
           </div>
           <div>
             <label style={labelStyle}>Email</label>
-            <input type="email" defaultValue="vika@example.com" style={inputStyle} />
+            <input type="email" defaultValue={userEmail} style={inputStyle} />
           </div>
         </div>
       </div>

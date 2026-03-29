@@ -133,8 +133,15 @@ export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
   const [activeView, setActiveView] = useState<"board" | "table" | "list">("board");
   const [activeFilter, setActiveFilter] = useState("All Platforms");
+  const [userName, setUserName] = useState("there");
 
   useEffect(() => {
+    const raw = localStorage.getItem("jella_session");
+    if (raw) {
+      const session = JSON.parse(raw);
+      const firstName = (session.name || "").split(" ")[0];
+      setUserName(firstName || "there");
+    }
     seedMockData();
     setPosts(getAllPosts());
     setMounted(true);
@@ -215,7 +222,7 @@ export default function DashboardPage() {
             margin: 0,
           }}
         >
-          Welcome back, Anna {"\uD83D\uDC4B"}
+          Welcome back, {userName} {"\uD83D\uDC4B"}
         </h1>
         <p
           style={{

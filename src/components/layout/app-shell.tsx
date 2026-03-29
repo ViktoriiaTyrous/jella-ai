@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Logo from "@/components/ui/logo";
+import { signOut } from "@/lib/auth";
 
 const mainNavItems = [
   {
@@ -118,6 +119,15 @@ const bottomNavItems = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userName, setUserName] = useState("User");
+
+  useEffect(() => {
+    const raw = localStorage.getItem("jella_session");
+    if (raw) {
+      const session = JSON.parse(raw);
+      setUserName(session.name || "User");
+    }
+  }, []);
 
   const isActive = (href: string) => pathname.startsWith(href);
 
@@ -186,6 +196,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {bottomNavItems.map((item, idx) => renderNavLink(item, idx))}
         <button
           className="flex items-center no-underline"
+          onClick={() => {
+            signOut();
+            window.location.href = "/sign-in";
+          }}
           style={{
             gap: 12,
             padding: "10px 16px",
@@ -327,7 +341,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               fontSize: 14,
             }}
           >
-            AS
+            {userName[0]?.toUpperCase() || "U"}
           </div>
           <div className="hidden md:block">
             <div
@@ -339,7 +353,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 lineHeight: 1.2,
               }}
             >
-              Anna Smith
+              {userName}
             </div>
             <span
               style={{
@@ -352,7 +366,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 borderRadius: 999,
               }}
             >
-              Pro Plan
+              Free Plan
             </span>
           </div>
         </div>
