@@ -286,6 +286,7 @@ export default function SignUpPage() {
 
             {/* Google button */}
             <button
+              onClick={() => { window.location.href = "/api/auth/signin/google"; }}
               style={{
                 width: "100%", padding: "12px 16px", borderRadius: 10,
                 border: "1px solid #d8dce8", background: "#ffffff",
