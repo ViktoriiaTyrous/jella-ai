@@ -55,8 +55,9 @@ const body: React.CSSProperties = { fontFamily: "var(--font-source), system-ui, 
 /* ───────── icons ───────── */
 function IconCheck() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={INDIGO} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="20 6 9 17 4 12" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="8 12 11 15 16 9" />
     </svg>
   );
 }
@@ -610,25 +611,43 @@ export default function LandingPage() {
 
       {/* ════════ SEE IT IN ACTION / VIDEO ════════ */}
       <section style={{ position: "relative", zIndex: 13, padding: "120px 0", background: WHITE, overflow: "hidden" }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px 0 0", display: "flex", gap: 80, alignItems: "center" }}>
-          {/* Left: Dashboard screenshot — edge to edge */}
-          <FadeIn style={{ flex: 1 }}>
-            <div style={{ position: "relative" }}>
-              <div style={{ borderRadius: "0 20px 20px 0", overflow: "hidden", border: `1px solid ${CARD_BORDER}`, borderLeft: "none", boxShadow: "0 8px 40px rgba(0,0,0,0.08)", background: BG }}>
-                <img src="/dashboard-preview.png" alt="Jella AI Demo" style={{ width: "100%", display: "block" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-              </div>
-              {/* Watch introduction pill */}
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px", display: "flex", alignItems: "center" }}>
+          {/* Left: Lavender container with dashboard screenshot */}
+          <FadeIn style={{ flex: "0 0 70%", maxWidth: "70%", marginLeft: "calc(-1 * (100vw - 1400px) / 2 - 40px)" }}>
+            <div style={{
+              position: "relative",
+              background: "#F2EDF7",
+              borderRadius: "0 28px 28px 0",
+              padding: "42px 42px 0 0",
+              height: 700,
+              overflow: "hidden",
+            }}>
               <div style={{
-                position: "absolute", bottom: -24, left: "50%", transform: "translateX(-50%)",
+                padding: "12px 12px 0 0",
+                background: "rgba(255,255,255,0.4)",
+                border: "1px solid rgba(255,255,255,0.6)",
+                borderRadius: "0 24px 0 0",
+                borderLeft: "none",
+                borderBottom: "none",
+                height: "100%",
+              }}>
+                <div style={{ borderRadius: "0 16px 0 0", overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.08)", height: "100%" }}>
+                  <img src="/dashboard-preview.png" alt="Jella AI Demo" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "left top", display: "block" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                </div>
+              </div>
+              {/* Watch introduction pill — bottom right corner */}
+              <div style={{
+                position: "absolute", bottom: 20, right: 20,
                 display: "flex", alignItems: "center", gap: 12,
-                padding: "14px 28px",
+                padding: "6px 24px 6px 6px",
                 background: PINK,
                 borderRadius: 40,
                 cursor: "pointer",
                 boxShadow: "0 8px 24px rgba(232,67,147,0.3)",
                 whiteSpace: "nowrap",
+                zIndex: 2,
               }}>
-                <div style={{ width: 32, height: 32, borderRadius: "50%", background: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", background: INDIGO, display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M8 5v14l11-7z" /></svg>
                 </div>
                 <span style={{ color: WHITE, fontSize: 15, fontWeight: 600, fontFamily: "var(--font-source)" }}>Watch introduction 1:37</span>
@@ -637,7 +656,7 @@ export default function LandingPage() {
           </FadeIn>
 
           {/* Right: Text content */}
-          <FadeIn delay={0.15} style={{ flex: "0 0 42%", maxWidth: "42%" }}>
+          <FadeIn delay={0.15} style={{ flex: "0 0 605px", maxWidth: 605, paddingLeft: 80 }}>
             <div>
               <h2 style={{ ...heading, fontSize: 48, fontWeight: 700, lineHeight: 1.2 }}>
                 Discover the Key Features of <span style={{ color: INDIGO }}>Jella</span>
@@ -670,46 +689,76 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ════════ BEFORE / AFTER ════════ */}
-      <section style={{ position: "relative", zIndex: 14, padding: "120px 0", background: "linear-gradient(180deg, #1a1a2e 0%, #191e41 100%)" }}>
+      {/* ════════ BENTO GRID ════════ */}
+      <section style={{ position: "relative", zIndex: 14, padding: "120px 0", background: "linear-gradient(180deg, #1a1a2e 0%, #191e41 100%)", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "url(/grid-pattern.svg)", backgroundSize: "cover", backgroundPosition: "center", opacity: 0.4, pointerEvents: "none" }} />
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px" }}>
           <FadeIn>
             <div style={{ textAlign: "center", marginBottom: 60 }}>
               <h2 style={{ ...heading, fontSize: 48, fontWeight: 700, color: WHITE }}>
-                Compare Jella: One Platform,{"\n"}Endless Advantages
+                Everything You Need,{"\n"}One Platform
               </h2>
               <p style={{ ...body, fontSize: 18, marginTop: 16, color: "rgba(255,255,255,0.6)", maxWidth: 700, margin: "16px auto 0" }}>
-                Canva for design. Buffer for scheduling. Google Analytics for data. Notion for planning. Or just Jella — for everything.
+                Canva for design. Buffer for scheduling. Google Analytics for data. Or just Jella — for everything.
               </p>
             </div>
           </FadeIn>
 
           <FadeIn delay={0.15}>
-            <div style={{ display: "flex", gap: 40, alignItems: "flex-start" }}>
-              {/* Left */}
-              <div style={{ flex: "0 0 400px" }}>
-                <h3 style={{ ...heading, fontSize: 14, fontWeight: 600, color: PINK, textTransform: "uppercase", letterSpacing: "0.05em" }}>Smart Content Engine</h3>
-                <h4 style={{ ...heading, fontSize: 28, fontWeight: 700, color: WHITE, marginTop: 12, lineHeight: 1.3 }}>
-                  One AI That Does the Work of Five Apps
-                </h4>
-                <p style={{ ...body, fontSize: 15, color: "rgba(255,255,255,0.6)", marginTop: 12, lineHeight: 1.7 }}>
-                  Write captions, generate visuals, schedule posts, track results, and get growth tips — all inside a single dashboard built for creators who value their time.
-                </p>
-                <div style={{ marginTop: 28, display: "flex", flexDirection: "column", gap: 12 }}>
-                  {["Content creation", "Scheduling & publishing", "Analytics & reporting", "Team collaboration"].map(item => (
-                    <div key={item} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={PINK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      <span style={{ ...body, fontSize: 14, color: "rgba(255,255,255,0.7)" }}>{item}</span>
-                    </div>
-                  ))}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20 }}>
+              {/* Top row — 3 cards */}
+              <div style={{ borderRadius: 20, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", padding: 32 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(234,76,137,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={PINK} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20V10M18 20V4M6 20v-4"/></svg>
                 </div>
+                <h4 style={{ ...heading, fontSize: 20, fontWeight: 700, color: WHITE }}>Real-Time Analytics</h4>
+                <p style={{ ...body, fontSize: 14, color: "rgba(255,255,255,0.6)", marginTop: 8, lineHeight: 1.6 }}>
+                  See which posts drive followers and where your growth is coming from.
+                </p>
               </div>
 
-              {/* Right: Dashboard */}
-              <div style={{ flex: 1, borderRadius: 16, overflow: "hidden", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", minHeight: 400 }}>
-                <img src="/dashboard-preview.png" alt="Jella Dashboard" style={{ width: "100%", opacity: 0.85 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+              <div style={{ borderRadius: 20, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", padding: 32 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(67,56,202,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={INDIGO} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <h4 style={{ ...heading, fontSize: 20, fontWeight: 700, color: WHITE }}>Smart Scheduler</h4>
+                <p style={{ ...body, fontSize: 14, color: "rgba(255,255,255,0.6)", marginTop: 8, lineHeight: 1.6 }}>
+                  Drop posts into a visual calendar. Jella finds the best time automatically.
+                </p>
+              </div>
+
+              <div style={{ borderRadius: 20, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", padding: 32 }}>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(234,76,137,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20 }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={PINK} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                <h4 style={{ ...heading, fontSize: 20, fontWeight: 700, color: WHITE }}>Brand Templates</h4>
+                <p style={{ ...body, fontSize: 14, color: "rgba(255,255,255,0.6)", marginTop: 8, lineHeight: 1.6 }}>
+                  Save your colors, fonts, and voice. Every new post starts on-brand.
+                </p>
+              </div>
+
+              {/* Bottom — 1 large card spanning all 3 columns */}
+              <div style={{ gridColumn: "1 / -1", borderRadius: 20, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", padding: 40, display: "flex", gap: 40, alignItems: "center" }}>
+                <div style={{ flex: "0 0 400px" }}>
+                  <h3 style={{ ...heading, fontSize: 14, fontWeight: 600, color: PINK, textTransform: "uppercase", letterSpacing: "0.05em" }}>AI Content Engine</h3>
+                  <h4 style={{ ...heading, fontSize: 28, fontWeight: 700, color: WHITE, marginTop: 12, lineHeight: 1.3 }}>
+                    One AI That Does the Work of Five Apps
+                  </h4>
+                  <p style={{ ...body, fontSize: 15, color: "rgba(255,255,255,0.6)", marginTop: 12, lineHeight: 1.7 }}>
+                    Write captions, generate visuals, schedule posts, track results — all inside a single dashboard built for creators who value their time.
+                  </p>
+                  <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 12 }}>
+                    {["Content creation", "Scheduling & publishing", "Analytics & reporting", "Team collaboration"].map(item => (
+                      <div key={item} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={PINK} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                        <span style={{ ...body, fontSize: 14, color: "rgba(255,255,255,0.7)" }}>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ flex: 1, borderRadius: 12, overflow: "hidden", opacity: 0.85 }}>
+                  <img src="/dashboard-preview.png" alt="Dashboard" style={{ width: "100%", display: "block", borderRadius: 12 }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                </div>
               </div>
             </div>
           </FadeIn>
@@ -729,32 +778,81 @@ export default function LandingPage() {
           </FadeIn>
 
           <FadeIn delay={0.15}>
-            <div style={{ display: "flex", justifyContent: "center", gap: 20, marginTop: 48, flexWrap: "wrap" }}>
-              {integrations.map(p => (
-                <div key={p.name} style={{
-                  padding: "16px 24px",
-                  borderRadius: 14,
-                  border: `1px solid ${p.name === "Jella AI" ? "transparent" : CARD_BORDER}`,
-                  background: p.name === "Jella AI" ? PINK : WHITE,
-                  display: "flex", alignItems: "center", gap: 10,
-                  boxShadow: p.name === "Jella AI" ? "0 4px 20px rgba(234,76,137,0.25)" : "0 1px 4px rgba(0,0,0,0.04)",
-                  cursor: "default",
-                }}>
-                  <div style={{
-                    width: 32, height: 32, borderRadius: 8,
-                    background: p.name === "Jella AI" ? "rgba(255,255,255,0.2)" : `${p.color}15`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
+            <div style={{ position: "relative", marginTop: 80, display: "flex", justifyContent: "center", alignItems: "center", gap: 0, minHeight: 320 }}>
+
+              {/* Left platforms */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "flex-end", flex: "0 0 200px" }}>
+                {integrations.filter(p => p.name !== "Jella AI").slice(0, 3).map(p => (
+                  <div key={p.name} style={{
+                    display: "flex", alignItems: "center", gap: 12,
+                    padding: "14px 20px", borderRadius: 14,
+                    border: `1.5px solid ${CARD_BORDER}`, background: WHITE,
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
                   }}>
-                    {p.name === "Jella AI" ? <Logo size="sm" variant="light" /> : (
-                      <span style={{ fontSize: 16, fontWeight: 700, color: p.color }}>{p.letter}</span>
-                    )}
+                    <div style={{ width: 36, height: 36, borderRadius: 8, background: `${p.color}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: 18, fontWeight: 700, color: p.color }}>{p.letter}</span>
+                    </div>
+                    <span style={{ ...body, fontSize: 15, fontWeight: 600, color: NAVY }}>{p.name}</span>
                   </div>
-                  <span style={{
-                    ...body, fontWeight: 600, fontSize: 14,
-                    color: p.name === "Jella AI" ? WHITE : NAVY,
-                  }}>{p.name}</span>
+                ))}
+              </div>
+
+              {/* Left arrows */}
+              <div style={{ flex: "0 0 80px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 24 }}>
+                {[0, 1, 2].map(i => (
+                  <svg key={i} width="80" height="20" viewBox="0 0 80 20">
+                    <line x1="0" y1="10" x2="68" y2="10" stroke={INDIGO} strokeWidth="1.5" />
+                    <polygon points="68,5 80,10 68,15" fill={INDIGO} />
+                    <circle cx="0" cy="10" r="3" fill={INDIGO} opacity="0.3" />
+                  </svg>
+                ))}
+              </div>
+
+              {/* Center Jella */}
+              <div style={{
+                padding: "20px 40px", borderRadius: 16,
+                border: `2px solid ${INDIGO}`,
+                background: WHITE,
+                display: "flex", alignItems: "center", gap: 14,
+                boxShadow: "0 8px 32px rgba(67,56,202,0.12)",
+                position: "relative", zIndex: 2,
+              }}>
+                <div style={{
+                  width: 48, height: 48, borderRadius: 12,
+                  background: PINK, display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <Logo size="sm" variant="light" />
                 </div>
-              ))}
+                <span style={{ ...heading, fontSize: 28, fontWeight: 700, color: NAVY }}>Jella AI</span>
+              </div>
+
+              {/* Right arrows */}
+              <div style={{ flex: "0 0 80px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 24 }}>
+                {[0, 1, 2].map(i => (
+                  <svg key={i} width="80" height="20" viewBox="0 0 80 20">
+                    <circle cx="80" cy="10" r="3" fill={INDIGO} opacity="0.3" />
+                    <line x1="12" y1="10" x2="80" y2="10" stroke={INDIGO} strokeWidth="1.5" />
+                    <polygon points="0,5 12,10 0,15" fill={INDIGO} />
+                  </svg>
+                ))}
+              </div>
+
+              {/* Right platforms */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 24, alignItems: "flex-start", flex: "0 0 200px" }}>
+                {integrations.filter(p => p.name !== "Jella AI").slice(3, 6).map(p => (
+                  <div key={p.name} style={{
+                    display: "flex", alignItems: "center", gap: 12,
+                    padding: "14px 20px", borderRadius: 14,
+                    border: `1.5px solid ${CARD_BORDER}`, background: WHITE,
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+                  }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 8, background: `${p.color}12`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <span style={{ fontSize: 18, fontWeight: 700, color: p.color }}>{p.letter}</span>
+                    </div>
+                    <span style={{ ...body, fontSize: 15, fontWeight: 600, color: NAVY }}>{p.name}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </FadeIn>
         </div>
@@ -774,72 +872,72 @@ export default function LandingPage() {
             </div>
           </FadeIn>
 
-          <div style={{ display: "flex", gap: 40, alignItems: "center" }}>
-            {/* Left - iOS */}
-            <FadeIn style={{ flex: 1 }}>
-              <div>
-                <h3 style={{ ...heading, fontSize: 24, fontWeight: 600, marginBottom: 16 }}>iPhone & iPad</h3>
-                <p style={{ ...body, fontSize: 15, lineHeight: 1.7, marginBottom: 24 }}>
-                  Full AI generation, scheduling, and analytics — optimized for iOS with native notifications.
-                </p>
-                {["Draft and publish posts on the go", "Get push alerts when posts go live", "Review team submissions with one tap"].map(item => (
-                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: INDIGO_LIGHT, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <IconCheck />
-                    </div>
-                    <span style={{ ...body, fontSize: 14, color: NAVY }}>{item}</span>
-                  </div>
-                ))}
-                <button style={{
-                  marginTop: 20, padding: "12px 24px", background: NAVY, color: WHITE,
-                  borderRadius: 10, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
-                  fontFamily: "var(--font-source), system-ui, sans-serif",
-                }}>
-                  Download for iOS
-                </button>
-              </div>
-            </FadeIn>
-
-            {/* Center - phone mockup */}
-            <FadeIn delay={0.15} style={{ flex: "0 0 300px", textAlign: "center" }}>
+          {/* Phone mockup centered above cards */}
+          <FadeIn delay={0.1}>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: -120, position: "relative", zIndex: 2 }}>
               <div style={{
-                width: 260, height: 520, borderRadius: 36, background: NAVY,
-                margin: "0 auto", padding: 8, boxShadow: "0 20px 60px rgba(25,30,65,0.2)",
+                width: 280, height: 560, borderRadius: 40, background: NAVY,
+                padding: 8, boxShadow: "0 24px 80px rgba(25,30,65,0.25)",
               }}>
-                <div style={{
-                  width: "100%", height: "100%", borderRadius: 28, background: WHITE,
-                  overflow: "hidden",
-                }}>
-                  <img src="/dashboard-preview.png" alt="Jella Mobile" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                <div style={{ width: "100%", height: "100%", borderRadius: 32, background: WHITE, overflow: "hidden" }}>
+                  <img src="/dashboard-preview.png" alt="Jella Mobile" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "left top" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                 </div>
               </div>
-            </FadeIn>
+            </div>
+          </FadeIn>
 
-            {/* Right - Android */}
-            <FadeIn delay={0.3} style={{ flex: 1 }}>
-              <div>
-                <h3 style={{ ...heading, fontSize: 24, fontWeight: 600, marginBottom: 16 }}>Android</h3>
-                <p style={{ ...body, fontSize: 15, lineHeight: 1.7, marginBottom: 24 }}>
-                  Same powerful features, built natively for Android. Your content syncs in real time across every device.
+          {/* Two white cards side by side */}
+          <FadeIn delay={0.2}>
+            <div style={{ display: "flex", gap: 24, position: "relative", zIndex: 1 }}>
+              {/* iOS card */}
+              <div style={{
+                flex: 1, background: WHITE, borderRadius: 24, padding: "160px 40px 40px",
+                border: `1px solid ${CARD_BORDER}`, boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
+              }}>
+                <h3 style={{ ...heading, fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Create on the Go</h3>
+                <p style={{ ...body, fontSize: 15, lineHeight: 1.7, marginBottom: 28 }}>
+                  Open Jella from any browser on your phone — no app needed. The full dashboard adapts perfectly to your screen.
                 </p>
-                {["Capture ideas with voice-to-post", "Schedule content from anywhere", "Track growth metrics in real time"].map(item => (
+                {["Draft and publish posts anywhere", "Quick-edit captions between meetings", "Review analytics on your commute"].map(item => (
                   <div key={item} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: INDIGO_LIGHT, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <IconCheck />
-                    </div>
+                    <IconCheck />
                     <span style={{ ...body, fontSize: 14, color: NAVY }}>{item}</span>
                   </div>
                 ))}
-                <button style={{
-                  marginTop: 20, padding: "12px 24px", background: NAVY, color: WHITE,
-                  borderRadius: 10, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
+                <Link href="/sign-up" style={{
+                  display: "inline-block", marginTop: 24, padding: "14px 28px", background: NAVY, color: WHITE,
+                  borderRadius: 12, textDecoration: "none", fontWeight: 600, fontSize: 15,
                   fontFamily: "var(--font-source), system-ui, sans-serif",
                 }}>
-                  Download for Android
-                </button>
+                  Try on Mobile
+                </Link>
               </div>
-            </FadeIn>
-          </div>
+
+              {/* Android card */}
+              <div style={{
+                flex: 1, background: WHITE, borderRadius: 24, padding: "160px 40px 40px",
+                border: `1px solid ${CARD_BORDER}`, boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
+              }}>
+                <h3 style={{ ...heading, fontSize: 24, fontWeight: 700, marginBottom: 12 }}>Stay in Control</h3>
+                <p style={{ ...body, fontSize: 15, lineHeight: 1.7, marginBottom: 28 }}>
+                  Approve posts, check performance, and respond to trends — all from your phone browser, synced in real time.
+                </p>
+                {["Approve or reschedule posts instantly", "Monitor engagement as it happens", "Manage your team from anywhere"].map(item => (
+                  <div key={item} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                    <IconCheck />
+                    <span style={{ ...body, fontSize: 14, color: NAVY }}>{item}</span>
+                  </div>
+                ))}
+                <Link href="/sign-up" style={{
+                  display: "inline-block", marginTop: 24, padding: "14px 28px", background: NAVY, color: WHITE,
+                  borderRadius: 12, textDecoration: "none", fontWeight: 600, fontSize: 15,
+                  fontFamily: "var(--font-source), system-ui, sans-serif",
+                }}>
+                  Get Started Free
+                </Link>
+              </div>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
@@ -879,26 +977,65 @@ export default function LandingPage() {
       </section>
 
       {/* ════════ TESTIMONIALS ════════ */}
+      <style>{`
+        @keyframes testimonialFade {
+          0% { opacity: 0; transform: translateY(12px); }
+          100% { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
       <section style={{ position: "relative", zIndex: 18, padding: "120px 0", background: BG }}>
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px" }}>
           <FadeIn>
-            <div style={{ display: "flex", gap: 60, alignItems: "center" }}>
-              {/* Left: photo */}
-              <div style={{ flex: "0 0 320px" }}>
-                <div style={{ width: 320, height: 380, borderRadius: 20, overflow: "hidden", background: "#e8ecf4" }}>
-                  <img src="/social-proof.png" alt="Testimonial" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                </div>
-              </div>
+            <div style={{ position: "relative", maxWidth: 1100, margin: "0 auto" }}>
+              {/* Stacked card effect — back cards */}
+              <div style={{
+                position: "absolute", top: -12, left: 12, right: 12, bottom: 12,
+                borderRadius: 24, border: `1px solid ${CARD_BORDER}`, background: WHITE,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+              }} />
+              <div style={{
+                position: "absolute", top: -6, left: 6, right: 6, bottom: 6,
+                borderRadius: 24, border: `1px solid ${CARD_BORDER}`, background: WHITE,
+                boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+              }} />
 
-              {/* Right: text */}
-              <div style={{ flex: 1 }}>
-                <p style={{ ...body, fontSize: 14, color: PINK, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>Testimonials</p>
-                <p style={{ ...body, fontSize: 24, lineHeight: 1.6, color: NAVY, marginTop: 24, fontWeight: 400 }}>
-                  &ldquo;{testimonials[testimonialIdx].text}&rdquo;
-                </p>
-                <p style={{ ...body, fontSize: 15, color: BODY, marginTop: 24 }}>
-                  — {testimonials[testimonialIdx].author}, {testimonials[testimonialIdx].role}
-                </p>
+              {/* Main card with flip animation */}
+              <div
+                key={testimonialIdx}
+                style={{
+                  position: "relative", zIndex: 1,
+                  borderRadius: 24, border: `1px solid ${CARD_BORDER}`, background: WHITE,
+                  boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
+                  padding: 40,
+                  display: "flex", gap: 60, alignItems: "center",
+                  animation: "testimonialFade 0.6s ease",
+                }}
+              >
+                {/* Left: photo */}
+                <div style={{ flex: "0 0 380px", overflow: "hidden", marginBottom: -40, marginRight: -20 }}>
+                  <div style={{
+                    padding: "12px 0 0 12px",
+                    background: "rgba(0,0,0,0.03)",
+                    border: `1px solid ${CARD_BORDER}`,
+                    borderRadius: "20px 20px 0 0",
+                    borderBottom: "none",
+                  }}>
+                    <div style={{ borderRadius: "12px 12px 0 0", overflow: "hidden", background: "#e8ecf4" }}>
+                      <img src="/social-proof.png" alt="Testimonial" style={{ width: "100%", height: 480, objectFit: "cover", display: "block" }} onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: text */}
+                <div style={{ flex: 1 }}>
+                  <p style={{ ...body, fontSize: 14, color: INDIGO, fontWeight: 600, letterSpacing: "0.04em" }}>Testimonials</p>
+                  <p style={{ ...heading, fontSize: 32, lineHeight: 1.4, color: NAVY, marginTop: 24, fontWeight: 600 }}>
+                    &ldquo;{testimonials[testimonialIdx].text}&rdquo;
+                  </p>
+                  <p style={{ ...body, fontSize: 16, color: BODY, marginTop: 28 }}>
+                    — {testimonials[testimonialIdx].author}, {testimonials[testimonialIdx].role}
+                  </p>
+                </div>
               </div>
             </div>
           </FadeIn>
