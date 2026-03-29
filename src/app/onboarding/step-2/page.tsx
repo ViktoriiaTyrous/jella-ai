@@ -6,34 +6,102 @@ import { useOnboarding } from "@/context/onboarding-context";
 import StepNav from "@/components/onboarding/step-nav";
 
 const goals = [
-  "Grow followers",
-  "Drive sales",
-  "Build brand awareness",
-  "Increase engagement",
-  "Generate leads",
-  "Educate audience",
+  { emoji: "🎯", label: "Growth & Awareness" },
+  { emoji: "💜", label: "Engagement & Community" },
+  { emoji: "🤝", label: "Brand Positioning & Strategy" },
+  { emoji: "🎨", label: "Creativity & Inspiration" },
+  { emoji: "💻", label: "Content Productivity" },
+  { emoji: "🔍", label: "Insights & Analytics" },
 ];
 
 const platforms = [
-  { name: "Instagram", icon: "M7.8 2h8.4C19 2 21 4 21 6.8v8.4c0 2.8-2 4.8-4.8 4.8H7.8C5 20 3 18 3 15.2V6.8C3 4 5 2 7.8 2zm-.2 2C5.6 4 4 5.6 4 7.6v8.8C4 18.4 5.6 20 7.6 20h8.8c2 0 3.6-1.6 3.6-3.6V7.6C20 5.6 18.4 4 16.4 4H7.6zm9.65 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6z" },
-  { name: "TikTok", icon: "M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.4a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.3 6.34 6.34 0 009.49 21.6a6.34 6.34 0 006.34-6.34V8.7a8.16 8.16 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.13z" },
-  { name: "Twitter/X", icon: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" },
-  { name: "Facebook", icon: "M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" },
-  { name: "LinkedIn", icon: "M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" },
-  { name: "Pinterest", icon: "M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641 0 12.017 0z" },
-  { name: "YouTube", icon: "M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z" },
+  {
+    name: "Instagram",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <linearGradient id="ig" x1="4" y1="28" x2="28" y2="4">
+            <stop offset="0%" stopColor="#feda75" />
+            <stop offset="25%" stopColor="#fa7e1e" />
+            <stop offset="50%" stopColor="#d62976" />
+            <stop offset="75%" stopColor="#962fbf" />
+            <stop offset="100%" stopColor="#4f5bd5" />
+          </linearGradient>
+        </defs>
+        <rect width="32" height="32" rx="8" fill="url(#ig)" />
+        <rect x="8" y="8" width="16" height="16" rx="5" stroke="white" strokeWidth="1.8" fill="none" />
+        <circle cx="16" cy="16" r="4" stroke="white" strokeWidth="1.8" fill="none" />
+        <circle cx="21.5" cy="10.5" r="1.2" fill="white" />
+      </svg>
+    ),
+  },
+  {
+    name: "TikTok",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#010101" />
+        <path d="M21.5 10.5a4.5 4.5 0 01-3.5-3.5h-2.5v12.5a2.5 2.5 0 11-1.75-2.38V14.5a5 5 0 104.25 4.94V14a7 7 0 003.5 1v-2.5a4.5 4.5 0 01-1.5-2z" fill="white" />
+      </svg>
+    ),
+  },
+  {
+    name: "Facebook",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#1877F2" />
+        <path d="M22 16.07C22 12.72 19.31 10 16 10s-6 2.72-6 6.07c0 3.03 2.19 5.54 5.06 6v-4.24h-1.52v-1.76h1.52v-1.34c0-1.52.89-2.36 2.26-2.36.66 0 1.34.12 1.34.12v1.49h-.75c-.75 0-.98.47-.98.95v1.14h1.66l-.27 1.76h-1.4V22.07c2.87-.46 5.08-2.97 5.08-6z" fill="white" />
+      </svg>
+    ),
+  },
+  {
+    name: "LinkedIn",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#0A66C2" />
+        <path d="M12.5 22h-2.5v-8h2.5v8zm-1.25-9.1a1.45 1.45 0 110-2.9 1.45 1.45 0 010 2.9zM23 22h-2.5v-3.9c0-.93-.02-2.13-1.3-2.13-1.3 0-1.5 1.02-1.5 2.06V22h-2.5v-8h2.4v1.09h.03a2.63 2.63 0 012.37-1.3c2.53 0 3 1.67 3 3.83V22z" fill="white" />
+      </svg>
+    ),
+  },
+  {
+    name: "X (Formerly Twitter)",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#000000" />
+        <path d="M18.9 13.6L23.3 9h-1.04l-3.82 4L15.7 9H11l4.62 6.73L11 20.8h1.04l4.04-4.7 3.23 4.7H24L18.9 13.6zm-1.43 1.66l-.47-.67L12.6 9.85h1.6l3.01 4.3.47.67 3.91 5.6h-1.6l-3.19-4.56z" fill="white" />
+      </svg>
+    ),
+  },
+  {
+    name: "YouTube",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#FF0000" />
+        <path d="M24.37 12.4a2 2 0 00-1.41-1.42C21.57 10.6 16 10.6 16 10.6s-5.57 0-6.96.38a2 2 0 00-1.41 1.42C7.25 13.8 7.25 16 7.25 16s0 2.2.38 3.6a2 2 0 001.41 1.42c1.39.38 6.96.38 6.96.38s5.57 0 6.96-.38a2 2 0 001.41-1.42c.38-1.4.38-3.6.38-3.6s0-2.2-.38-3.6z" fill="white" />
+        <path d="M14.25 18.73V13.27L19 16l-4.75 2.73z" fill="#FF0000" />
+      </svg>
+    ),
+  },
+  {
+    name: "Pinterest",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect width="32" height="32" rx="8" fill="#E60023" />
+        <path d="M16 9a7 7 0 00-2.55 13.52c-.07-.6-.13-1.52.03-2.18l.88-3.74s-.22-.45-.22-1.12c0-1.05.61-1.83 1.37-1.83.64 0 .95.48.95 1.06 0 .65-.41 1.62-.63 2.52a1.1 1.1 0 001.12 1.37c1.34 0 2.37-1.41 2.37-3.46 0-1.81-1.3-3.07-3.15-3.07a3.45 3.45 0 00-3.6 3.46c0 .68.26 1.41.59 1.81a.24.24 0 01.05.23l-.22.9c-.04.14-.11.17-.26.1-.99-.46-1.6-1.9-1.6-3.07 0-2.5 1.81-4.79 5.23-4.79 2.75 0 4.88 1.96 4.88 4.57 0 2.73-1.72 4.93-4.11 4.93-.8 0-1.56-.42-1.82-.91l-.49 1.88c-.18.69-.66 1.55-.99 2.08A7 7 0 1016 9z" fill="white" />
+      </svg>
+    ),
+  },
 ];
 
-function Chip({
+function GoalChip({
+  emoji,
   label,
   selected,
   onClick,
-  icon,
 }: {
+  emoji: string;
   label: string;
   selected: boolean;
   onClick: () => void;
-  icon?: string;
 }) {
   return (
     <button
@@ -53,14 +121,97 @@ function Chip({
         fontSize: 15,
         cursor: "pointer",
         transition: "all 0.2s",
+        lineHeight: "1.4",
       }}
     >
-      {icon && (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d={icon} />
-        </svg>
+      {selected ? (
+        <span style={{ color: "#ea4c89", fontSize: 14, fontWeight: 700 }}>✓</span>
+      ) : (
+        <span style={{ color: "#b0b4c8", fontSize: 16 }}>+</span>
       )}
+      <span>{emoji}</span>
       {label}
+    </button>
+  );
+}
+
+function PlatformCard({
+  name,
+  icon,
+  selected,
+  onClick,
+}: {
+  name: string;
+  icon: React.ReactNode;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        padding: "12px 16px",
+        borderRadius: 12,
+        border: `1px solid ${selected ? "rgba(234,76,137,0.3)" : "#f3f5fc"}`,
+        background: selected ? "rgba(234,76,137,0.03)" : "white",
+        cursor: "pointer",
+        transition: "all 0.2s",
+        width: "100%",
+        textAlign: "left",
+      }}
+    >
+      <span style={{ flexShrink: 0, display: "flex" }}>{icon}</span>
+      <span
+        style={{
+          flex: 1,
+          fontFamily: "var(--font-mona), sans-serif",
+          fontWeight: 500,
+          fontSize: 15,
+          color: "#191e41",
+        }}
+      >
+        {name}
+      </span>
+      {selected ? (
+        <span
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: "50%",
+            background: "#ea4c89",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            fontSize: 12,
+            fontWeight: 700,
+            flexShrink: 0,
+          }}
+        >
+          ✓
+        </span>
+      ) : (
+        <span
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: "50%",
+            border: "1.5px solid #d0d3e0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#b0b4c8",
+            fontSize: 14,
+            flexShrink: 0,
+          }}
+        >
+          +
+        </span>
+      )}
     </button>
   );
 }
@@ -70,7 +221,9 @@ export default function Step2Page() {
   const { data, updateField, setCurrentStep } = useOnboarding();
   const s = data.step2;
 
-  useEffect(() => { setCurrentStep(2); }, [setCurrentStep]);
+  useEffect(() => {
+    setCurrentStep(2);
+  }, [setCurrentStep]);
 
   const toggleArray = (field: "goals" | "platforms", val: string) => {
     const arr = s[field];
@@ -81,38 +234,114 @@ export default function Step2Page() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
       <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        {/* Header */}
         <div>
-          <h1 style={{ fontFamily: "var(--font-mona), sans-serif", fontWeight: 600, fontSize: 32, color: "#191e41", margin: 0 }}>
+          <h1
+            style={{
+              fontFamily: "var(--font-mona), sans-serif",
+              fontWeight: 600,
+              fontSize: 32,
+              color: "#191e41",
+              margin: 0,
+            }}
+          >
             Goals & Platforms
           </h1>
-          <p style={{ fontFamily: "var(--font-mona), sans-serif", fontWeight: 400, fontSize: 16, color: "#636788", margin: "8px 0 0 0" }}>
-            What do you want to achieve and where?
+          <p
+            style={{
+              fontFamily: "var(--font-mona), sans-serif",
+              fontWeight: 400,
+              fontSize: 16,
+              color: "#636788",
+              margin: "8px 0 0 0",
+              lineHeight: "1.5",
+            }}
+          >
+            Add your website or Instagram link — this helps AI understand your brand&apos;s audience, tone, and product style.
           </p>
         </div>
 
-        <div style={{ background: "white", borderRadius: 12, boxShadow: "0 1px 2px rgba(0,0,0,0.05)" }}>
-          {/* Goals */}
+        {/* Card */}
+        <div
+          style={{
+            background: "white",
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+            paddingBottom: 24,
+          }}
+        >
+          {/* Section 1: Goals */}
           <div style={{ padding: 24, borderBottom: "1px solid #f3f5fc" }}>
-            <div style={{ fontFamily: "var(--font-mona), sans-serif", fontWeight: 600, fontSize: 14, color: "#191e41", marginBottom: 12 }}>
-              Goals
+            <div
+              style={{
+                fontFamily: "var(--font-mona), sans-serif",
+                fontWeight: 600,
+                fontSize: 16,
+                color: "#191e41",
+                marginBottom: 4,
+              }}
+            >
+              What&apos;s your main focus?
+            </div>
+            <div
+              style={{
+                fontFamily: "var(--font-source), 'Source Sans 3', sans-serif",
+                fontWeight: 400,
+                fontSize: 14,
+                color: "#636788",
+                marginBottom: 16,
+              }}
+            >
+              Tell us about your business
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
               {goals.map((g) => (
-                <Chip key={g} label={g} selected={s.goals.includes(g)} onClick={() => toggleArray("goals", g)} />
+                <GoalChip
+                  key={g.label}
+                  emoji={g.emoji}
+                  label={g.label}
+                  selected={s.goals.includes(g.label)}
+                  onClick={() => toggleArray("goals", g.label)}
+                />
               ))}
             </div>
           </div>
 
-          {/* Platforms */}
+          {/* Section 2: Platforms */}
           <div style={{ padding: 24 }}>
-            <div style={{ fontFamily: "var(--font-mona), sans-serif", fontWeight: 600, fontSize: 14, color: "#191e41", marginBottom: 12 }}>
-              Platforms
+            <div
+              style={{
+                fontFamily: "var(--font-mona), sans-serif",
+                fontWeight: 600,
+                fontSize: 16,
+                color: "#191e41",
+                marginBottom: 4,
+              }}
+            >
+              What&apos;s your main focus?
             </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+            <div
+              style={{
+                fontFamily: "var(--font-source), 'Source Sans 3', sans-serif",
+                fontWeight: 400,
+                fontSize: 14,
+                color: "#636788",
+                marginBottom: 16,
+              }}
+            >
+              Tell us about your business
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: 12,
+              }}
+            >
               {platforms.map((p) => (
-                <Chip
+                <PlatformCard
                   key={p.name}
-                  label={p.name}
+                  name={p.name}
                   icon={p.icon}
                   selected={s.platforms.includes(p.name)}
                   onClick={() => toggleArray("platforms", p.name)}

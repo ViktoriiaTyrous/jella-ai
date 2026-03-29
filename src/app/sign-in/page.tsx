@@ -111,105 +111,91 @@ export default function SignInPage() {
         }
       `}</style>
       <div className="flex min-h-screen" style={{ fontFamily: "var(--font-source), sans-serif" }}>
-        {/* Left Brand Panel */}
+        {/* Left Brand Panel — light style from Figma */}
         <div
-          className="hidden lg:flex flex-col relative overflow-hidden"
+          className="hidden lg:flex flex-col justify-between relative overflow-hidden"
           style={{
             width: "50%",
-            background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+            background: "linear-gradient(180deg, #e8edf8 0%, #f0eaf5 50%, #f5e8f0 100%)",
             padding: "40px 48px",
+            borderRadius: "0 24px 24px 0",
           }}
         >
-          {/* Decorative orbs */}
-          <div style={{
-            position: "absolute", top: -80, right: -80, width: 300, height: 300,
-            borderRadius: "50%", background: "radial-gradient(circle, rgba(234,76,137,0.15) 0%, transparent 70%)",
-            animation: "float1 8s ease-in-out infinite",
-          }} />
-          <div style={{
-            position: "absolute", bottom: 100, left: -60, width: 200, height: 200,
-            borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)",
-            animation: "float2 10s ease-in-out infinite",
-          }} />
-          <div style={{
-            position: "absolute", top: "40%", right: "10%", width: 120, height: 120,
-            borderRadius: "50%", border: "1px solid rgba(255,255,255,0.06)",
-            animation: "float3 12s ease-in-out infinite",
-          }} />
-
           {/* Logo */}
-          <div className="flex items-center" style={{ gap: 12, marginBottom: 60 }}>
-            <Logo size="lg" variant="light" />
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 0 }}>
+            <Logo size="lg" variant="dark" />
             <span style={{
               fontFamily: "var(--font-mona), sans-serif",
-              fontWeight: 700, fontSize: 24, color: "#ffffff",
+              fontWeight: 700, fontSize: 22, color: "#191e41",
             }}>
               Jella AI
             </span>
           </div>
 
-          {/* Hero text */}
-          <div style={{ marginBottom: 48 }}>
+          {/* Hero text — centered vertically */}
+          <div>
             <h1 style={{
               fontFamily: "var(--font-mona), sans-serif",
-              fontWeight: 700, fontSize: 40, color: "#ffffff",
+              fontWeight: 700, fontSize: 38, color: "#191e41",
               lineHeight: 1.15, marginBottom: 16,
             }}>
               Welcome to Jella
             </h1>
             <p style={{
-              fontSize: 17, color: "rgba(255,255,255,0.7)",
+              fontFamily: "var(--font-source), sans-serif",
+              fontSize: 16, color: "#636788",
               lineHeight: 1.6, maxWidth: 420,
             }}>
               Your AI-powered creative workspace for content, strategy, and growth.
             </p>
-          </div>
 
-          {/* Feature cards */}
-          <div className="flex flex-col" style={{ gap: 16, marginBottom: 48 }}>
-            {features.map((f, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex", alignItems: "flex-start", gap: 16,
-                  padding: "20px 24px", borderRadius: 16,
-                  background: "rgba(255,255,255,0.06)",
-                  backdropFilter: "blur(12px)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
-              >
-                <div style={{
-                  width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-                  background: "rgba(234,76,137,0.15)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  {f.icon}
-                </div>
-                <div>
+            {/* Feature cards — horizontal */}
+            <div style={{ display: "flex", gap: 16, marginTop: 32 }}>
+              {features.map((f, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: "flex", flexDirection: "column", alignItems: "center",
+                    textAlign: "center" as const,
+                    padding: "24px 20px", borderRadius: 16,
+                    background: "rgba(255,255,255,0.7)",
+                    border: "1px solid rgba(255,255,255,0.9)",
+                    flex: 1, minWidth: 0,
+                  }}
+                >
+                  <div style={{
+                    width: 48, height: 48, borderRadius: 14, flexShrink: 0,
+                    background: "#ea4c89",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    marginBottom: 12,
+                  }}>
+                    {f.icon}
+                  </div>
                   <div style={{
                     fontFamily: "var(--font-mona), sans-serif",
-                    fontWeight: 600, fontSize: 15, color: "#ffffff", marginBottom: 4,
+                    fontWeight: 600, fontSize: 14, color: "#191e41", marginBottom: 4,
                   }}>
                     {f.title}
                   </div>
-                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", lineHeight: 1.5 }}>
+                  <div style={{ fontSize: 13, color: "#636788", lineHeight: 1.4 }}>
                     {f.desc}
                   </div>
                 </div>
-              </div>
             ))}
+          </div>
           </div>
 
           {/* Testimonials */}
-          <div style={{ marginTop: "auto" }}>
+          <div>
             <div style={{
               padding: "24px 28px", borderRadius: 16,
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(255,255,255,0.6)",
+              border: "1px solid rgba(255,255,255,0.8)",
               minHeight: 130,
             }}>
               <p style={{
-                fontSize: 15, color: "rgba(255,255,255,0.8)",
+                fontFamily: "var(--font-source), sans-serif",
+                fontSize: 15, color: "#636788",
                 lineHeight: 1.6, fontStyle: "italic", marginBottom: 16,
               }}>
                 &ldquo;{testimonials[activeTestimonial].text}&rdquo;
@@ -217,7 +203,7 @@ export default function SignInPage() {
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div style={{
                   width: 36, height: 36, borderRadius: "50%",
-                  background: "rgba(234,76,137,0.2)",
+                  background: "rgba(234,76,137,0.15)",
                   display: "flex", alignItems: "center", justifyContent: "center",
                   fontFamily: "var(--font-mona), sans-serif",
                   fontWeight: 600, fontSize: 14, color: "#ea4c89",
@@ -227,18 +213,18 @@ export default function SignInPage() {
                 <div>
                   <div style={{
                     fontFamily: "var(--font-mona), sans-serif",
-                    fontWeight: 600, fontSize: 14, color: "#ffffff",
+                    fontWeight: 600, fontSize: 14, color: "#191e41",
                   }}>
                     {testimonials[activeTestimonial].name}
                   </div>
-                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.5)" }}>
+                  <div style={{ fontSize: 13, color: "#636788" }}>
                     {testimonials[activeTestimonial].role}
                   </div>
                 </div>
               </div>
             </div>
             {/* Dots */}
-            <div className="flex justify-center" style={{ gap: 8, marginTop: 16 }}>
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16 }}>
               {testimonials.map((_, i) => (
                 <button
                   key={i}
@@ -247,7 +233,7 @@ export default function SignInPage() {
                   style={{
                     width: i === activeTestimonial ? 24 : 8,
                     height: 8, borderRadius: 4, border: "none", cursor: "pointer",
-                    background: i === activeTestimonial ? "#ea4c89" : "rgba(255,255,255,0.25)",
+                    background: i === activeTestimonial ? "#ea4c89" : "rgba(0,0,0,0.12)",
                     transition: "all 0.3s ease",
                   }}
                 />
