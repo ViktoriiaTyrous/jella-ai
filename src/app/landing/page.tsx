@@ -123,7 +123,7 @@ export default function LandingPage() {
         </div>
       )}
 
-      {/* responsive CSS */}
+      {/* responsive CSS + animations */}
       <style>{`
         @media(max-width:768px){
           .nav-desktop{display:none !important}
@@ -132,14 +132,37 @@ export default function LandingPage() {
         @media(min-width:769px){
           .nav-mobile{display:none !important}
         }
+        @keyframes float1{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-20px) scale(1.05)}}
+        @keyframes float2{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-15px) rotate(5deg)}}
+        @keyframes float3{0%,100%{transform:translate(0,0)}50%{transform:translate(10px,-10px)}}
+        @keyframes pulse{0%,100%{opacity:0.4}50%{opacity:0.8}}
+        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+        .hero-glow-1{animation:float1 6s ease-in-out infinite}
+        .hero-glow-2{animation:float2 8s ease-in-out infinite}
+        .hero-glow-3{animation:float3 10s ease-in-out infinite}
+        .hero-pulse{animation:pulse 3s ease-in-out infinite}
       `}</style>
     </nav>
   );
 
   /* ─── HERO ─── */
   const hero = (
-    <section style={{ paddingTop: 140, paddingBottom: 80, background: BG, textAlign: "center" }}>
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px" }}>
+    <section style={{ paddingTop: 140, paddingBottom: 80, background: `linear-gradient(180deg, ${BG} 0%, #f0eaf5 50%, ${BG} 100%)`, textAlign: "center", position: "relative", overflow: "hidden" }}>
+      {/* Floating decorative glows */}
+      <div className="hero-glow-1" style={{ position: "absolute", top: 60, left: "5%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(234,76,137,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div className="hero-glow-2" style={{ position: "absolute", top: 200, right: "8%", width: 250, height: 250, borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div className="hero-glow-3" style={{ position: "absolute", bottom: 100, left: "15%", width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(234,76,137,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
+      {/* Floating platform badges */}
+      <div className="hero-glow-1" style={{ position: "absolute", top: 180, left: "8%", padding: "8px 16px", borderRadius: 20, background: "rgba(255,255,255,0.8)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.9)", boxShadow: "0 4px 16px rgba(0,0,0,0.06)", fontSize: 13, fontWeight: 600, color: NAVY, display: "flex", alignItems: "center", gap: 6, pointerEvents: "none" }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#e1306c" }} />Instagram
+      </div>
+      <div className="hero-glow-2" style={{ position: "absolute", top: 280, right: "6%", padding: "8px 16px", borderRadius: 20, background: "rgba(255,255,255,0.8)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.9)", boxShadow: "0 4px 16px rgba(0,0,0,0.06)", fontSize: 13, fontWeight: 600, color: NAVY, display: "flex", alignItems: "center", gap: 6, pointerEvents: "none" }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#000" }} />TikTok
+      </div>
+      <div className="hero-glow-3" style={{ position: "absolute", top: 160, right: "15%", padding: "8px 16px", borderRadius: 20, background: "rgba(255,255,255,0.8)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.9)", boxShadow: "0 4px 16px rgba(0,0,0,0.06)", fontSize: 13, fontWeight: 600, color: NAVY, display: "flex", alignItems: "center", gap: 6, pointerEvents: "none" }}>
+        <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#1da1f2" }} />Twitter
+      </div>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
         <FadeIn>
           <h1 style={{ ...heading, fontSize: 52, fontWeight: 800, lineHeight: 1.12, letterSpacing: "-0.02em" }}>
             Your All-in-One Platform for{" "}
@@ -177,19 +200,12 @@ export default function LandingPage() {
               <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#28c840" }} />
               <span style={{ flex: 1, marginLeft: 12, padding: "6px 12px", borderRadius: 8, background: "#fff", border: `1px solid ${CARD_BORDER}`, fontSize: 13, color: BODY }}>app.jella.ai/dashboard</span>
             </div>
-            {/* dashboard mockup */}
-            <div style={{ padding: 32, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 20, minHeight: 280 }}>
-              {[
-                { label: "Posts Generated", val: "1,247", color: PINK },
-                { label: "Scheduled Today", val: "12", color: "#6c63ff" },
-                { label: "Engagement Rate", val: "4.8%", color: "#28c840" },
-              ].map((s) => (
-                <div key={s.label} style={{ background: BG, borderRadius: 12, padding: 24, textAlign: "left" }}>
-                  <p style={{ ...body, fontSize: 13, marginBottom: 8 }}>{s.label}</p>
-                  <p style={{ ...heading, fontSize: 32, fontWeight: 700, color: s.color }}>{s.val}</p>
-                </div>
-              ))}
-            </div>
+            {/* real dashboard screenshot */}
+            <img
+              src="/dashboard-preview.png"
+              alt="Jella AI Dashboard"
+              style={{ width: "100%", display: "block" }}
+            />
           </div>
         </div>
       </FadeIn>
