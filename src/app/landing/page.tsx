@@ -82,25 +82,27 @@ export default function LandingPage() {
   const nav = (
     <nav style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-      background: scrolled ? "rgba(255,255,255,0.95)" : "transparent",
+      background: scrolled ? "rgba(234,76,137,0.95)" : "transparent",
       backdropFilter: scrolled ? "blur(12px)" : "none",
-      boxShadow: scrolled ? "0 1px 3px rgba(0,0,0,0.06)" : "none",
+      boxShadow: scrolled ? "0 2px 8px rgba(0,0,0,0.1)" : "none",
       transition: "all 0.3s ease",
     }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <Logo size="sm" />
-          <span style={{ ...heading, fontSize: 20, fontWeight: 700 }}>Jella AI</span>
+          <Logo size="sm" variant="light" />
+          <span style={{ fontFamily: "var(--font-mona), sans-serif", fontSize: 20, fontWeight: 700, color: "#fff" }}>Jella AI</span>
         </Link>
 
         {/* desktop links */}
-        <div style={{ display: "flex", alignItems: "center", gap: 32 }} className="nav-desktop">
-          {["features", "pricing", "testimonials", "faq"].map((s) => (
-            <button key={s} onClick={() => scrollTo(s)} style={{ ...body, background: "none", border: "none", cursor: "pointer", fontSize: 15, fontWeight: 500, textTransform: "capitalize" }}>{s}</button>
+        <div style={{ display: "flex", alignItems: "center", gap: 0, background: "rgba(255,255,255,0.15)", borderRadius: 999, padding: 4 }} className="nav-desktop">
+          {[{ label: "Home", id: "hero" }, { label: "About", id: "features" }, { label: "Services", id: "whyChoose" }, { label: "Pricing", id: "pricing" }, { label: "Contacts", id: "faq" }].map((s, i) => (
+            <button key={s.id} onClick={() => scrollTo(s.id)} style={{ background: i === 0 ? "rgba(255,255,255,0.25)" : "transparent", border: "none", cursor: "pointer", fontSize: 14, fontWeight: 500, color: "#fff", padding: "8px 20px", borderRadius: 999, fontFamily: "var(--font-source), sans-serif", transition: "background 0.2s" }}
+              onMouseEnter={(e) => { if (i !== 0) e.currentTarget.style.background = "rgba(255,255,255,0.1)"; }}
+              onMouseLeave={(e) => { if (i !== 0) e.currentTarget.style.background = "transparent"; }}
+            >{s.label}</button>
           ))}
-          <Link href="/sign-in" style={{ ...btnOutline, padding: "10px 20px", fontSize: 14 }}>Sign In</Link>
-          <Link href="/sign-up" style={{ ...btnPink, padding: "10px 20px", fontSize: 14 }}>Get Started Free</Link>
         </div>
+        <Link href="/sign-up" style={{ padding: "10px 24px", borderRadius: 999, background: "#191e41", color: "#fff", fontFamily: "var(--font-mona), sans-serif", fontSize: 14, fontWeight: 600, textDecoration: "none", border: "none", cursor: "pointer" }}>Get Started</Link>
 
         {/* mobile hamburger */}
         <button onClick={() => setMenuOpen(!menuOpen)} style={{ display: "none", background: "none", border: "none", cursor: "pointer", padding: 8 }} className="nav-hamburger">
@@ -147,64 +149,51 @@ export default function LandingPage() {
 
   /* ─── HERO ─── */
   const hero = (
-    <section style={{ paddingTop: 140, paddingBottom: 80, background: `linear-gradient(180deg, ${BG} 0%, #f0eaf5 50%, ${BG} 100%)`, textAlign: "center", position: "relative", overflow: "hidden" }}>
-      {/* Floating decorative glows */}
-      <div className="hero-glow-1" style={{ position: "absolute", top: 60, left: "5%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(234,76,137,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <div className="hero-glow-2" style={{ position: "absolute", top: 200, right: "8%", width: 250, height: 250, borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <div className="hero-glow-3" style={{ position: "absolute", bottom: 100, left: "15%", width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(234,76,137,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
-      {/* Floating platform badges — large with colored icons */}
-      <div className="hero-glow-1" style={{ position: "absolute", top: 180, left: "6%", padding: "12px 24px", borderRadius: 24, background: "rgba(255,255,255,0.9)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.95)", boxShadow: "0 8px 32px rgba(225,48,108,0.12)", fontSize: 15, fontWeight: 700, color: NAVY, display: "flex", alignItems: "center", gap: 10, pointerEvents: "none" }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="16" height="16" rx="5" /><circle cx="10" cy="10" r="4" /><circle cx="15" cy="5" r="1.2" fill="white" stroke="none" /></svg>
-        </div>
-        Instagram
-      </div>
-      <div className="hero-glow-2" style={{ position: "absolute", top: 300, right: "5%", padding: "12px 24px", borderRadius: 24, background: "rgba(255,255,255,0.9)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.95)", boxShadow: "0 8px 32px rgba(0,0,0,0.08)", fontSize: 15, fontWeight: 700, color: NAVY, display: "flex", alignItems: "center", gap: 10, pointerEvents: "none" }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: "#000000", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M11 2v9a4.5 4.5 0 11-3.5-4.38" stroke="white" strokeWidth="1.8" strokeLinecap="round" /><path d="M11 2c1.5.5 3.5 1.5 5 3.5" stroke="#25F4EE" strokeWidth="1.8" strokeLinecap="round" /></svg>
-        </div>
-        TikTok
-      </div>
-      <div className="hero-glow-3" style={{ position: "absolute", top: 160, right: "12%", padding: "12px 24px", borderRadius: 24, background: "rgba(255,255,255,0.9)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.95)", boxShadow: "0 8px 32px rgba(29,161,242,0.12)", fontSize: 15, fontWeight: 700, color: NAVY, display: "flex", alignItems: "center", gap: 10, pointerEvents: "none" }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: "#000", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><path d="M1.5 1l5.2 6.6L1.2 15h1.2l4.8-5.8L11.3 15H15L9.5 7.9 14.7 1h-1.2L9 7l-3.6-6H1.5z" /></svg>
-        </div>
-        X (Twitter)
-      </div>
-      <div className="hero-glow-1" style={{ position: "absolute", top: 380, left: "12%", padding: "12px 24px", borderRadius: 24, background: "rgba(255,255,255,0.9)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.95)", boxShadow: "0 8px 32px rgba(0,119,181,0.12)", fontSize: 15, fontWeight: 700, color: NAVY, display: "flex", alignItems: "center", gap: 10, pointerEvents: "none" }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: "#0077B5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><path d="M2 4.5V14h3V4.5H2zM3.5 1A1.75 1.75 0 003.5 4.5 1.75 1.75 0 003.5 1zM11.5 4.3c-1.5 0-2.2.8-2.5 1.2V4.5H6V14h3V8.7c0-.3 0-.6.1-.8.3-.6.9-1.2 1.9-1.2 1.3 0 1.9 1 1.9 2.5V14h3V8.8c0-3-1.6-4.5-3.9-4.5z" /></svg>
-        </div>
-        LinkedIn
-      </div>
-      <div className="hero-glow-2" style={{ position: "absolute", top: 420, right: "15%", padding: "12px 24px", borderRadius: 24, background: "rgba(255,255,255,0.9)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.95)", boxShadow: "0 8px 32px rgba(255,0,0,0.08)", fontSize: 15, fontWeight: 700, color: NAVY, display: "flex", alignItems: "center", gap: 10, pointerEvents: "none" }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: "#FF0000", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="white"><path d="M7 12l5-3-5-3v6z" /><rect x="1" y="3" width="16" height="12" rx="4" stroke="white" strokeWidth="1.5" fill="none" /></svg>
-        </div>
-        YouTube
-      </div>
-      <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 24px", position: "relative", zIndex: 1 }}>
+    <section id="hero" style={{ paddingTop: 120, paddingBottom: 0, background: "linear-gradient(180deg, #ea4c89 0%, #e84393 40%, #f5a0c0 80%, #fafbff 100%)", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      {/* Decorative circles */}
+      <div style={{ position: "absolute", top: -100, left: -100, width: 400, height: 400, borderRadius: "50%", background: "rgba(255,255,255,0.06)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: 50, right: -80, width: 300, height: 300, borderRadius: "50%", background: "rgba(255,255,255,0.04)", pointerEvents: "none" }} />
+
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 32px", position: "relative", zIndex: 1 }}>
         <FadeIn>
-          <h1 style={{ ...heading, fontSize: 52, fontWeight: 800, lineHeight: 1.12, letterSpacing: "-0.02em" }}>
-            Your All-in-One Platform for{" "}
-            <span style={{ background: `linear-gradient(135deg, ${PINK}, #c13584)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Social Media Growth</span>
+          <h1 style={{ fontFamily: "var(--font-mona), sans-serif", fontSize: 56, fontWeight: 800, lineHeight: 1.1, letterSpacing: "-0.02em", color: "rgba(255,255,255,0.85)", marginTop: 40 }}>
+            Your All-in-One Platform for<br />
+            <span style={{ color: "#ffffff" }}>Social Media Growth</span>
           </h1>
         </FadeIn>
         <FadeIn delay={0.1}>
-          <p style={{ ...body, fontSize: 20, lineHeight: 1.6, marginTop: 24, maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
-            Create AI-powered posts, schedule content, and grow your audience — all from one beautiful dashboard.
+          <p style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 18, lineHeight: 1.6, marginTop: 20, color: "rgba(255,255,255,0.75)", maxWidth: 600, marginLeft: "auto", marginRight: "auto" }}>
+            Create AI-powered posts, schedule content, and grow your audience —<br />all from one beautiful dashboard.
           </p>
         </FadeIn>
         <FadeIn delay={0.2}>
-          <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 40, flexWrap: "wrap" }}>
-            <Link href="/sign-up" style={{ ...btnPink, padding: "16px 36px", fontSize: 17 }}>Get Started Free</Link>
-            <button onClick={() => {}} style={{ ...btnOutline, padding: "16px 36px", fontSize: 17 }}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ marginRight: 8 }}><polygon points="6,3 18,10 6,17" fill={NAVY} /></svg>
-              Watch Demo
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 36, flexWrap: "wrap" }}>
+            <Link href="/sign-up" style={{ padding: "14px 32px", borderRadius: 999, background: "#191e41", color: "#fff", fontFamily: "var(--font-mona), sans-serif", fontSize: 16, fontWeight: 600, textDecoration: "none", border: "none" }}>Get Started Free</Link>
+            <button onClick={() => {}} style={{ padding: "14px 32px", borderRadius: 999, background: "rgba(255,255,255,0.2)", color: "#fff", fontFamily: "var(--font-mona), sans-serif", fontSize: 16, fontWeight: 600, border: "1px solid rgba(255,255,255,0.3)", cursor: "pointer", backdropFilter: "blur(8px)", display: "flex", alignItems: "center", gap: 8 }}>
+              View Video Demo
             </button>
           </div>
         </FadeIn>
       </div>
+
+      {/* Dashboard screenshot — wide */}
+      <FadeIn delay={0.3}>
+        <div style={{ maxWidth: 1200, margin: "50px auto 0", padding: "0 32px", position: "relative", zIndex: 1 }}>
+          <div style={{
+            borderRadius: 16, overflow: "hidden",
+            background: "#fff", border: "1px solid rgba(255,255,255,0.3)",
+            boxShadow: "0 32px 100px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.1)",
+          }}>
+            <div style={{ padding: "10px 16px", background: "#f9fafb", borderBottom: "1px solid #f3f5fc", display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#ff5f57" }} />
+              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#febc2e" }} />
+              <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#28c840" }} />
+              <span style={{ flex: 1, marginLeft: 12, padding: "5px 12px", borderRadius: 8, background: "#fff", border: "1px solid #f3f5fc", fontSize: 12, color: "#636788" }}>app.jella.ai/dashboard</span>
+            </div>
+            <img src="/dashboard-preview.png" alt="Jella AI Dashboard" style={{ width: "100%", display: "block" }} />
+          </div>
+        </div>
+      </FadeIn>
 
       {/* hero mockup */}
       <FadeIn delay={0.3}>
