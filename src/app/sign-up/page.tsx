@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/ui/logo";
+import { signUp as doSignUp } from "@/lib/auth";
 
 const features = [
   {
@@ -64,6 +66,28 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSignUp = () => {
+    setError("");
+    if (!fullName.trim()) { setError("Please enter your name"); return; }
+    if (!email.trim()) { setError("Please enter your email"); return; }
+    if (!password.trim()) { setError("Please enter a password"); return; }
+    if (password.length < 6) { setError("Password must be at least 6 characters"); return; }
+    if (password !== confirmPassword) { setError("Passwords do not match"); return; }
+    setLoading(true);
+    setTimeout(() => {
+      const result = doSignUp(fullName, email, password);
+      if (result.ok) {
+        router.push("/onboarding/step-1");
+      } else {
+        setError(result.error || "Sign up failed");
+        setLoading(false);
+      }
+    }, 500);
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -442,19 +466,28 @@ export default function SignUpPage() {
               </div>
             </label>
 
+            {/* Error */}
+            {error && (
+              <p style={{ color: "#ef4444", fontSize: 14, fontFamily: "var(--font-source), sans-serif", textAlign: "center", margin: "0 0 8px" }}>
+                {error}
+              </p>
+            )}
+
             {/* Create Account button */}
             <button
+              onClick={handleSignUp}
+              disabled={loading}
               style={{
                 width: "100%", padding: "13px 16px", borderRadius: 10,
-                border: "none", background: "#ea4c89", color: "#ffffff",
+                border: "none", background: loading ? "#c4a0b3" : "#ea4c89", color: "#ffffff",
                 fontFamily: "var(--font-mona), sans-serif",
-                fontSize: 16, fontWeight: 600, cursor: "pointer",
+                fontSize: 16, fontWeight: 600, cursor: loading ? "wait" : "pointer",
                 transition: "background 0.2s",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#d63f7b"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "#ea4c89"; }}
+              onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = "#d63f7b"; }}
+              onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = "#ea4c89"; }}
             >
-              Create Account
+              {loading ? "Creating account..." : "Create Account"}
             </button>
 
             {/* Sign In link */}

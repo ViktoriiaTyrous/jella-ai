@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Logo from "@/components/ui/logo";
+import { signIn as doSignIn } from "@/lib/auth";
 
 const features = [
   {
@@ -62,6 +64,27 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSignIn = () => {
+    setError("");
+    if (!email.trim() || !password.trim()) {
+      setError("Please enter email and password");
+      return;
+    }
+    setLoading(true);
+    setTimeout(() => {
+      const result = doSignIn(email, password);
+      if (result.ok) {
+        router.push("/dashboard");
+      } else {
+        setError(result.error || "Sign in failed");
+        setLoading(false);
+      }
+    }, 500);
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -389,19 +412,28 @@ export default function SignInPage() {
               </Link>
             </div>
 
+            {/* Error */}
+            {error && (
+              <p style={{ color: "#ef4444", fontSize: 14, fontFamily: "var(--font-source), sans-serif", textAlign: "center", margin: "0 0 8px" }}>
+                {error}
+              </p>
+            )}
+
             {/* Sign In button */}
             <button
+              onClick={handleSignIn}
+              disabled={loading}
               style={{
                 width: "100%", padding: "13px 16px", borderRadius: 10,
-                border: "none", background: "#ea4c89", color: "#ffffff",
+                border: "none", background: loading ? "#c4a0b3" : "#ea4c89", color: "#ffffff",
                 fontFamily: "var(--font-mona), sans-serif",
-                fontSize: 16, fontWeight: 600, cursor: "pointer",
+                fontSize: 16, fontWeight: 600, cursor: loading ? "wait" : "pointer",
                 transition: "background 0.2s",
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = "#d63f7b"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = "#ea4c89"; }}
+              onMouseEnter={(e) => { if (!loading) e.currentTarget.style.background = "#d63f7b"; }}
+              onMouseLeave={(e) => { if (!loading) e.currentTarget.style.background = "#ea4c89"; }}
             >
-              Sign In
+              {loading ? "Signing in..." : "Sign In"}
             </button>
 
             {/* Sign Up link */}
