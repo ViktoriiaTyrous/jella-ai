@@ -76,6 +76,7 @@ export default function DashboardPage() {
   const drafts = getPostsByStatus("draft");
   const scheduled = getPostsByStatus("scheduled");
   const published = getPostsByStatus("published");
+  const allPosts = [...drafts, ...scheduled, ...published];
   const totalPosts = posts.length;
 
   const draftCount = drafts.length;
@@ -628,173 +629,97 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Kanban columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {kanbanConfig.map((col) => {
-              const colPosts = filterByPlatform(
-                col.status === "draft" ? drafts : col.status === "scheduled" ? scheduled : published
-              );
-              return (
-                <div
-                  key={col.title}
-                  style={{
-                    background: "#f9fafb",
-                    borderRadius: 10,
-                    padding: 12,
-                    minHeight: 200,
-                  }}
-                >
-                  <div className="flex items-center" style={{ gap: 8, marginBottom: 12, padding: "0 4px" }}>
-                    <span
-                      style={{
-                        width: 8,
-                        height: 8,
-                        borderRadius: "50%",
-                        background: col.dotColor,
-                        display: "inline-block",
-                      }}
-                    />
-                    <span
-                      style={{
-                        fontFamily: "var(--font-mona), sans-serif",
-                        fontWeight: 600,
-                        fontSize: 14,
-                        color: "#191e41",
-                      }}
-                    >
-                      {col.title}
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: "var(--font-source), sans-serif",
-                        fontSize: 12,
-                        color: "#9ca3af",
-                        marginLeft: "auto",
-                      }}
-                    >
-                      {colPosts.length}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col" style={{ gap: 8 }}>
-                    {colPosts.length === 0 ? (
-                      <div style={{ padding: "24px 12px", textAlign: "center" }}>
-                        <p
-                          style={{
-                            fontFamily: "var(--font-source), sans-serif",
-                            fontSize: 13,
-                            color: "#9ca3af",
-                            fontStyle: "italic",
-                            margin: "0 0 8px",
-                          }}
-                        >
-                          No items yet
-                        </p>
-                        <Link
-                          href="/create"
-                          style={{
-                            fontFamily: "var(--font-mona), sans-serif",
-                            fontSize: 13,
-                            fontWeight: 600,
-                            color: "#ea4c89",
-                            textDecoration: "none",
-                          }}
-                        >
-                          + Create
-                        </Link>
-                      </div>
-                    ) : (
-                      colPosts.map((post) => (
-                        <Link
-                          key={post.id}
-                          href={`/create?id=${post.id}`}
-                          style={{
-                            background: "#ffffff",
-                            borderRadius: 8,
-                            padding: 16,
-                            border: "1px solid #f3f5fc",
-                            textDecoration: "none",
-                            cursor: "pointer",
-                            display: "block",
-                            transition: "box-shadow 0.15s ease",
-                          }}
+          {/* === BOARD VIEW === */}
+          {activeView === "board" && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+              {kanbanConfig.map((col) => {
+                const colPosts = filterByPlatform(col.status === "draft" ? drafts : col.status === "scheduled" ? scheduled : published);
+                return (
+                  <div key={col.title} style={{ background: "#f9fafb", borderRadius: 10, padding: 12, minHeight: 200 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, padding: "0 4px" }}>
+                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: col.dotColor, display: "inline-block" }} />
+                      <span style={{ fontFamily: "var(--font-mona), sans-serif", fontWeight: 600, fontSize: 14, color: "#191e41" }}>{col.title}</span>
+                      <span style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 12, color: "#9ca3af", marginLeft: "auto" }}>{colPosts.length}</span>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      {colPosts.length === 0 ? (
+                        <div style={{ padding: "24px 12px", textAlign: "center" }}>
+                          <p style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 13, color: "#9ca3af", fontStyle: "italic", margin: "0 0 8px" }}>No items yet</p>
+                          <Link href="/create" style={{ fontFamily: "var(--font-mona), sans-serif", fontSize: 13, fontWeight: 600, color: "#ea4c89", textDecoration: "none" }}>+ Create</Link>
+                        </div>
+                      ) : colPosts.map((post) => (
+                        <Link key={post.id} href={`/create?id=${post.id}`} style={{ background: "#ffffff", borderRadius: 8, padding: 16, border: "1px solid #f3f5fc", textDecoration: "none", cursor: "pointer", display: "block", transition: "box-shadow 0.15s ease" }}
                           onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)")}
-                          onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}
-                        >
-                          <span
-                            style={{
-                              display: "inline-block",
-                              padding: "2px 8px",
-                              borderRadius: 4,
-                              background: platformBgColors[post.platform] || "rgba(234,76,137,0.08)",
-                              color: "#191e41",
-                              fontFamily: "var(--font-source), sans-serif",
-                              fontSize: 11,
-                              fontWeight: 600,
-                              marginBottom: 8,
-                              textTransform: "capitalize",
-                            }}
-                          >
-                            {post.platform}
-                          </span>
-
-                          <div
-                            style={{
-                              fontFamily: "var(--font-source), sans-serif",
-                              fontSize: 13,
-                              color: "#191e41",
-                              lineHeight: 1.4,
-                              marginBottom: 8,
-                              display: "-webkit-box",
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: "vertical",
-                              overflow: "hidden",
-                            }}
-                          >
-                            {post.caption.length > 50 ? post.caption.slice(0, 50) + "..." : post.caption}
-                          </div>
-
-                          <div
-                            style={{
-                              fontFamily: "var(--font-source), sans-serif",
-                              fontSize: 11,
-                              color: "#9ca3af",
-                            }}
-                          >
-                            {post.publishedAt
-                              ? new Date(post.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-                              : post.scheduledAt
-                              ? new Date(post.scheduledAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-                              : new Date(post.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                          </div>
+                          onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
+                          <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, background: platformBgColors[post.platform] || "rgba(234,76,137,0.08)", color: "#191e41", fontFamily: "var(--font-source), sans-serif", fontSize: 11, fontWeight: 600, marginBottom: 8, textTransform: "capitalize" }}>{post.platform}</span>
+                          <div style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 13, color: "#191e41", lineHeight: 1.4, marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{post.caption.length > 50 ? post.caption.slice(0, 50) + "..." : post.caption}</div>
+                          <div style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 11, color: "#9ca3af" }}>{new Date(post.scheduledAt || post.publishedAt || post.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</div>
                         </Link>
-                      ))
-                    )}
-
-                    <Link
-                      href="/create"
-                      style={{
-                        width: "100%",
-                        padding: "10px",
-                        borderRadius: 8,
-                        border: "1.5px dashed #d1d5db",
-                        background: "transparent",
-                        color: "#9ca3af",
-                        fontFamily: "var(--font-source), sans-serif",
-                        fontSize: 13,
-                        cursor: "pointer",
-                        textAlign: "center",
-                        textDecoration: "none",
-                        display: "block",
-                      }}
-                    >
-                      + Add new idea
-                    </Link>
+                      ))}
+                      <Link href="/create" style={{ width: "100%", padding: 10, borderRadius: 8, border: "1.5px dashed #d1d5db", background: "transparent", color: "#9ca3af", fontFamily: "var(--font-source), sans-serif", fontSize: 13, cursor: "pointer", textAlign: "center", textDecoration: "none", display: "block" }}>+ Add new idea</Link>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* === TABLE VIEW === */}
+          {activeView === "table" && (
+            <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #f3f5fc", overflow: "hidden" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: "var(--font-source), sans-serif", fontSize: 14 }}>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid #f3f5fc" }}>
+                    {["Caption", "Platform", "Status", "Date", ""].map((h) => (
+                      <th key={h} style={{ padding: "14px 16px", textAlign: "left", fontFamily: "var(--font-mona), sans-serif", fontSize: 12, fontWeight: 600, color: "#636788", textTransform: "uppercase", letterSpacing: "0.05em" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {filterByPlatform(allPosts).map((post) => (
+                    <tr key={post.id} style={{ borderBottom: "1px solid #f3f5fc", transition: "background 0.15s" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = "#fafbff")}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                      <td style={{ padding: "14px 16px", color: "#191e41", maxWidth: 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{post.caption.slice(0, 80)}{post.caption.length > 80 ? "..." : ""}</td>
+                      <td style={{ padding: "14px 16px" }}>
+                        <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 4, background: platformBgColors[post.platform] || "#f3f5fc", fontSize: 12, fontWeight: 600, textTransform: "capitalize", color: "#191e41" }}>{post.platform}</span>
+                      </td>
+                      <td style={{ padding: "14px 16px" }}>
+                        <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 12, fontSize: 12, fontWeight: 600, background: post.status === "published" ? "rgba(34,197,94,0.1)" : post.status === "scheduled" ? "rgba(59,130,246,0.1)" : "rgba(156,163,175,0.1)", color: post.status === "published" ? "#16a34a" : post.status === "scheduled" ? "#2563eb" : "#6b7280", textTransform: "capitalize" }}>{post.status}</span>
+                      </td>
+                      <td style={{ padding: "14px 16px", color: "#9ca3af", fontSize: 13 }}>{new Date(post.scheduledAt || post.publishedAt || post.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</td>
+                      <td style={{ padding: "14px 16px" }}>
+                        <Link href={`/create?id=${post.id}`} style={{ color: "#ea4c89", fontWeight: 600, fontSize: 13, textDecoration: "none" }}>Edit</Link>
+                      </td>
+                    </tr>
+                  ))}
+                  {filterByPlatform(allPosts).length === 0 && (
+                    <tr><td colSpan={5} style={{ padding: 40, textAlign: "center", color: "#9ca3af", fontStyle: "italic" }}>No posts yet</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* === LIST VIEW === */}
+          {activeView === "list" && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {filterByPlatform(allPosts).length === 0 ? (
+                <div style={{ padding: 40, textAlign: "center", color: "#9ca3af", fontStyle: "italic", fontFamily: "var(--font-source), sans-serif" }}>No posts yet</div>
+              ) : filterByPlatform(allPosts).map((post) => (
+                <Link key={post.id} href={`/create?id=${post.id}`} style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", background: "#fff", borderRadius: 12, border: "1px solid #f3f5fc", textDecoration: "none", transition: "box-shadow 0.15s" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.06)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 40, height: 40, borderRadius: 10, background: platformBgColors[post.platform] || "#f3f5fc", fontFamily: "var(--font-mona), sans-serif", fontSize: 11, fontWeight: 700, color: "#191e41", textTransform: "uppercase", flexShrink: 0 }}>{post.platform.slice(0, 2)}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 14, color: "#191e41", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{post.caption}</div>
+                    <div style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 12, color: "#9ca3af", marginTop: 2 }}>{post.platform} · {new Date(post.scheduledAt || post.publishedAt || post.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</div>
+                  </div>
+                  <span style={{ display: "inline-block", padding: "4px 12px", borderRadius: 12, fontSize: 12, fontWeight: 600, fontFamily: "var(--font-source), sans-serif", background: post.status === "published" ? "rgba(34,197,94,0.1)" : post.status === "scheduled" ? "rgba(59,130,246,0.1)" : "rgba(156,163,175,0.1)", color: post.status === "published" ? "#16a34a" : post.status === "scheduled" ? "#2563eb" : "#6b7280", textTransform: "capitalize", flexShrink: 0 }}>{post.status}</span>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
