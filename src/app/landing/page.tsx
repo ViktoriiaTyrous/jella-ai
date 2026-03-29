@@ -314,6 +314,129 @@ export default function LandingPage() {
     </section>
   );
 
+  /* ─── WHY PEOPLE CHOOSE JELLA — 6 CARDS ─── */
+  const whyPeopleCards = [
+    { icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z", title: "AI Content Generator", desc: "Generate captions, hashtags, and full posts for any platform in seconds with GPT-4o." },
+    { icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z", title: "Visual Creator", desc: "Create stunning images with DALL-E 3 or upload your own media with drag & drop." },
+    { icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z", title: "Smart Scheduler", desc: "Plan and schedule posts across 6 platforms with an AI-optimized content calendar." },
+    { icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z", title: "Analytics Dashboard", desc: "Track engagement, follower growth, and content performance with visual insights." },
+    { icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z", title: "Brand Consistency", desc: "Set your brand voice, tone, and style once — every generated post stays on-brand." },
+    { icon: "M13 10V3L4 14h7v7l9-11h-7z", title: "Bulk Generation", desc: "Generate 5 posts at once, with AI text improver to refine tone and length instantly." },
+  ];
+  const whyPeopleSection = (
+    <section style={{ padding: "100px 24px", background: "#fff" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 56 }}>
+          <div>
+            <FadeIn>
+              <h2 style={{ ...heading, fontSize: 40, fontWeight: 700 }}>Why People Choose Jella</h2>
+              <p style={{ ...body, fontSize: 16, marginTop: 12 }}>Smart tools that simplify every step of your content journey.</p>
+            </FadeIn>
+          </div>
+          <FadeIn delay={0.1}>
+            <Link href="/sign-up" style={{ ...btnPink, borderRadius: 9999, padding: "12px 28px", fontSize: 15 }}>Start Creating</Link>
+          </FadeIn>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+          {whyPeopleCards.map((card, i) => (
+            <FadeIn key={card.title} delay={i * 0.08}>
+              <div
+                style={{
+                  background: "#fff", borderRadius: 16, padding: 32,
+                  border: `1px solid ${CARD_BORDER}`,
+                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                  cursor: "default", height: "100%",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 40px rgba(0,0,0,0.10)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}
+              >
+                <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(234,76,137,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={PINK} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d={card.icon} /></svg>
+                </div>
+                <h3 style={{ ...heading, fontSize: 20, fontWeight: 600, marginTop: 20 }}>{card.title}</h3>
+                <p style={{ ...body, fontSize: 15, lineHeight: 1.6, marginTop: 12 }}>{card.desc}</p>
+              </div>
+            </FadeIn>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+
+  /* ─── DISCOVER KEY FEATURES ─── */
+  const featureBullets = [
+    "Create AI-powered posts for any platform",
+    "Schedule and automate your content calendar",
+    "Track performance with real-time analytics",
+  ];
+  const discoverSection = (
+    <section style={{ padding: "100px 24px", background: BG }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", alignItems: "center", gap: 64 }}>
+        {/* Left — image */}
+        <FadeIn style={{ flex: 1 }}>
+          <div style={{
+            background: NAVY, borderRadius: 24, padding: 40,
+            position: "relative", overflow: "hidden",
+          }}>
+            <img
+              src="/dashboard-preview.png"
+              alt="Jella AI Dashboard Preview"
+              style={{
+                width: "100%", borderRadius: 12, display: "block",
+                transform: "perspective(1200px) rotateY(-4deg) rotateX(2deg)",
+                boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+              }}
+            />
+            {/* Play button overlay */}
+            <div style={{
+              position: "absolute", bottom: 32, left: 40,
+              display: "flex", alignItems: "center", gap: 12,
+            }}>
+              <div style={{
+                width: 48, height: 48, borderRadius: "50%", background: PINK,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", boxShadow: "0 4px 20px rgba(234,76,137,0.4)",
+              }}>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="white"><polygon points="6,2 16,9 6,16" /></svg>
+              </div>
+              <span style={{ color: "#fff", fontSize: 14, fontWeight: 600, fontFamily: "var(--font-mona)" }}>Watch introduction 1:37</span>
+            </div>
+          </div>
+        </FadeIn>
+
+        {/* Right — text */}
+        <FadeIn delay={0.15} style={{ flex: 1 }}>
+          <div>
+            <h2 style={{ ...heading, fontSize: 40, fontWeight: 700, lineHeight: 1.2 }}>
+              Discover the <span style={{ color: PINK }}>Key</span> Features of Jella
+            </h2>
+            <p style={{ ...body, fontSize: 17, lineHeight: 1.7, marginTop: 20 }}>
+              Jella brings all essential content tools into one intuitive platform — helping you create, schedule, and analyze your social media presence without stress.
+            </p>
+            <div style={{ marginTop: 28 }}>
+              {featureBullets.map((bullet, i) => (
+                <div key={i} style={{
+                  background: "#fff", borderRadius: 12,
+                  border: `1px solid ${CARD_BORDER}`,
+                  padding: "16px 20px", marginBottom: 12,
+                  display: "flex", alignItems: "center", gap: 14,
+                }}>
+                  <div style={{
+                    width: 24, height: 24, borderRadius: "50%", background: PINK,
+                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                  }}>
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </div>
+                  <span style={{ ...body, fontSize: 15, fontWeight: 500, color: NAVY }}>{bullet}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </FadeIn>
+      </div>
+    </section>
+  );
+
   /* ─── TESTIMONIALS CAROUSEL ─── */
   const testimonials = [
     { text: "Jella cut our content creation time by 80%. The AI suggestions are incredibly on-brand.", name: "Sarah Chen", role: "Founder, Bloom Studio", avatar: "SC" },
@@ -582,6 +705,8 @@ export default function LandingPage() {
       {hero}
       {whyJella}
       {featuresSection}
+      {whyPeopleSection}
+      {discoverSection}
       {testimonialsSection}
       {deepDiveSection}
       {pricingSection}

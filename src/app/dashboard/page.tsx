@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getAllPosts, getPostsByStatus, type Post } from "@/lib/post-store";
+import { getAllPosts, getPostsByStatus, deletePost, type Post } from "@/lib/post-store";
 import { seedMockData } from "@/lib/mock-data";
 
 /* ─── Calendar helpers ─── */
@@ -648,13 +648,21 @@ export default function DashboardPage() {
                           <Link href="/create" style={{ fontFamily: "var(--font-mona), sans-serif", fontSize: 13, fontWeight: 600, color: "#ea4c89", textDecoration: "none" }}>+ Create</Link>
                         </div>
                       ) : colPosts.map((post) => (
-                        <Link key={post.id} href={`/create?id=${post.id}`} style={{ background: "#ffffff", borderRadius: 8, padding: 16, border: "1px solid #f3f5fc", textDecoration: "none", cursor: "pointer", display: "block", transition: "box-shadow 0.15s ease" }}
+                        <div key={post.id} style={{ background: "#ffffff", borderRadius: 8, padding: 16, border: "1px solid #f3f5fc", transition: "box-shadow 0.15s ease" }}
                           onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)")}
                           onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "none")}>
                           <span style={{ display: "inline-block", padding: "2px 8px", borderRadius: 4, background: platformBgColors[post.platform] || "rgba(234,76,137,0.08)", color: "#191e41", fontFamily: "var(--font-source), sans-serif", fontSize: 11, fontWeight: 600, marginBottom: 8, textTransform: "capitalize" }}>{post.platform}</span>
                           <div style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 13, color: "#191e41", lineHeight: 1.4, marginBottom: 8, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{post.caption.length > 50 ? post.caption.slice(0, 50) + "..." : post.caption}</div>
-                          <div style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 11, color: "#9ca3af" }}>{new Date(post.scheduledAt || post.publishedAt || post.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</div>
-                        </Link>
+                          <div style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 11, color: "#9ca3af", marginBottom: 10 }}>{new Date(post.scheduledAt || post.publishedAt || post.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}</div>
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <Link href={`/create?id=${post.id}`} style={{ padding: "4px 12px", borderRadius: 6, border: "1px solid #e5e7eb", background: "transparent", color: "#636788", fontFamily: "var(--font-source), sans-serif", fontSize: 12, fontWeight: 500, textDecoration: "none", cursor: "pointer" }}
+                              onMouseEnter={(e) => (e.currentTarget.style.background = "#f3f5fc")}
+                              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>Edit</Link>
+                            <button type="button" onClick={() => { deletePost(post.id); setPosts(getAllPosts()); }} style={{ padding: "4px 12px", borderRadius: 6, border: "1px solid rgba(239,68,68,0.2)", background: "transparent", color: "#ef4444", fontFamily: "var(--font-source), sans-serif", fontSize: 12, fontWeight: 500, cursor: "pointer" }}
+                              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(239,68,68,0.05)")}
+                              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>Delete</button>
+                          </div>
+                        </div>
                       ))}
                       <Link href="/create" style={{ width: "100%", padding: 10, borderRadius: 8, border: "1.5px dashed #d1d5db", background: "transparent", color: "#9ca3af", fontFamily: "var(--font-source), sans-serif", fontSize: 13, cursor: "pointer", textAlign: "center", textDecoration: "none", display: "block" }}>+ Add new idea</Link>
                     </div>
