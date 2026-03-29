@@ -2,23 +2,47 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getPostsByStatus, deletePost, type Post } from "@/lib/post-store";
+import { getAllPosts, deletePost, type Post } from "@/lib/post-store";
 import { seedMockData } from "@/lib/mock-data";
 
 const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-function getCalendarData() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDay = new Date(year, month, 1).getDay();
-  // Convert Sunday=0 to Monday-start: Sun=6, Mon=0, Tue=1...
-  const firstDayOffset = firstDay === 0 ? 6 : firstDay - 1;
-  const today = now.getDate();
-  const monthName = now.toLocaleString("en-US", { month: "long", year: "numeric" });
+const platformColors: Record<string, { bg: string; dot: string }> = {
+  instagram: { bg: "rgba(225,48,108,0.1)", dot: "#e1306c" },
+  tiktok: { bg: "rgba(0,0,0,0.08)", dot: "#000000" },
+  twitter: { bg: "rgba(29,161,242,0.1)", dot: "#1da1f2" },
+  facebook: { bg: "rgba(24,119,242,0.1)", dot: "#1877f2" },
+  linkedin: { bg: "rgba(0,119,181,0.1)", dot: "#0077b5" },
+  pinterest: { bg: "rgba(230,0,35,0.1)", dot: "#e60023" },
+};
 
-  return { year, month, daysInMonth, firstDayOffset, today, monthName };
+function getCalendarDays(year: number, month: number) {
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startDow = (firstDay.getDay() + 6) % 7; // Monday = 0
+  const daysInMonth = lastDay.getDate();
+
+  const days: { date: number; inMonth: boolean }[] = [];
+  const prevMonthDays = new Date(year, month, 0).getDate();
+  for (let i = startDow - 1; i >= 0; i--) {
+    days.push({ date: prevMonthDays - i, inMonth: false });
+  }
+  for (let i = 1; i <= daysInMonth; i++) {
+    days.push({ date: i, inMonth: true });
+  }
+  while (days.length % 7 !== 0) {
+    days.push({ date: days.length - daysInMonth - startDow + 1, inMonth: false });
+  }
+  return days;
+}
+
+function getPostsForDay(posts: Post[], year: number, month: number, day: number): Post[] {
+  return posts.filter((p) => {
+    const dateStr = p.scheduledAt || p.createdAt;
+    if (!dateStr) return false;
+    const d = new Date(dateStr);
+    return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
+  });
 }
 
 function formatDateTime(iso: string): string {
@@ -33,50 +57,16 @@ function formatDateTime(iso: string): string {
   });
 }
 
-const platformIcons: Record<string, React.ReactNode> = {
-  instagram: (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#e1306c" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="1" y="1" width="12" height="12" rx="3" />
-      <circle cx="7" cy="7" r="3" />
-    </svg>
-  ),
-  tiktok: (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#000" strokeWidth="1.2" strokeLinecap="round">
-      <path d="M9 2v7a3.5 3.5 0 11-2.5-3.35" />
-      <path d="M9 2c1 .4 2.5 1.2 3.5 2.5" />
-    </svg>
-  ),
-  twitter: (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1da1f2" strokeWidth="1.2" strokeLinecap="round">
-      <path d="M2 2l4.5 5L2 12M12 2l-4.5 5L12 12" />
-    </svg>
-  ),
-  linkedin: (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#0077b5" strokeWidth="1.2">
-      <rect x="2" y="2" width="10" height="10" rx="2" />
-      <path d="M5 6.5v2.5M5 5v.01M8 9V7.5a1 1 0 012 0V9M8 6.5v2.5" />
-    </svg>
-  ),
-  facebook: (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#1877f2" strokeWidth="1.2">
-      <circle cx="7" cy="7" r="5" />
-    </svg>
-  ),
-  pinterest: (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#e60023" strokeWidth="1.2">
-      <circle cx="7" cy="7" r="5" />
-    </svg>
-  ),
-};
-
 export default function SchedulePage() {
-  const [scheduledPosts, setScheduledPosts] = useState<Post[]>([]);
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
   const loadPosts = () => {
     seedMockData();
-    setScheduledPosts(getPostsByStatus("scheduled"));
+    setAllPosts(getAllPosts());
   };
 
   useEffect(() => {
@@ -86,41 +76,53 @@ export default function SchedulePage() {
 
   if (!mounted) return null;
 
-  const { daysInMonth, firstDayOffset, today, monthName, month, year } = getCalendarData();
+  const today = new Date();
+  const isCurrentMonth = currentMonth === today.getMonth() && currentYear === today.getFullYear();
+  const todayDate = today.getDate();
 
-  // Days that have scheduled posts
-  const scheduledDays = new Set(
-    scheduledPosts
-      .filter((p) => p.scheduledAt)
-      .map((p) => {
-        const d = new Date(p.scheduledAt!);
-        if (d.getMonth() === month && d.getFullYear() === year) return d.getDate();
-        return -1;
-      })
-      .filter((d) => d > 0)
-  );
+  const calendarDays = getCalendarDays(currentYear, currentMonth);
+  const monthName = new Date(currentYear, currentMonth).toLocaleString("en-US", { month: "long", year: "numeric" });
 
-  const calendarCells: (number | null)[] = [];
-  for (let i = 0; i < firstDayOffset; i++) calendarCells.push(null);
-  for (let d = 1; d <= daysInMonth; d++) calendarCells.push(d);
-  while (calendarCells.length % 7 !== 0) calendarCells.push(null);
-
-  // Posts for selected day
-  const postsForDay = selectedDay
-    ? scheduledPosts.filter((p) => {
-        if (!p.scheduledAt) return false;
-        const d = new Date(p.scheduledAt);
-        return d.getDate() === selectedDay && d.getMonth() === month && d.getFullYear() === year;
-      })
+  const postsForSelectedDay = selectedDay !== null
+    ? getPostsForDay(allPosts, currentYear, currentMonth, selectedDay)
     : [];
+
+  const upcomingPosts = allPosts
+    .filter((p) => {
+      const dateStr = p.scheduledAt || p.createdAt;
+      if (!dateStr) return false;
+      return new Date(dateStr) > new Date();
+    })
+    .sort((a, b) => new Date(a.scheduledAt || a.createdAt).getTime() - new Date(b.scheduledAt || b.createdAt).getTime());
 
   const handleDelete = (id: string) => {
     deletePost(id);
     loadPosts();
   };
 
+  const prevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+    setSelectedDay(null);
+  };
+
+  const nextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+    setSelectedDay(null);
+  };
+
   return (
-    <div>
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 16px" }}>
+      {/* Back link */}
       <Link
         href="/dashboard"
         style={{
@@ -134,7 +136,18 @@ export default function SchedulePage() {
       >
         &larr; Back to Dashboard
       </Link>
-      <div className="flex items-center justify-between" style={{ marginBottom: 32 }}>
+
+      {/* Title row */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: 16,
+          marginBottom: 32,
+        }}
+      >
         <h1
           style={{
             fontFamily: "var(--font-mona), sans-serif",
@@ -146,6 +159,58 @@ export default function SchedulePage() {
         >
           Content Calendar
         </h1>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            onClick={prevMonth}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              border: "1px solid #f3f5fc",
+              background: "#ffffff",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 16,
+              color: "#636788",
+            }}
+          >
+            &lsaquo;
+          </button>
+          <span
+            style={{
+              fontFamily: "var(--font-mona), sans-serif",
+              fontWeight: 600,
+              fontSize: 18,
+              color: "#191e41",
+              minWidth: 160,
+              textAlign: "center",
+            }}
+          >
+            {monthName}
+          </span>
+          <button
+            onClick={nextMonth}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 8,
+              border: "1px solid #f3f5fc",
+              background: "#ffffff",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 16,
+              color: "#636788",
+            }}
+          >
+            &rsaquo;
+          </button>
+        </div>
+
         <Link
           href="/create"
           style={{
@@ -167,171 +232,392 @@ export default function SchedulePage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6" style={{ marginBottom: 40 }}>
-        {/* Calendar */}
+      {/* Calendar Grid */}
+      <div
+        style={{
+          background: "#ffffff",
+          borderRadius: 12,
+          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+          marginBottom: 40,
+          overflow: "hidden",
+        }}
+      >
+        {/* Day name headers */}
         <div
-          className="lg:col-span-2"
           style={{
-            background: "#ffffff",
-            borderRadius: 12,
-            padding: 24,
-            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+            display: "grid",
+            gridTemplateColumns: "repeat(7, 1fr)",
           }}
         >
-          <h3
-            style={{
-              fontFamily: "var(--font-mona), sans-serif",
-              fontWeight: 600,
-              fontSize: 18,
-              color: "#191e41",
-              margin: "0 0 20px",
-              textAlign: "center",
-            }}
-          >
-            {monthName}
-          </h3>
-          <div className="grid grid-cols-7 gap-1">
-            {daysOfWeek.map((d) => (
-              <div
-                key={d}
-                className="text-center"
-                style={{
-                  fontFamily: "var(--font-source), sans-serif",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: "#636788",
-                  padding: "8px 0",
-                }}
-              >
-                {d}
-              </div>
-            ))}
-            {calendarCells.map((day, i) => (
-              <button
-                key={i}
-                disabled={day === null}
-                onClick={() => day && setSelectedDay(day)}
-                className="flex flex-col items-center justify-center"
-                style={{
-                  height: 48,
-                  border: "none",
-                  borderRadius: 8,
-                  background:
-                    day === today
-                      ? "#ea4c89"
-                      : day === selectedDay
-                      ? "rgba(234,76,137,0.08)"
-                      : "transparent",
-                  color: day === today ? "#ffffff" : day ? "#191e41" : "transparent",
-                  fontFamily: "var(--font-source), sans-serif",
-                  fontSize: 14,
-                  cursor: day ? "pointer" : "default",
-                  position: "relative",
-                  padding: "4px",
-                }}
-              >
-                {day}
-                {day && scheduledDays.has(day) && (
-                  <span
-                    style={{
-                      width: 5,
-                      height: 5,
-                      borderRadius: "50%",
-                      background: day === today ? "#ffffff" : "#ea4c89",
-                      position: "absolute",
-                      bottom: 6,
-                    }}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
+          {daysOfWeek.map((d) => (
+            <div
+              key={d}
+              style={{
+                fontFamily: "var(--font-source), sans-serif",
+                fontSize: 13,
+                fontWeight: 600,
+                color: "#636788",
+                padding: "12px 8px",
+                textAlign: "center",
+                borderBottom: "1px solid #f3f5fc",
+              }}
+            >
+              {d}
+            </div>
+          ))}
         </div>
 
-        {/* Selected day panel */}
+        {/* Day cells */}
         <div
           style={{
-            background: "#ffffff",
-            borderRadius: 12,
-            padding: 24,
-            boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+            display: "grid",
+            gridTemplateColumns: "repeat(7, 1fr)",
           }}
         >
-          <h3
-            style={{
-              fontFamily: "var(--font-mona), sans-serif",
-              fontWeight: 600,
-              fontSize: 16,
-              color: "#191e41",
-              margin: "0 0 16px",
-            }}
-          >
-            {selectedDay
-              ? new Date(year, month, selectedDay).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
-              : "Select a day"}
-          </h3>
-          {postsForDay.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              {postsForDay.map((post) => (
+          {calendarDays.map((day, i) => {
+            const isToday = isCurrentMonth && day.inMonth && day.date === todayDate;
+            const dayPosts = day.inMonth
+              ? getPostsForDay(allPosts, currentYear, currentMonth, day.date)
+              : [];
+            const visiblePills = dayPosts.slice(0, 2);
+            const extraCount = dayPosts.length - 2;
+
+            return (
+              <div
+                key={i}
+                onClick={() => {
+                  if (day.inMonth) setSelectedDay(day.date);
+                }}
+                style={{
+                  minHeight: 120,
+                  border: "1px solid #f3f5fc",
+                  borderLeft: isToday ? "3px solid #ea4c89" : "1px solid #f3f5fc",
+                  padding: 8,
+                  background: isToday
+                    ? "rgba(234,76,137,0.05)"
+                    : day.inMonth
+                    ? dayPosts.length > 0
+                      ? "#ffffff"
+                      : "#fafbff"
+                    : "#fafbff",
+                  cursor: day.inMonth ? "pointer" : "default",
+                  position: "relative",
+                }}
+              >
+                {/* Day number */}
                 <div
-                  key={post.id}
                   style={{
-                    padding: 16,
-                    borderRadius: 8,
-                    background: "#fafbff",
-                    border: "1px solid #f3f5fc",
+                    fontFamily: "var(--font-source), sans-serif",
+                    fontSize: 14,
+                    fontWeight: isToday ? 700 : 400,
+                    color: day.inMonth ? "#191e41" : "#d1d5db",
+                    marginBottom: 4,
                   }}
                 >
-                  <p style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 14, color: "#191e41", margin: "0 0 4px", fontWeight: 600, lineHeight: 1.4 }}>
-                    {post.caption.slice(0, 80)}{post.caption.length > 80 ? "..." : ""}
-                  </p>
-                  <p style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 12, color: "#636788", margin: "0 0 8px", textTransform: "capitalize" }}>
-                    {post.platform} &middot; {post.scheduledAt ? new Date(post.scheduledAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : ""}
-                  </p>
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/create?id=${post.id}`}
-                      style={{
-                        padding: "4px 10px",
-                        borderRadius: 6,
-                        border: "1px solid #f3f5fc",
-                        background: "#ffffff",
-                        color: "#636788",
-                        fontFamily: "var(--font-source), sans-serif",
-                        fontSize: 12,
-                        textDecoration: "none",
+                  {day.date}
+                </div>
+
+                {/* Post pills */}
+                {visiblePills.map((post) => {
+                  const colors = platformColors[post.platform] || { bg: "rgba(0,0,0,0.05)", dot: "#636788" };
+                  return (
+                    <div
+                      key={post.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (day.inMonth) setSelectedDay(day.date);
                       }}
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(post.id)}
                       style={{
-                        padding: "4px 10px",
+                        width: "100%",
+                        marginBottom: 4,
+                        padding: "4px 8px",
                         borderRadius: 6,
-                        border: "1px solid #fee2e2",
-                        background: "#fff5f5",
-                        color: "#dc2626",
-                        fontFamily: "var(--font-source), sans-serif",
-                        fontSize: 12,
+                        background: colors.bg,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 6,
                         cursor: "pointer",
                       }}
                     >
-                      Delete
-                    </button>
+                      <span
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: "50%",
+                          background: colors.dot,
+                          flexShrink: 0,
+                        }}
+                      />
+                      <span
+                        style={{
+                          fontFamily: "var(--font-source), sans-serif",
+                          fontSize: 11,
+                          color: "#191e41",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {post.caption.length > 20 ? post.caption.slice(0, 20) + "..." : post.caption}
+                      </span>
+                    </div>
+                  );
+                })}
+
+                {extraCount > 0 && (
+                  <div
+                    style={{
+                      fontFamily: "var(--font-source), sans-serif",
+                      fontSize: 10,
+                      color: "#9ca3af",
+                      paddingLeft: 4,
+                    }}
+                  >
+                    +{extraCount} more
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 14, color: "#636788", margin: 0 }}>
-              {selectedDay ? "No posts scheduled" : "Click a day to see details"}
-            </p>
-          )}
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* Upcoming posts */}
+      {/* Day detail modal overlay */}
+      {selectedDay !== null && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 1000,
+            display: "flex",
+            justifyContent: "flex-end",
+          }}
+        >
+          {/* Backdrop */}
+          <div
+            onClick={() => setSelectedDay(null)}
+            style={{
+              position: "absolute",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              background: "rgba(0,0,0,0.2)",
+            }}
+          />
+          {/* Slide-in panel */}
+          <div
+            style={{
+              position: "relative",
+              width: 400,
+              maxWidth: "90vw",
+              background: "#ffffff",
+              boxShadow: "-4px 0 24px rgba(0,0,0,0.1)",
+              padding: 24,
+              overflowY: "auto",
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: 24,
+              }}
+            >
+              <h3
+                style={{
+                  fontFamily: "var(--font-mona), sans-serif",
+                  fontWeight: 600,
+                  fontSize: 18,
+                  color: "#191e41",
+                  margin: 0,
+                }}
+              >
+                {new Date(currentYear, currentMonth, selectedDay).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              </h3>
+              <button
+                onClick={() => setSelectedDay(null)}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 8,
+                  border: "1px solid #f3f5fc",
+                  background: "#ffffff",
+                  cursor: "pointer",
+                  fontSize: 16,
+                  color: "#636788",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Posts for this day */}
+            {postsForSelectedDay.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {postsForSelectedDay.map((post) => {
+                  const colors = platformColors[post.platform] || { bg: "rgba(0,0,0,0.05)", dot: "#636788" };
+                  return (
+                    <div
+                      key={post.id}
+                      style={{
+                        padding: 16,
+                        borderRadius: 8,
+                        background: "#fafbff",
+                        border: "1px solid #f3f5fc",
+                      }}
+                    >
+                      {/* Platform badge */}
+                      <div
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          padding: "4px 10px",
+                          borderRadius: 20,
+                          background: colors.bg,
+                          marginBottom: 8,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            background: colors.dot,
+                          }}
+                        />
+                        <span
+                          style={{
+                            fontFamily: "var(--font-source), sans-serif",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: "#191e41",
+                            textTransform: "capitalize",
+                          }}
+                        >
+                          {post.platform}
+                        </span>
+                      </div>
+
+                      {/* Caption */}
+                      <p
+                        style={{
+                          fontFamily: "var(--font-source), sans-serif",
+                          fontSize: 14,
+                          color: "#191e41",
+                          margin: "0 0 8px",
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        {post.caption}
+                      </p>
+
+                      {/* Time */}
+                      <p
+                        style={{
+                          fontFamily: "var(--font-source), sans-serif",
+                          fontSize: 12,
+                          color: "#636788",
+                          margin: "0 0 12px",
+                        }}
+                      >
+                        {post.scheduledAt
+                          ? new Date(post.scheduledAt).toLocaleTimeString("en-US", {
+                              hour: "numeric",
+                              minute: "2-digit",
+                            })
+                          : "No time set"}
+                      </p>
+
+                      {/* Actions */}
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <Link
+                          href={`/create?id=${post.id}`}
+                          style={{
+                            padding: "6px 14px",
+                            borderRadius: 6,
+                            border: "1px solid #f3f5fc",
+                            background: "#ffffff",
+                            color: "#636788",
+                            fontFamily: "var(--font-source), sans-serif",
+                            fontSize: 12,
+                            textDecoration: "none",
+                          }}
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(post.id)}
+                          style={{
+                            padding: "6px 14px",
+                            borderRadius: 6,
+                            border: "1px solid #fee2e2",
+                            background: "#fff5f5",
+                            color: "#dc2626",
+                            fontFamily: "var(--font-source), sans-serif",
+                            fontSize: 12,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p
+                style={{
+                  fontFamily: "var(--font-source), sans-serif",
+                  fontSize: 14,
+                  color: "#636788",
+                  margin: "0 0 16px",
+                }}
+              >
+                No posts scheduled for this day.
+              </p>
+            )}
+
+            {/* Schedule new button */}
+            <Link
+              href="/create"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "10px 20px",
+                borderRadius: 8,
+                background: "#ea4c89",
+                color: "#ffffff",
+                fontFamily: "var(--font-mona), sans-serif",
+                fontWeight: 600,
+                fontSize: 14,
+                textDecoration: "none",
+                marginTop: 16,
+              }}
+            >
+              Schedule New
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Upcoming Posts */}
       <div>
         <h2
           style={{
@@ -345,9 +631,8 @@ export default function SchedulePage() {
           Upcoming Posts
         </h2>
 
-        {scheduledPosts.length === 0 ? (
+        {upcomingPosts.length === 0 ? (
           <div
-            className="flex flex-col items-center justify-center"
             style={{
               background: "#ffffff",
               borderRadius: 12,
@@ -364,7 +649,7 @@ export default function SchedulePage() {
                 margin: "0 0 16px",
               }}
             >
-              No scheduled posts yet.
+              No upcoming posts.
             </p>
             <Link
               href="/create"
@@ -386,30 +671,46 @@ export default function SchedulePage() {
             </Link>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            {scheduledPosts
-              .sort((a, b) => new Date(a.scheduledAt || "").getTime() - new Date(b.scheduledAt || "").getTime())
-              .map((post) => (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {upcomingPosts.map((post) => {
+              const colors = platformColors[post.platform] || { bg: "rgba(0,0,0,0.05)", dot: "#636788" };
+              return (
                 <div
                   key={post.id}
-                  className="flex items-center gap-4"
                   style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 16,
                     background: "#ffffff",
                     borderRadius: 12,
                     padding: 20,
                     boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
                   }}
                 >
+                  {/* Platform dot */}
                   <div
-                    className="shrink-0"
                     style={{
-                      width: 56,
-                      height: 56,
+                      width: 40,
+                      height: 40,
                       borderRadius: 8,
-                      background: "#f3f5fc",
+                      background: colors.bg,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
                     }}
-                  />
-                  <div className="flex-1 min-w-0">
+                  >
+                    <span
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: "50%",
+                        background: colors.dot,
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <p
                       style={{
                         fontFamily: "var(--font-source), sans-serif",
@@ -423,14 +724,20 @@ export default function SchedulePage() {
                     >
                       {post.caption}
                     </p>
-                    <div className="flex items-center gap-1">
-                      {platformIcons[post.platform] || null}
-                      <p style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 13, color: "#636788", margin: 0, textTransform: "capitalize" }}>
-                        {post.platform} &middot; {post.scheduledAt ? formatDateTime(post.scheduledAt) : "Not set"}
-                      </p>
-                    </div>
+                    <p
+                      style={{
+                        fontFamily: "var(--font-source), sans-serif",
+                        fontSize: 13,
+                        color: "#636788",
+                        margin: 0,
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {post.platform} &middot; {post.scheduledAt ? formatDateTime(post.scheduledAt) : "Not set"}
+                    </p>
                   </div>
-                  <div className="flex gap-2 shrink-0">
+
+                  <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
                     <Link
                       href={`/create?id=${post.id}`}
                       style={{
@@ -463,7 +770,8 @@ export default function SchedulePage() {
                     </button>
                   </div>
                 </div>
-              ))}
+              );
+            })}
           </div>
         )}
       </div>
