@@ -94,6 +94,17 @@ const tones: { id: Tone; label: string }[] = [
 
 const imageStyles = ["Photorealistic", "Illustration", "Minimal", "Vibrant", "Elegant"];
 
+const postTemplates = [
+  { name: "Product Launch", emoji: "\u{1F680}", template: "Exciting news! We're launching [product]. Here's why you'll love it..." },
+  { name: "Behind the Scenes", emoji: "\u{1F3AC}", template: "Ever wondered what goes on behind the scenes? Here's a sneak peek..." },
+  { name: "Tips & Tricks", emoji: "\u{1F4A1}", template: "5 tips to [achieve goal] that most people don't know about..." },
+  { name: "Customer Story", emoji: "\u2B50", template: "Meet [name], who transformed their [area] using our [product]..." },
+  { name: "Question Post", emoji: "\u2753", template: "What's your biggest challenge with [topic]? Drop your answer below!" },
+  { name: "Promotion", emoji: "\u{1F381}", template: "Limited time offer! Get [discount]% off [product] \u2014 use code [CODE]..." },
+  { name: "Motivation", emoji: "\u{1F525}", template: "Remember: [motivational insight]. Keep pushing towards your goals!" },
+  { name: "Poll/Survey", emoji: "\u{1F4CA}", template: "Quick poll! Which do you prefer: A) [option1] or B) [option2]?" },
+];
+
 export default function CreatePage() {
   return (
     <Suspense fallback={null}>
@@ -130,6 +141,11 @@ function CreatePageInner() {
   const [imageError, setImageError] = useState("");
   const [uploadedImage, setUploadedImage] = useState<string>("");
   const [isDragging, setIsDragging] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [improveMode, setImproveMode] = useState<string>("");
+  const [isImproving, setIsImproving] = useState(false);
+  const [bulkPosts, setBulkPosts] = useState<GeneratedPost[]>([]);
+  const [isBulkGenerating, setIsBulkGenerating] = useState(false);
 
   // Load post for editing
   useEffect(() => {
@@ -190,6 +206,68 @@ function CreatePageInner() {
     const next = variations[0];
     setVariations((prev) => [...prev.slice(1), caption]);
     setCaption(next);
+  };
+
+  const handleImprove = async (instruction: string) => {
+    if (!caption.trim()) return;
+    setIsImproving(true);
+    setImproveMode(instruction);
+    try {
+      const res = await fetch("/api/generate-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          platform: selectedPlatform,
+          improveCaption: caption,
+          instruction,
+        }),
+      });
+      if (!res.ok) throw new Error("API error");
+      const result: GeneratedPost = await res.json();
+      setCaption(result.caption);
+      if (result.hashtags?.length) setHashtags(result.hashtags);
+    } catch {
+      // silent fail — keep current caption
+    }
+    setIsImproving(false);
+    setImproveMode("");
+  };
+
+  const handleBulkGenerate = async () => {
+    if (!topic.trim()) return;
+    setIsBulkGenerating(true);
+    setBulkPosts([]);
+    try {
+      const res = await fetch("/api/generate-post", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          platform: selectedPlatform,
+          topic: topic.trim(),
+          tone: selectedTone,
+          contentType: selectedContentType,
+          bulkCount: 5,
+        }),
+      });
+      if (!res.ok) throw new Error("API error");
+      const result = await res.json();
+      if (result.posts) {
+        setBulkPosts(result.posts);
+      }
+    } catch {
+      // silent fail
+    }
+    setIsBulkGenerating(false);
+  };
+
+  const handleUseBulkPost = (post: GeneratedPost) => {
+    setCaption(post.caption);
+    setHashtags(post.hashtags);
+    setBestTime(post.bestTimeToPost);
+    setEngagement(post.estimatedEngagement);
+    setVariations(post.variations || []);
+    setHasGenerated(true);
+    setBulkPosts([]);
   };
 
   const removeHashtag = (tag: string) => {
@@ -505,6 +583,90 @@ function CreatePageInner() {
               </div>
             </div>
 
+            {/* Templates section */}
+            <div style={cardStyle}>
+              <button
+                type="button"
+                onClick={() => setShowTemplates(!showTemplates)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  background: "none",
+                  border: "none",
+                  padding: 0,
+                  cursor: "pointer",
+                }}
+              >
+                <span style={{
+                  fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                  fontWeight: 600,
+                  fontSize: 15,
+                  color: "#191e41",
+                  lineHeight: "1.4",
+                }}>
+                  {"\u{1F4DD}"} Use a Template
+                </span>
+                <span style={{
+                  fontSize: 14,
+                  color: "#636788",
+                  transform: showTemplates ? "rotate(180deg)" : "rotate(0deg)",
+                  transition: "transform 0.2s",
+                  display: "inline-block",
+                }}>
+                  {"\u25BC"}
+                </span>
+              </button>
+              {showTemplates && (
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 8,
+                  marginTop: 12,
+                }}>
+                  {postTemplates.map((t) => (
+                    <button
+                      type="button"
+                      key={t.name}
+                      onClick={() => { setTopic(t.template); setShowTemplates(false); }}
+                      style={{
+                        background: "#ffffff",
+                        borderRadius: 8,
+                        border: "1px solid #e8ebf5",
+                        padding: 12,
+                        cursor: "pointer",
+                        textAlign: "left",
+                        transition: "border-color 0.15s",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#ea4c89")}
+                      onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#e8ebf5")}
+                    >
+                      <span style={{ fontSize: 20, display: "block", marginBottom: 4 }}>{t.emoji}</span>
+                      <span style={{
+                        fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                        fontWeight: 600,
+                        fontSize: 13,
+                        color: "#191e41",
+                        display: "block",
+                        marginBottom: 2,
+                      }}>{t.name}</span>
+                      <span style={{
+                        fontFamily: "'Source Sans 3', var(--font-source), sans-serif",
+                        fontSize: 12,
+                        color: "#636788",
+                        lineHeight: "1.4",
+                        display: "block",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}>{t.template}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             {/* Topic input */}
             <div style={cardStyle}>
               <label style={{ ...sectionLabel, marginBottom: 8 }}>Topic</label>
@@ -577,7 +739,89 @@ function CreatePageInner() {
                   <span style={{ color: "#ffffff", fontSize: 16, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>{"\u2728"} Generate with AI</span>
                 )}
               </button>
+
+              {/* Bulk Generate button */}
+              <button
+                type="button"
+                onClick={handleBulkGenerate}
+                disabled={isBulkGenerating || !topic.trim()}
+                style={{
+                  marginTop: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  width: "100%",
+                  padding: "12px 24px",
+                  borderRadius: 10,
+                  border: "2px solid #ea4c89",
+                  background: "transparent",
+                  color: isBulkGenerating || !topic.trim() ? "#d1d5e0" : "#ea4c89",
+                  fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                  fontWeight: 600,
+                  fontSize: 14,
+                  cursor: isBulkGenerating || !topic.trim() ? "not-allowed" : "pointer",
+                  lineHeight: "1.4",
+                  boxSizing: "border-box" as const,
+                  borderColor: isBulkGenerating || !topic.trim() ? "#d1d5e0" : "#ea4c89",
+                }}
+              >
+                {isBulkGenerating ? "Generating 5 variations..." : "\u{1F4E6} Bulk Generate (5 posts)"}
+              </button>
             </div>
+
+            {/* Bulk posts results */}
+            {bulkPosts.length > 0 && (
+              <div style={cardStyle}>
+                <label style={sectionLabel}>{"\u{1F4E6}"} Bulk Results ({bulkPosts.length} variations)</label>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {bulkPosts.map((post, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        background: "#fafbff",
+                        borderRadius: 8,
+                        border: "1px solid #e8ebf5",
+                        padding: 12,
+                      }}
+                    >
+                      <p style={{
+                        fontFamily: "'Source Sans 3', var(--font-source), sans-serif",
+                        fontSize: 13,
+                        color: "#191e41",
+                        margin: "0 0 8px",
+                        lineHeight: 1.5,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}>
+                        {post.caption}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => handleUseBulkPost(post)}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          padding: "6px 14px",
+                          borderRadius: 6,
+                          border: "none",
+                          background: "#ea4c89",
+                          color: "#ffffff",
+                          fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                          fontWeight: 600,
+                          fontSize: 12,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Use This
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Generated content */}
             {hasGenerated && (
@@ -677,6 +921,42 @@ function CreatePageInner() {
                       </button>
                     )}
                   </div>
+
+                  {/* AI Improve buttons */}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                    {[
+                      { label: "\u2728 Make Shorter", instruction: "Make this caption shorter and more concise while keeping the key message" },
+                      { label: "\u{1F4DD} Make Longer", instruction: "Expand this caption with more detail and context while keeping it engaging" },
+                      { label: "\u{1F3AF} More Professional", instruction: "Refine the tone to be more professional and polished" },
+                      { label: "\u{1F389} More Casual", instruction: "Make the tone more casual, friendly, and conversational" },
+                      { label: "\u{1F525} Add Hook", instruction: "Add a strong attention-grabbing opening hook to the beginning" },
+                    ].map((btn) => (
+                      <button
+                        type="button"
+                        key={btn.label}
+                        onClick={() => handleImprove(btn.instruction)}
+                        disabled={isImproving}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          padding: "5px 10px",
+                          borderRadius: 6,
+                          border: "1px solid #e8ebf5",
+                          background: isImproving && improveMode === btn.instruction ? "#f3f5fc" : "#ffffff",
+                          color: "#636788",
+                          fontFamily: "'Source Sans 3', var(--font-source), sans-serif",
+                          fontSize: 12,
+                          cursor: isImproving ? "not-allowed" : "pointer",
+                          lineHeight: "1.4",
+                          opacity: isImproving ? 0.6 : 1,
+                        }}
+                        onMouseEnter={(e) => { if (!isImproving) e.currentTarget.style.borderColor = "#ea4c89"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#e8ebf5"; }}
+                      >
+                        {isImproving && improveMode === btn.instruction ? "Improving..." : btn.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Hashtags */}
@@ -766,6 +1046,59 @@ function CreatePageInner() {
                     </button>
                   </div>
                 </div>
+
+                {/* Hashtag Analytics */}
+                {hashtags.length > 0 && (
+                  <div style={cardStyle}>
+                    <label style={sectionLabel}>{"\u{1F4CA}"} Hashtag Analytics</label>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 12 }}>
+                      <div style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                        padding: "8px 14px",
+                        borderRadius: 8,
+                        background: "rgba(34,197,94,0.08)",
+                      }}>
+                        <span style={{ fontFamily: "'Source Sans 3', var(--font-source), sans-serif", fontSize: 13, fontWeight: 600, color: "#16a34a" }}>
+                          {"\u{1F30D}"} Est. reach: ~{(hashtags.length * 500).toLocaleString()}
+                        </span>
+                      </div>
+                      <div style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                        padding: "8px 14px",
+                        borderRadius: 8,
+                        background: "rgba(59,130,246,0.08)",
+                      }}>
+                        <span style={{ fontFamily: "'Source Sans 3', var(--font-source), sans-serif", fontSize: 13, fontWeight: 600, color: "#2563eb" }}>
+                          Mix: {Math.ceil(hashtags.length * 0.4)} broad, {Math.floor(hashtags.length * 0.6)} niche
+                        </span>
+                      </div>
+                    </div>
+                    {/* Diversity bar */}
+                    <div style={{ marginTop: 4 }}>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontFamily: "'Source Sans 3', var(--font-source), sans-serif", fontSize: 12, color: "#636788" }}>
+                          Hashtag diversity
+                        </span>
+                        <span style={{ fontFamily: "'Source Sans 3', var(--font-source), sans-serif", fontSize: 12, color: "#636788" }}>
+                          {Math.min(hashtags.length, 15)}/15 optimal
+                        </span>
+                      </div>
+                      <div style={{ width: "100%", height: 6, borderRadius: 3, background: "#f3f5fc", overflow: "hidden" }}>
+                        <div style={{
+                          width: `${Math.min((hashtags.length / 15) * 100, 100)}%`,
+                          height: "100%",
+                          borderRadius: 3,
+                          background: hashtags.length >= 10 && hashtags.length <= 15 ? "#16a34a" : hashtags.length < 5 ? "#dc2626" : "#f59e0b",
+                          transition: "width 0.3s",
+                        }} />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Best time + engagement badges */}
                 {(bestTime || engagement) && (

@@ -173,25 +173,6 @@ export default function DashboardPage() {
             Here&apos;s what&apos;s happening with your content today.
           </p>
         </div>
-        <Link
-          href="/create"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "12px 24px",
-            borderRadius: 10,
-            background: "#ea4c89",
-            color: "#ffffff",
-            fontFamily: "var(--font-mona), sans-serif",
-            fontWeight: 600,
-            fontSize: 15,
-            textDecoration: "none",
-            border: "none",
-          }}
-        >
-          + Create Post
-        </Link>
       </div>
 
       {/* Stats Row — clickable */}
