@@ -35,7 +35,10 @@
       "Read(//Users/viktoriatyrous/vs code/Project 1/$\\(brew --prefix oh-my-posh 2>/dev/null\\)/**)",
       "Bash(fc-list)",
       "Read(//Users/viktoriatyrous/Library/Fonts/**)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "mcp__plugin_playwright_playwright__browser_snapshot"
     ]
   }
 }
