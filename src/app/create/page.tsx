@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { platformLimits, type GeneratedPost, type GeneratePostParams } from "@/lib/post-generator";
 import { createPost, getPostById, updatePost } from "@/lib/post-store";
 import Modal from "@/components/ui/modal";
@@ -91,6 +92,8 @@ const tones: { id: Tone; label: string }[] = [
   { id: "luxurious", label: "Luxurious" },
 ];
 
+const imageStyles = ["Photorealistic", "Illustration", "Minimal", "Vibrant", "Elegant"];
+
 export default function CreatePage() {
   return (
     <Suspense fallback={null}>
@@ -103,6 +106,7 @@ function CreatePageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("id");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [selectedPlatform, setSelectedPlatform] = useState<Platform>("instagram");
   const [selectedContentType, setSelectedContentType] = useState<ContentType>("product");
@@ -121,6 +125,11 @@ function CreatePageInner() {
   const [imageUrl, setImageUrl] = useState<string>("");
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [imagePrompt, setImagePrompt] = useState("");
+  const [mediaTab, setMediaTab] = useState<"generate" | "upload">("generate");
+  const [imageStyle, setImageStyle] = useState("Photorealistic");
+  const [imageError, setImageError] = useState("");
+  const [uploadedImage, setUploadedImage] = useState<string>("");
+  const [isDragging, setIsDragging] = useState(false);
 
   // Load post for editing
   useEffect(() => {
@@ -130,6 +139,7 @@ function CreatePageInner() {
         setCaption(post.caption);
         setHashtags(post.hashtags);
         setSelectedPlatform(post.platform as Platform);
+        if (post.mediaUrl) setImageUrl(post.mediaUrl);
         setHasGenerated(true);
       }
     }
@@ -158,7 +168,6 @@ function CreatePageInner() {
       setVariations(result.variations);
       setHasGenerated(true);
     } catch {
-      // Fallback to mock if API fails
       const { generatePost } = await import("@/lib/post-generator");
       const result = await generatePost({
         platform: selectedPlatform,
@@ -203,6 +212,7 @@ function CreatePageInner() {
   const handleGenerateImage = async () => {
     if (!imagePrompt.trim()) return;
     setIsGeneratingImage(true);
+    setImageError("");
     try {
       const res = await fetch("/api/generate-image", {
         method: "POST",
@@ -210,17 +220,52 @@ function CreatePageInner() {
         body: JSON.stringify({
           prompt: imagePrompt.trim(),
           platform: selectedPlatform,
+          style: imageStyle,
         }),
       });
-      if (!res.ok) throw new Error("Failed to generate image");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        setImageError(err.error || "Generation failed. Check your OpenAI billing.");
+        setIsGeneratingImage(false);
+        return;
+      }
       const data = await res.json();
       if (data.imageUrl) {
         setImageUrl(data.imageUrl);
+        setUploadedImage("");
       }
-    } catch (err) {
-      console.error("Image generation error:", err);
+    } catch {
+      setImageError("AI generation temporarily unavailable.");
     }
     setIsGeneratingImage(false);
+  };
+
+  const handleFileDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const result = ev.target?.result as string;
+        setUploadedImage(result);
+        setImageUrl(result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const result = ev.target?.result as string;
+        setUploadedImage(result);
+        setImageUrl(result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSaveDraft = () => {
@@ -287,6 +332,21 @@ function CreatePageInner() {
 
   return (
     <div style={{ background: "transparent" }}>
+      {/* Back link */}
+      <Link
+        href="/dashboard"
+        style={{
+          fontFamily: "'Source Sans 3', var(--font-source), sans-serif",
+          fontSize: 14,
+          color: "#636788",
+          textDecoration: "none",
+          display: "inline-block",
+          marginBottom: 16,
+        }}
+      >
+        &larr; Back to Dashboard
+      </Link>
+
       {/* Header */}
       <div style={{ marginBottom: 32, background: "transparent" }}>
         <h1
@@ -753,9 +813,10 @@ function CreatePageInner() {
               </>
             )}
 
-            {/* Media */}
+            {/* Media section with tabs */}
             <div style={cardStyle}>
               <label style={sectionLabel}>Media</label>
+
               {imageUrl ? (
                 <div>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -764,8 +825,8 @@ function CreatePageInner() {
                     alt="Generated image"
                     style={{
                       width: "100%",
-                      maxWidth: "100%",
-                      borderRadius: 8,
+                      maxHeight: 400,
+                      borderRadius: 12,
                       objectFit: "cover",
                       display: "block",
                     }}
@@ -790,11 +851,11 @@ function CreatePageInner() {
                         lineHeight: "1.4",
                       }}
                     >
-                      <span style={{ color: "#636788", fontSize: 13, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>Regenerate</span>
+                      Regenerate
                     </button>
                     <button
                       type="button"
-                      onClick={() => setImageUrl("")}
+                      onClick={() => { setImageUrl(""); setUploadedImage(""); }}
                       style={{
                         display: "inline-flex",
                         alignItems: "center",
@@ -810,133 +871,206 @@ function CreatePageInner() {
                         lineHeight: "1.4",
                       }}
                     >
-                      <span style={{ color: "#dc2626", fontSize: 13, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>Remove</span>
+                      Remove
                     </button>
                   </div>
                 </div>
               ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                  {/* AI Generate */}
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 10,
-                      border: "2px dashed #d8dce8",
-                      borderRadius: 10,
-                      padding: 20,
-                      background: "#fafbff",
-                    }}
-                  >
-                    <span style={{ fontFamily: "'Mona Sans', var(--font-mona), sans-serif", fontSize: 13, fontWeight: 600, color: "#191e41" }}>AI Generate</span>
-                    <input
-                      type="text"
-                      value={imagePrompt}
-                      onChange={(e) => setImagePrompt(e.target.value)}
-                      placeholder="Describe the image you want..."
-                      style={{
-                        display: "block",
-                        width: "100%",
-                        padding: "10px 12px",
-                        border: "2px solid #d8dce8",
-                        borderRadius: 8,
-                        fontFamily: "'Source Sans 3', var(--font-source), sans-serif",
-                        fontSize: 13,
-                        color: "#191e41",
-                        outline: "none",
-                        background: "#ffffff",
-                        lineHeight: "1.4",
-                        boxSizing: "border-box",
-                      }}
-                      onFocus={(e) => (e.currentTarget.style.borderColor = "#ea4c89")}
-                      onBlur={(e) => (e.currentTarget.style.borderColor = "#d8dce8")}
-                      onKeyDown={(e) => e.key === "Enter" && handleGenerateImage()}
-                    />
+                <>
+                  {/* Tabs row */}
+                  <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
                     <button
                       type="button"
-                      onClick={handleGenerateImage}
-                      disabled={isGeneratingImage || !imagePrompt.trim()}
+                      onClick={() => setMediaTab("generate")}
                       style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 6,
-                        padding: "10px 20px",
-                        borderRadius: 10,
+                        padding: "8px 18px",
+                        borderRadius: 8,
                         border: "none",
-                        background: isGeneratingImage || !imagePrompt.trim() ? "#d1d5e0" : "#3a3546",
-                        color: "#ffffff",
-                        fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
-                        fontWeight: 600,
-                        fontSize: 13,
-                        cursor: isGeneratingImage || !imagePrompt.trim() ? "not-allowed" : "pointer",
-                        lineHeight: "1.4",
-                      }}
-                    >
-                      {isGeneratingImage ? (
-                        <>
-                          <span
-                            style={{
-                              width: 14,
-                              height: 14,
-                              border: "2px solid rgba(255,255,255,0.3)",
-                              borderTopColor: "#ffffff",
-                              borderRadius: "50%",
-                              display: "inline-block",
-                              animation: "spin 0.8s linear infinite",
-                            }}
-                          />
-                          <span style={{ color: "#ffffff", fontSize: 13 }}>Generating...</span>
-                        </>
-                      ) : (
-                        <span style={{ color: "#ffffff", fontSize: 13 }}>{"\uD83C\uDFA8"} Generate Image</span>
-                      )}
-                    </button>
-                  </div>
-                  {/* Upload area */}
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      border: "2px dashed #d8dce8",
-                      borderRadius: 10,
-                      padding: 20,
-                      background: "#fafbff",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" stroke="#636788" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="4" y="4" width="32" height="32" rx="4" />
-                      <circle cx="14" cy="16" r="3" />
-                      <path d="M36 28l-8-8-12 12" />
-                    </svg>
-                    <p style={{ fontFamily: "'Source Sans 3', var(--font-source), sans-serif", fontSize: 13, color: "#636788", margin: "8px 0 4px", display: "block", lineHeight: "1.4", textAlign: "center" }}>
-                      Drag & drop images or videos
-                    </p>
-                    <button
-                      type="button"
-                      style={{
-                        marginTop: 4,
-                        display: "inline-flex",
-                        alignItems: "center",
-                        padding: "8px 16px",
-                        borderRadius: 8,
-                        border: "2px solid #e8ebf5",
-                        background: "transparent",
-                        color: "#636788",
+                        background: mediaTab === "generate" ? "#ea4c89" : "#f3f5fc",
+                        color: mediaTab === "generate" ? "#ffffff" : "#636788",
                         fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
                         fontWeight: 600,
                         fontSize: 13,
                         cursor: "pointer",
-                        lineHeight: "1.4",
                       }}
                     >
-                      <span style={{ color: "#636788", fontSize: 13, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>Browse files</span>
+                      {"\uD83C\uDFA8"} AI Generate
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMediaTab("upload")}
+                      style={{
+                        padding: "8px 18px",
+                        borderRadius: 8,
+                        border: "none",
+                        background: mediaTab === "upload" ? "#ea4c89" : "#f3f5fc",
+                        color: mediaTab === "upload" ? "#ffffff" : "#636788",
+                        fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                        fontWeight: 600,
+                        fontSize: 13,
+                        cursor: "pointer",
+                      }}
+                    >
+                      {"\uD83D\uDCC1"} Upload
                     </button>
                   </div>
-                </div>
+
+                  {mediaTab === "generate" ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                      <textarea
+                        value={imagePrompt}
+                        onChange={(e) => setImagePrompt(e.target.value)}
+                        placeholder="Describe your image... e.g. 'A minimalist flat lay of skincare products on marble background'"
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          minHeight: 80,
+                          padding: "12px 14px",
+                          border: "2px solid #d8dce8",
+                          borderRadius: 10,
+                          fontFamily: "'Source Sans 3', var(--font-source), sans-serif",
+                          fontSize: 14,
+                          color: "#191e41",
+                          outline: "none",
+                          background: "#fafbff",
+                          lineHeight: 1.5,
+                          boxSizing: "border-box",
+                          resize: "vertical",
+                        }}
+                        onFocus={(e) => (e.currentTarget.style.borderColor = "#ea4c89")}
+                        onBlur={(e) => (e.currentTarget.style.borderColor = "#d8dce8")}
+                      />
+
+                      {/* Style chips */}
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {imageStyles.map((s) => (
+                          <button
+                            type="button"
+                            key={s}
+                            onClick={() => setImageStyle(s)}
+                            style={{
+                              padding: "6px 14px",
+                              borderRadius: 8,
+                              border: imageStyle === s ? "none" : "1px solid #f3f5fc",
+                              background: imageStyle === s ? "#ea4c89" : "#ffffff",
+                              color: imageStyle === s ? "#ffffff" : "#636788",
+                              fontFamily: "'Source Sans 3', var(--font-source), sans-serif",
+                              fontSize: 13,
+                              cursor: "pointer",
+                            }}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Generate Image button */}
+                      <button
+                        type="button"
+                        onClick={handleGenerateImage}
+                        disabled={isGeneratingImage || !imagePrompt.trim()}
+                        style={{
+                          width: "100%",
+                          padding: 14,
+                          borderRadius: 10,
+                          border: "none",
+                          background: isGeneratingImage || !imagePrompt.trim() ? "#d1d5e0" : "#ea4c89",
+                          color: "#ffffff",
+                          fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                          fontWeight: 600,
+                          fontSize: 14,
+                          cursor: isGeneratingImage || !imagePrompt.trim() ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        {isGeneratingImage ? "Generating..." : "\u2728 Generate Image"}
+                      </button>
+
+                      {/* Error banner */}
+                      {imageError && (
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            padding: "10px 14px",
+                            borderRadius: 8,
+                            background: "rgba(234,76,137,0.08)",
+                            color: "#dc2626",
+                            fontFamily: "'Source Sans 3', var(--font-source), sans-serif",
+                            fontSize: 13,
+                          }}
+                        >
+                          <span>{imageError}</span>
+                          <button
+                            type="button"
+                            onClick={() => setImageError("")}
+                            style={{
+                              background: "none",
+                              border: "none",
+                              color: "#dc2626",
+                              fontSize: 16,
+                              cursor: "pointer",
+                              padding: "0 4px",
+                            }}
+                          >
+                            {"\u00d7"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* Upload tab */
+                    <div>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*,video/*"
+                        onChange={handleFileSelect}
+                        style={{ display: "none" }}
+                      />
+                      <div
+                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                        onDragEnter={(e) => { e.preventDefault(); setIsDragging(true); }}
+                        onDragLeave={() => setIsDragging(false)}
+                        onDrop={handleFileDrop}
+                        style={{
+                          border: `2px dashed ${isDragging ? "#ea4c89" : "#d8dce8"}`,
+                          borderRadius: 12,
+                          padding: 40,
+                          textAlign: "center",
+                          background: isDragging ? "rgba(234,76,137,0.03)" : "#fafbff",
+                          transition: "border-color 0.15s, background 0.15s",
+                        }}
+                      >
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#636788" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: 12 }}>
+                          <rect x="4" y="4" width="32" height="32" rx="4" />
+                          <circle cx="14" cy="16" r="3" />
+                          <path d="M36 28l-8-8-12 12" />
+                        </svg>
+                        <p style={{ fontFamily: "'Source Sans 3', var(--font-source), sans-serif", fontSize: 14, color: "#636788", margin: "0 0 12px" }}>
+                          Drag & drop images or videos
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          style={{
+                            padding: "8px 20px",
+                            borderRadius: 8,
+                            border: "2px solid #e8ebf5",
+                            background: "transparent",
+                            color: "#636788",
+                            fontFamily: "'Mona Sans', var(--font-mona), sans-serif",
+                            fontWeight: 600,
+                            fontSize: 13,
+                            cursor: "pointer",
+                          }}
+                        >
+                          Browse files
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -1133,7 +1267,7 @@ function CreatePageInner() {
             lineHeight: "1.4",
           }}
         >
-          <span style={{ color: "#636788", fontSize: 15, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>Save as Draft</span>
+          Save as Draft
         </button>
         <button
           type="button"
@@ -1155,7 +1289,7 @@ function CreatePageInner() {
             lineHeight: "1.4",
           }}
         >
-          <span style={{ color: "#ea4c89", fontSize: 15, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>Schedule</span>
+          Schedule
         </button>
         <button
           type="button"
@@ -1176,7 +1310,7 @@ function CreatePageInner() {
             lineHeight: "1.4",
           }}
         >
-          <span style={{ color: "#ffffff", fontSize: 15, fontFamily: "'Mona Sans', var(--font-mona), sans-serif" }}>Publish Now</span>
+          Publish Now
         </button>
         {saveMessage && (
           <span

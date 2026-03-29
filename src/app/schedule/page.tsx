@@ -121,6 +121,19 @@ export default function SchedulePage() {
 
   return (
     <div>
+      <Link
+        href="/dashboard"
+        style={{
+          fontFamily: "var(--font-source), sans-serif",
+          fontSize: 14,
+          color: "#636788",
+          textDecoration: "none",
+          display: "inline-block",
+          marginBottom: 16,
+        }}
+      >
+        &larr; Back to Dashboard
+      </Link>
       <div className="flex items-center justify-between" style={{ marginBottom: 32 }}>
         <h1
           style={{

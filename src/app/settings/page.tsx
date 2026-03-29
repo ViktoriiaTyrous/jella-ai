@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
-const connectedPlatforms = [
+const defaultPlatforms = [
   { name: "Instagram", connected: true },
   { name: "TikTok", connected: true },
   { name: "Twitter/X", connected: false },
@@ -23,7 +24,10 @@ export default function SettingsPage() {
   const [notifState, setNotifState] = useState<Record<string, boolean>>(
     Object.fromEntries(notifications.map((n) => [n.key, n.on]))
   );
-  const [saveMsg, setSaveMsg] = useState("");
+  const [platformState, setPlatformState] = useState(
+    defaultPlatforms.map((p) => ({ ...p }))
+  );
+  const [showSaved, setShowSaved] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const raw = localStorage.getItem("jella_session");
@@ -36,6 +40,17 @@ export default function SettingsPage() {
 
   const toggleNotif = (key: string) => {
     setNotifState((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const togglePlatform = (name: string) => {
+    setPlatformState((prev) =>
+      prev.map((p) => (p.name === name ? { ...p, connected: !p.connected } : p))
+    );
+  };
+
+  const handleSave = (section: string) => {
+    setShowSaved((prev) => ({ ...prev, [section]: true }));
+    setTimeout(() => setShowSaved((prev) => ({ ...prev, [section]: false })), 2000);
   };
 
   const cardStyle: React.CSSProperties = {
@@ -69,6 +84,19 @@ export default function SettingsPage() {
 
   return (
     <div style={{ maxWidth: 720 }}>
+      <Link
+        href="/dashboard"
+        style={{
+          fontFamily: "var(--font-source), sans-serif",
+          fontSize: 14,
+          color: "#636788",
+          textDecoration: "none",
+          display: "inline-block",
+          marginBottom: 16,
+        }}
+      >
+        &larr; Back to Dashboard
+      </Link>
       <h1
         style={{
           fontFamily: "var(--font-mona), sans-serif",
@@ -103,6 +131,7 @@ export default function SettingsPage() {
             {userName[0]?.toUpperCase() || "U"}
           </div>
           <button
+            onClick={() => alert("Coming soon!")}
             style={{
               padding: "8px 16px",
               borderRadius: 8,
@@ -127,6 +156,29 @@ export default function SettingsPage() {
             <input type="email" defaultValue={userEmail} style={inputStyle} />
           </div>
         </div>
+        <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            onClick={() => handleSave("profile")}
+            style={{
+              padding: "10px 20px",
+              borderRadius: 8,
+              border: "none",
+              background: "#ea4c89",
+              color: "#ffffff",
+              fontFamily: "var(--font-mona), sans-serif",
+              fontWeight: 600,
+              fontSize: 14,
+              cursor: "pointer",
+            }}
+          >
+            Save Profile
+          </button>
+          {showSaved.profile && (
+            <span style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 14, color: "#16a34a", fontWeight: 600 }}>
+              {"\u2713"} Saved!
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Connected Platforms */}
@@ -135,7 +187,7 @@ export default function SettingsPage() {
           Connected Platforms
         </h2>
         <div className="flex flex-col gap-3">
-          {connectedPlatforms.map((p) => (
+          {platformState.map((p) => (
             <div
               key={p.name}
               className="flex items-center justify-between"
@@ -149,6 +201,7 @@ export default function SettingsPage() {
                 {p.name}
               </span>
               <button
+                onClick={() => togglePlatform(p.name)}
                 style={{
                   padding: "8px 16px",
                   borderRadius: 8,
@@ -189,6 +242,29 @@ export default function SettingsPage() {
               <input type="text" defaultValue="#ea4c89" style={{ ...inputStyle, flex: 1 }} />
             </div>
           </div>
+        </div>
+        <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            onClick={() => handleSave("brand")}
+            style={{
+              padding: "10px 20px",
+              borderRadius: 8,
+              border: "none",
+              background: "#ea4c89",
+              color: "#ffffff",
+              fontFamily: "var(--font-mona), sans-serif",
+              fontWeight: 600,
+              fontSize: 14,
+              cursor: "pointer",
+            }}
+          >
+            Save Brand
+          </button>
+          {showSaved.brand && (
+            <span style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 14, color: "#16a34a", fontWeight: 600 }}>
+              {"\u2713"} Saved!
+            </span>
+          )}
         </div>
       </div>
 
@@ -235,6 +311,29 @@ export default function SettingsPage() {
             </div>
           ))}
         </div>
+        <div style={{ marginTop: 16, display: "flex", alignItems: "center", gap: 12 }}>
+          <button
+            onClick={() => handleSave("notifications")}
+            style={{
+              padding: "10px 20px",
+              borderRadius: 8,
+              border: "none",
+              background: "#ea4c89",
+              color: "#ffffff",
+              fontFamily: "var(--font-mona), sans-serif",
+              fontWeight: 600,
+              fontSize: 14,
+              cursor: "pointer",
+            }}
+          >
+            Save Notifications
+          </button>
+          {showSaved.notifications && (
+            <span style={{ fontFamily: "var(--font-source), sans-serif", fontSize: 14, color: "#16a34a", fontWeight: 600 }}>
+              {"\u2713"} Saved!
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Billing */}
@@ -252,6 +351,7 @@ export default function SettingsPage() {
             </p>
           </div>
           <button
+            onClick={() => alert("Coming soon!")}
             style={{
               padding: "12px 24px",
               borderRadius: 10,
